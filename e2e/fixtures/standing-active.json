@@ -1,0 +1,31 @@
+{
+  "can_book": false,
+  "profile_complete": true,
+  "blockers": [
+    {
+      "code": "active_limit",
+      "message": "یک رزرو فعال دارید؛ پس از پایان یا لغو آن می‌توانید رزرو تازه بگیرید."
+    }
+  ],
+  "active": {
+    "limit": 1,
+    "remaining": 0,
+    "used": 1,
+    "window_days": null
+  },
+  "window": {
+    "limit": 14,
+    "remaining": 10,
+    "used": 4,
+    "window_days": 30
+  },
+  "year": {
+    "limit": 60,
+    "remaining": 56,
+    "used": 4,
+    "window_days": null
+  },
+  "cooldown_until": null,
+  "next_eligible_at": null,
+  "suspended_until": null
+}

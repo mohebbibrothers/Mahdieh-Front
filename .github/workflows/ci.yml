@@ -1,0 +1,75 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# CI فرانت مهدیه — هر push و PR.
+#   ۱ verify  تولیدشده‌ها به‌روز، lint، قالب، نوع (TS 6 + TS 7)، آزمون واحد، ساخت تولید،
+#             بسته‌بندی و بازرسی بسته (همان قواعد front_deploy.sh میزبان + ممیزی CSP)
+#   ۲ e2e     Playwright روی همان خروجی ساخت، با CSP سخت‌گیر بک‌اند، دسکتاپ ۱۴۴۰ و موبایل ۳۹۰،
+#             axe، سرریز افقی، تم شب، خطای API — با fixtureهای واقعی بک‌اند و ساعت ثابت
+# «Release bundle» فقط پس از سبزشدن همین گردش‌کار روی main اجرا می‌شود.
+# ══════════════════════════════════════════════════════════════════════════════
+name: CI
+
+on:
+  push:
+    branches: [main, "wip/**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  verify:
+    name: 🔎 بررسی، ساخت و بازرسی بسته
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: تولیدشده‌ها، lint، قالب، نوع و آزمون واحد
+        run: pnpm verify
+      - name: ساخت تولید (خروجی ایستا + postbuild)
+        run: pnpm build
+      - name: بسته‌بندی و بازرسی بسته
+        run: |
+          node scripts/pack-bundle.mjs --out release
+          node scripts/verify-bundle.mjs release/mahdieh-front.tar.gz --commit "${GITHUB_SHA}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: front-dist
+          path: dist/mahdieh-front/
+          retention-days: 7
+          if-no-files-found: error
+          include-hidden-files: true
+
+  e2e:
+    name: 🎭 آزمون سرتاسری (Playwright)
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - uses: actions/download-artifact@v4
+        with:
+          name: front-dist
+          path: dist/mahdieh-front
+      - name: نصب Chromium هم‌نسخهٔ Playwright
+        run: pnpm exec playwright install --with-deps chromium
+      - name: اجرای e2e
+        run: pnpm e2e
+      - name: گزارش شکست
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

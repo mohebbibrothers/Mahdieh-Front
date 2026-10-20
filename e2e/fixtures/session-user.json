@@ -1,0 +1,22 @@
+{
+  "authenticated": true,
+  "mfa_pending": false,
+  "profile": {
+    "id": "0192f0a0-0000-7000-8000-0000000000aa",
+    "display_name": "زهرا محمدی",
+    "first_name": "زهرا",
+    "last_name": "محمدی",
+    "phone_masked": "0912***4567",
+    "is_profile_complete": true,
+    "is_staff_member": false,
+    "role": "guest",
+    "city": "تبریز",
+    "date_joined": "2026-10-01T10:00:00+03:30",
+    "id_document_type": "national_id",
+    "national_id_masked": "******1234",
+    "nationality": "IR",
+    "nationality_title": "ایران",
+    "province": "east-azerbaijan",
+    "province_title": "آذربایجان شرقی"
+  }
+}

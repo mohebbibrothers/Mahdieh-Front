@@ -59,4 +59,9 @@ export default tseslint.config(
     files: ["scripts/**/*.mjs", "*.config.{mjs,ts}", "e2e/**/*.ts"],
     rules: { "no-console": "off" },
   },
+  {
+    // fixtureهای Playwright پارامتر «use» دارند؛ ربطی به Hookهای React ندارد.
+    files: ["e2e/**/*.ts"],
+    rules: { "react-hooks/rules-of-hooks": "off" },
+  },
 );

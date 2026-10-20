@@ -1,0 +1,12 @@
+[
+  {
+    "id": "0192f0a0-0000-7000-8000-000000000001",
+    "title": "مناسبت نمونهٔ آزمون",
+    "kind": "religious",
+    "date_gregorian": "2026-10-23",
+    "date_jalali": "۱۴۰۵/۰۸/۰۱",
+    "demand_level": "peak",
+    "description": "روز پرتقاضای ساختگی برای آزمون",
+    "is_peak": true
+  }
+]

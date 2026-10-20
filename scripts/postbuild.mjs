@@ -116,8 +116,18 @@ async function main() {
         params: { [constants.BROTLI_PARAM_QUALITY]: 11, [constants.BROTLI_PARAM_SIZE_HINT]: buf.length },
       });
       const gz = gzipSync(buf, { level: 9 });
-      if (br.length < buf.length * 0.95) await writeFile(`${dest}.br`, br);
-      if (gz.length < buf.length * 0.95) await writeFile(`${dest}.gz`, gz);
+      // نسخه‌های فشرده هم در فهرست هش‌اند: سرور ترجیحاً همین‌ها را می‌دهد، پس دست‌کاری‌شان
+      // نباید از راستی‌آزمایی میزبان پنهان بماند.
+      const key = `public/${rel.split(path.sep).join("/")}`;
+      const digest = (b) => createHash("sha256").update(b).digest("hex");
+      if (br.length < buf.length * 0.95) {
+        await writeFile(`${dest}.br`, br);
+        manifest[`${key}.br`] = digest(br);
+      }
+      if (gz.length < buf.length * 0.95) {
+        await writeFile(`${dest}.gz`, gz);
+        manifest[`${key}.gz`] = digest(gz);
+      }
       compressed += 1;
     }
   }
@@ -133,15 +143,14 @@ async function main() {
   const sha = gitSha();
   // هم‌قالب بک‌اند (‎mahdieh_cli: «YYYYMMDDHHMMSS-کامیت»، built_at بی‌میلی‌ثانیه).
   const builtAt = new Date().toISOString().replace(/\.\d+Z$/, "Z");
-  const release = process.env.MAHDIEH_RELEASE ?? `${builtAt.replace(/[-:TZ]/g, "")}-${sha.slice(0, 7)}`;
+  const release = process.env.MAHDIEH_RELEASE || `${builtAt.replace(/[-:TZ]/g, "")}-${sha.slice(0, 7)}`;
   if (!/^\d{14}-[0-9a-f]{7}$/.test(release)) throw new Error(`شناسهٔ انتشار نامعتبر: ${release}`);
   const pkg = JSON.parse(await readFile(path.join(ROOT, "package.json"), "utf8"));
   const nextPkg = JSON.parse(await readFile(path.join(ROOT, "node_modules", "next", "package.json"), "utf8"));
 
-  await writeFile(
-    path.join(DIST, "routes.json"),
-    `${JSON.stringify({ version: 1, nonce_placeholder: NONCE, not_found: "404.html", routes }, null, 2)}\n`,
-  );
+  const routesJson = `${JSON.stringify({ version: 1, nonce_placeholder: NONCE, not_found: "404.html", routes }, null, 2)}\n`;
+  await writeFile(path.join(DIST, "routes.json"), routesJson);
+  manifest["routes.json"] = createHash("sha256").update(routesJson).digest("hex");
   await writeFile(
     path.join(DIST, "BUILD_INFO.json"),
     `${JSON.stringify(

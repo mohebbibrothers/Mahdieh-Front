@@ -1,0 +1,122 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# انتشار فرانت مهدیه برای میزبان cPanel (هم‌قرارداد با «Release bundle» بک‌اند).
+#   ۱ bundle   ساخت با شناسهٔ انتشار «YYYYMMDDHHMMSS-کامیت۷»، بسته‌بندی، بازرسی بسته و
+#              تمرین: e2e کامل روی **همان** خروجی‌ای که منتشر می‌شود
+#   ۲ publish  main ⇐ پیش‌انتشار «edge» (همیشه آخرین نسخهٔ سبز) · برچسب v* ⇐ انتشار نسخه‌دار
+#
+# روی میزبان: ‎mahdieh update front‎ ⇐ ‎~/mahdieh-front/bin/deploy.sh fetch‎ (sha256، هش تک‌تک
+# پرونده‌ها، جابه‌جایی اتمی، راستی‌آزمایی بیرونی و بازگشت خودکار).
+# فقط پس از سبزشدن CI روی main اجرا می‌شود؛ بستهٔ آزموده‌نشده هرگز منتشر نمی‌شود.
+# ══════════════════════════════════════════════════════════════════════════════
+name: Release bundle
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.event_name == 'push' && github.ref || 'edge' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+  SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+jobs:
+  bundle:
+    name: 📦 ساخت، بازرسی و تمرین بسته
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    outputs:
+      release: ${{ steps.meta.outputs.release }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+      - uses: ./.github/actions/setup
+      - id: meta
+        name: شناسهٔ انتشار
+        run: echo "release=$(date -u +%Y%m%d%H%M%S)-${SOURCE_SHA::7}" >> "$GITHUB_OUTPUT"
+      - name: ساخت تولید با شناسهٔ انتشار
+        env:
+          MAHDIEH_RELEASE: ${{ steps.meta.outputs.release }}
+        run: pnpm build
+      - name: بسته‌بندی و بازرسی بسته
+        run: |
+          node scripts/pack-bundle.mjs --out release
+          node scripts/verify-bundle.mjs release/mahdieh-front.tar.gz --commit "${SOURCE_SHA}"
+          test "$(node -p 'require("./release/BUILD_INFO.json").release')" = "${{ steps.meta.outputs.release }}"
+          cat release/BUILD_INFO.json | head -12
+      - name: تمرین — e2e روی همان خروجی منتشرشدنی
+        run: |
+          pnpm exec playwright install --with-deps chromium
+          pnpm e2e
+      - name: گزارش شکست
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mahdieh-front-bundle
+          path: release/
+          retention-days: 14
+          if-no-files-found: error
+
+  publish:
+    name: 🚀 انتشار
+    needs: bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: mahdieh-front-bundle
+          path: release
+      - name: انتشار در GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_ID: ${{ needs.bundle.outputs.release }}
+        run: |
+          set -euo pipefail
+          (cd release && sha256sum -c mahdieh-front.tar.gz.sha256)
+          notes="بستهٔ فرانت مهدیه برای cPanel · انتشار ${RELEASE_ID} · کامیت ${SOURCE_SHA}"
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            tag="${GITHUB_REF_NAME}"
+            gh release create "${tag}" --verify-tag --title "${tag}" --notes "${notes}" \
+              release/mahdieh-front.tar.gz release/mahdieh-front.tar.gz.sha256 release/BUILD_INFO.json
+          else
+            # «edge» = آخرین نسخهٔ سبزِ main. برچسب نشانی انسانی است؛ منبع حقیقت BUILD_INFO.json است.
+            if gh api -X PATCH "repos/${GH_REPO}/git/refs/tags/edge" -f sha="${SOURCE_SHA}" -F force=true \
+                 >/dev/null 2>/tmp/edge-tag.err \
+               || gh api -X POST "repos/${GH_REPO}/git/refs" -f ref=refs/tags/edge -f sha="${SOURCE_SHA}" \
+                 >/dev/null 2>>/tmp/edge-tag.err; then
+              echo "برچسب edge → ${SOURCE_SHA::7}"
+            else
+              echo "::warning title=برچسب edge جابه‌جا نشد::$(tr '\n' ' ' </tmp/edge-tag.err) — دارایی‌ها منتشر می‌شوند؛ BUILD_INFO.json کامیت ${SOURCE_SHA::7} را دارد."
+            fi
+            gh release view edge >/dev/null 2>&1 \
+              || gh release create edge --prerelease --title "edge (آخرین نسخهٔ سبز main)" --notes "${notes}"
+            # BUILD_INFO.json **آخر**: «mahdieh update front» تا دیدن کامیت تازه در آن صبر می‌کند،
+            # پس هرگز بستهٔ نیمه‌بارگذاری‌شده را نمی‌گیرد.
+            gh release upload edge --clobber release/mahdieh-front.tar.gz release/mahdieh-front.tar.gz.sha256
+            gh release upload edge --clobber release/BUILD_INFO.json
+            gh release edit edge --prerelease --notes "${notes}"
+          fi
+          echo "✅ منتشر شد: ${RELEASE_ID}"

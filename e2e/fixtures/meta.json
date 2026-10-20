@@ -1,0 +1,11 @@
+{
+  "service": "mahdieh-web",
+  "environment": "development",
+  "schema_version": "v1",
+  "today_jalali": "1405/07/28",
+  "timezone": "Asia/Tehran",
+  "contact": {
+    "phone": "",
+    "address": "مشهد، نوغان، کوچه ۱۱ شهید قائمی، درب سوم"
+  }
+}

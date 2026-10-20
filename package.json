@@ -21,7 +21,9 @@
     "typecheck": "next typegen && tsc --noEmit && node node_modules/typescript-7/bin/tsc --noEmit",
     "test": "vitest run",
     "e2e": "playwright test",
-    "verify": "pnpm gen:check && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test"
+    "verify": "pnpm gen:check && pnpm lint && pnpm format:check && pnpm typecheck && pnpm test",
+    "bundle": "node scripts/pack-bundle.mjs",
+    "bundle:verify": "node scripts/verify-bundle.mjs release/mahdieh-front.tar.gz"
   },
   "dependencies": {
     "@tanstack/react-query": "5.104.5",

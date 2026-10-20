@@ -11,3 +11,6 @@ dist/
 out/
 .next/
 src/shared/ui/shrine.generated.ts
+release/
+test-results/
+playwright-report/

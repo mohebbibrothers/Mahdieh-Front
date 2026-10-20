@@ -1,0 +1,3098 @@
+{
+  "days": [
+    {
+      "day": "2026-10-20",
+      "date_jalali": "۱۴۰۵/۰۷/۲۸",
+      "weekday": "سه‌شنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.0,
+      "free_cells": 10,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479818,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-20T08:00:00+03:30",
+              "end": "2026-10-20T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479819,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-20T20:00:00+03:30",
+              "end": "2026-10-21T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479818,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-20T08:00:00+03:30",
+              "end": "2026-10-20T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479819,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-20T20:00:00+03:30",
+              "end": "2026-10-21T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479818,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-20T08:00:00+03:30",
+              "end": "2026-10-20T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479819,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-20T20:00:00+03:30",
+              "end": "2026-10-21T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479818,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-20T08:00:00+03:30",
+              "end": "2026-10-20T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479819,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-20T20:00:00+03:30",
+              "end": "2026-10-21T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479818,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-20T08:00:00+03:30",
+              "end": "2026-10-20T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479819,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-20T20:00:00+03:30",
+              "end": "2026-10-21T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-10-21",
+      "date_jalali": "۱۴۰۵/۰۷/۲۹",
+      "weekday": "چهارشنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.2,
+      "free_cells": 8,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479820,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-21T08:00:00+03:30",
+              "end": "2026-10-21T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479821,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-21T20:00:00+03:30",
+              "end": "2026-10-22T08:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479820,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-21T08:00:00+03:30",
+              "end": "2026-10-21T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479821,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-21T20:00:00+03:30",
+              "end": "2026-10-22T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479820,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-21T08:00:00+03:30",
+              "end": "2026-10-21T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479821,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-21T20:00:00+03:30",
+              "end": "2026-10-22T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479820,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-21T08:00:00+03:30",
+              "end": "2026-10-21T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479821,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-21T20:00:00+03:30",
+              "end": "2026-10-22T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479820,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-21T08:00:00+03:30",
+              "end": "2026-10-21T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479821,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-21T20:00:00+03:30",
+              "end": "2026-10-22T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-10-22",
+      "date_jalali": "۱۴۰۵/۰۷/۳۰",
+      "weekday": "پنجشنبه",
+      "is_weekend": true,
+      "demand_level": "normal",
+      "occupancy_rate": 0.0,
+      "free_cells": 10,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479822,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-22T08:00:00+03:30",
+              "end": "2026-10-22T20:00:00+03:30",
+              "status": "blocked",
+              "detail": "تعمیر سرمایش"
+            },
+            {
+              "index": 1479823,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-22T20:00:00+03:30",
+              "end": "2026-10-23T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479822,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-22T08:00:00+03:30",
+              "end": "2026-10-22T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479823,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-22T20:00:00+03:30",
+              "end": "2026-10-23T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479822,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-22T08:00:00+03:30",
+              "end": "2026-10-22T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479823,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-22T20:00:00+03:30",
+              "end": "2026-10-23T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479822,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-22T08:00:00+03:30",
+              "end": "2026-10-22T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479823,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-22T20:00:00+03:30",
+              "end": "2026-10-23T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479822,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-22T08:00:00+03:30",
+              "end": "2026-10-22T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479823,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-22T20:00:00+03:30",
+              "end": "2026-10-23T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-10-23",
+      "date_jalali": "۱۴۰۵/۰۸/۰۱",
+      "weekday": "جمعه",
+      "is_weekend": true,
+      "demand_level": "normal",
+      "occupancy_rate": 0.2,
+      "free_cells": 8,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479824,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-23T08:00:00+03:30",
+              "end": "2026-10-23T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479825,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-23T20:00:00+03:30",
+              "end": "2026-10-24T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479824,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-23T08:00:00+03:30",
+              "end": "2026-10-23T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479825,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-23T20:00:00+03:30",
+              "end": "2026-10-24T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479824,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-23T08:00:00+03:30",
+              "end": "2026-10-23T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479825,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-23T20:00:00+03:30",
+              "end": "2026-10-24T08:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479824,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-23T08:00:00+03:30",
+              "end": "2026-10-23T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479825,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-23T20:00:00+03:30",
+              "end": "2026-10-24T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479824,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-23T08:00:00+03:30",
+              "end": "2026-10-23T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479825,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-23T20:00:00+03:30",
+              "end": "2026-10-24T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-10-24",
+      "date_jalali": "۱۴۰۵/۰۸/۰۲",
+      "weekday": "شنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.4,
+      "free_cells": 6,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479826,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-24T08:00:00+03:30",
+              "end": "2026-10-24T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479827,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-24T20:00:00+03:30",
+              "end": "2026-10-25T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479826,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-24T08:00:00+03:30",
+              "end": "2026-10-24T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479827,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-24T20:00:00+03:30",
+              "end": "2026-10-25T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479826,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-24T08:00:00+03:30",
+              "end": "2026-10-24T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479827,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-24T20:00:00+03:30",
+              "end": "2026-10-25T08:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479826,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-24T08:00:00+03:30",
+              "end": "2026-10-24T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479827,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-24T20:00:00+03:30",
+              "end": "2026-10-25T08:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479826,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-24T08:00:00+03:30",
+              "end": "2026-10-24T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479827,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-24T20:00:00+03:30",
+              "end": "2026-10-25T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-10-25",
+      "date_jalali": "۱۴۰۵/۰۸/۰۳",
+      "weekday": "یک‌شنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.2,
+      "free_cells": 8,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479828,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-25T08:00:00+03:30",
+              "end": "2026-10-25T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479829,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-25T20:00:00+03:30",
+              "end": "2026-10-26T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479828,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-25T08:00:00+03:30",
+              "end": "2026-10-25T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479829,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-25T20:00:00+03:30",
+              "end": "2026-10-26T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479828,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-25T08:00:00+03:30",
+              "end": "2026-10-25T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479829,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-25T20:00:00+03:30",
+              "end": "2026-10-26T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479828,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-25T08:00:00+03:30",
+              "end": "2026-10-25T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479829,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-25T20:00:00+03:30",
+              "end": "2026-10-26T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479828,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-25T08:00:00+03:30",
+              "end": "2026-10-25T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479829,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-25T20:00:00+03:30",
+              "end": "2026-10-26T08:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-10-26",
+      "date_jalali": "۱۴۰۵/۰۸/۰۴",
+      "weekday": "دوشنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.3,
+      "free_cells": 7,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479830,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-26T08:00:00+03:30",
+              "end": "2026-10-26T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479831,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-26T20:00:00+03:30",
+              "end": "2026-10-27T08:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479830,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-26T08:00:00+03:30",
+              "end": "2026-10-26T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479831,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-26T20:00:00+03:30",
+              "end": "2026-10-27T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479830,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-26T08:00:00+03:30",
+              "end": "2026-10-26T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479831,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-26T20:00:00+03:30",
+              "end": "2026-10-27T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479830,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-26T08:00:00+03:30",
+              "end": "2026-10-26T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479831,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-26T20:00:00+03:30",
+              "end": "2026-10-27T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479830,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-26T08:00:00+03:30",
+              "end": "2026-10-26T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479831,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-26T20:00:00+03:30",
+              "end": "2026-10-27T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-10-27",
+      "date_jalali": "۱۴۰۵/۰۸/۰۵",
+      "weekday": "سه‌شنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.4,
+      "free_cells": 6,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479832,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-27T08:00:00+03:30",
+              "end": "2026-10-27T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479833,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-27T20:00:00+03:30",
+              "end": "2026-10-28T08:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479832,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-27T08:00:00+03:30",
+              "end": "2026-10-27T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479833,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-27T20:00:00+03:30",
+              "end": "2026-10-28T08:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479832,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-27T08:00:00+03:30",
+              "end": "2026-10-27T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479833,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-27T20:00:00+03:30",
+              "end": "2026-10-28T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479832,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-27T08:00:00+03:30",
+              "end": "2026-10-27T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479833,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-27T20:00:00+03:30",
+              "end": "2026-10-28T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479832,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-27T08:00:00+03:30",
+              "end": "2026-10-27T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479833,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-27T20:00:00+03:30",
+              "end": "2026-10-28T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-10-28",
+      "date_jalali": "۱۴۰۵/۰۸/۰۶",
+      "weekday": "چهارشنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.2,
+      "free_cells": 8,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479834,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-28T08:00:00+03:30",
+              "end": "2026-10-28T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479835,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-28T20:00:00+03:30",
+              "end": "2026-10-29T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479834,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-28T08:00:00+03:30",
+              "end": "2026-10-28T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479835,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-28T20:00:00+03:30",
+              "end": "2026-10-29T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479834,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-28T08:00:00+03:30",
+              "end": "2026-10-28T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479835,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-28T20:00:00+03:30",
+              "end": "2026-10-29T08:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479834,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-28T08:00:00+03:30",
+              "end": "2026-10-28T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479835,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-28T20:00:00+03:30",
+              "end": "2026-10-29T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479834,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-28T08:00:00+03:30",
+              "end": "2026-10-28T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479835,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-28T20:00:00+03:30",
+              "end": "2026-10-29T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-10-29",
+      "date_jalali": "۱۴۰۵/۰۸/۰۷",
+      "weekday": "پنجشنبه",
+      "is_weekend": true,
+      "demand_level": "normal",
+      "occupancy_rate": 0.3,
+      "free_cells": 7,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479836,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-29T08:00:00+03:30",
+              "end": "2026-10-29T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479837,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-29T20:00:00+03:30",
+              "end": "2026-10-30T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479836,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-29T08:00:00+03:30",
+              "end": "2026-10-29T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479837,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-29T20:00:00+03:30",
+              "end": "2026-10-30T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479836,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-29T08:00:00+03:30",
+              "end": "2026-10-29T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479837,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-29T20:00:00+03:30",
+              "end": "2026-10-30T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479836,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-29T08:00:00+03:30",
+              "end": "2026-10-29T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479837,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-29T20:00:00+03:30",
+              "end": "2026-10-30T08:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479836,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-29T08:00:00+03:30",
+              "end": "2026-10-29T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479837,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-29T20:00:00+03:30",
+              "end": "2026-10-30T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-10-30",
+      "date_jalali": "۱۴۰۵/۰۸/۰۸",
+      "weekday": "جمعه",
+      "is_weekend": true,
+      "demand_level": "normal",
+      "occupancy_rate": 0.4,
+      "free_cells": 6,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479838,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-30T08:00:00+03:30",
+              "end": "2026-10-30T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479839,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-30T20:00:00+03:30",
+              "end": "2026-10-31T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479838,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-30T08:00:00+03:30",
+              "end": "2026-10-30T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479839,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-30T20:00:00+03:30",
+              "end": "2026-10-31T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479838,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-30T08:00:00+03:30",
+              "end": "2026-10-30T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479839,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-30T20:00:00+03:30",
+              "end": "2026-10-31T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479838,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-30T08:00:00+03:30",
+              "end": "2026-10-30T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479839,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-30T20:00:00+03:30",
+              "end": "2026-10-31T08:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479838,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-30T08:00:00+03:30",
+              "end": "2026-10-30T20:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            },
+            {
+              "index": 1479839,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-30T20:00:00+03:30",
+              "end": "2026-10-31T08:00:00+03:30",
+              "status": "occupied",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-10-31",
+      "date_jalali": "۱۴۰۵/۰۸/۰۹",
+      "weekday": "شنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.0,
+      "free_cells": 10,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479840,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-31T08:00:00+03:30",
+              "end": "2026-10-31T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479841,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-31T20:00:00+03:30",
+              "end": "2026-11-01T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479840,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-31T08:00:00+03:30",
+              "end": "2026-10-31T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479841,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-31T20:00:00+03:30",
+              "end": "2026-11-01T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479840,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-31T08:00:00+03:30",
+              "end": "2026-10-31T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479841,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-31T20:00:00+03:30",
+              "end": "2026-11-01T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479840,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-31T08:00:00+03:30",
+              "end": "2026-10-31T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479841,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-31T20:00:00+03:30",
+              "end": "2026-11-01T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479840,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-10-31T08:00:00+03:30",
+              "end": "2026-10-31T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479841,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-10-31T20:00:00+03:30",
+              "end": "2026-11-01T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-11-01",
+      "date_jalali": "۱۴۰۵/۰۸/۱۰",
+      "weekday": "یک‌شنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.0,
+      "free_cells": 10,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479842,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-01T08:00:00+03:30",
+              "end": "2026-11-01T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479843,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-01T20:00:00+03:30",
+              "end": "2026-11-02T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479842,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-01T08:00:00+03:30",
+              "end": "2026-11-01T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479843,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-01T20:00:00+03:30",
+              "end": "2026-11-02T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479842,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-01T08:00:00+03:30",
+              "end": "2026-11-01T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479843,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-01T20:00:00+03:30",
+              "end": "2026-11-02T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479842,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-01T08:00:00+03:30",
+              "end": "2026-11-01T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479843,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-01T20:00:00+03:30",
+              "end": "2026-11-02T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479842,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-01T08:00:00+03:30",
+              "end": "2026-11-01T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479843,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-01T20:00:00+03:30",
+              "end": "2026-11-02T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-11-02",
+      "date_jalali": "۱۴۰۵/۰۸/۱۱",
+      "weekday": "دوشنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.0,
+      "free_cells": 10,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479844,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-02T08:00:00+03:30",
+              "end": "2026-11-02T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479845,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-02T20:00:00+03:30",
+              "end": "2026-11-03T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479844,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-02T08:00:00+03:30",
+              "end": "2026-11-02T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479845,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-02T20:00:00+03:30",
+              "end": "2026-11-03T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479844,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-02T08:00:00+03:30",
+              "end": "2026-11-02T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479845,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-02T20:00:00+03:30",
+              "end": "2026-11-03T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479844,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-02T08:00:00+03:30",
+              "end": "2026-11-02T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479845,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-02T20:00:00+03:30",
+              "end": "2026-11-03T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479844,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-02T08:00:00+03:30",
+              "end": "2026-11-02T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479845,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-02T20:00:00+03:30",
+              "end": "2026-11-03T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-11-03",
+      "date_jalali": "۱۴۰۵/۰۸/۱۲",
+      "weekday": "سه‌شنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.0,
+      "free_cells": 10,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479846,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-03T08:00:00+03:30",
+              "end": "2026-11-03T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479847,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-03T20:00:00+03:30",
+              "end": "2026-11-04T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479846,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-03T08:00:00+03:30",
+              "end": "2026-11-03T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479847,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-03T20:00:00+03:30",
+              "end": "2026-11-04T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479846,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-03T08:00:00+03:30",
+              "end": "2026-11-03T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479847,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-03T20:00:00+03:30",
+              "end": "2026-11-04T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479846,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-03T08:00:00+03:30",
+              "end": "2026-11-03T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479847,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-03T20:00:00+03:30",
+              "end": "2026-11-04T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479846,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-03T08:00:00+03:30",
+              "end": "2026-11-03T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479847,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-03T20:00:00+03:30",
+              "end": "2026-11-04T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-11-04",
+      "date_jalali": "۱۴۰۵/۰۸/۱۳",
+      "weekday": "چهارشنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.0,
+      "free_cells": 10,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479848,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-04T08:00:00+03:30",
+              "end": "2026-11-04T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479849,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-04T20:00:00+03:30",
+              "end": "2026-11-05T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479848,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-04T08:00:00+03:30",
+              "end": "2026-11-04T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479849,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-04T20:00:00+03:30",
+              "end": "2026-11-05T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479848,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-04T08:00:00+03:30",
+              "end": "2026-11-04T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479849,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-04T20:00:00+03:30",
+              "end": "2026-11-05T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479848,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-04T08:00:00+03:30",
+              "end": "2026-11-04T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479849,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-04T20:00:00+03:30",
+              "end": "2026-11-05T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479848,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-04T08:00:00+03:30",
+              "end": "2026-11-04T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479849,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-04T20:00:00+03:30",
+              "end": "2026-11-05T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-11-05",
+      "date_jalali": "۱۴۰۵/۰۸/۱۴",
+      "weekday": "پنجشنبه",
+      "is_weekend": true,
+      "demand_level": "normal",
+      "occupancy_rate": 0.0,
+      "free_cells": 10,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479850,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-05T08:00:00+03:30",
+              "end": "2026-11-05T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479851,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-05T20:00:00+03:30",
+              "end": "2026-11-06T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479850,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-05T08:00:00+03:30",
+              "end": "2026-11-05T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479851,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-05T20:00:00+03:30",
+              "end": "2026-11-06T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479850,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-05T08:00:00+03:30",
+              "end": "2026-11-05T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479851,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-05T20:00:00+03:30",
+              "end": "2026-11-06T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479850,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-05T08:00:00+03:30",
+              "end": "2026-11-05T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479851,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-05T20:00:00+03:30",
+              "end": "2026-11-06T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479850,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-05T08:00:00+03:30",
+              "end": "2026-11-05T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479851,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-05T20:00:00+03:30",
+              "end": "2026-11-06T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-11-06",
+      "date_jalali": "۱۴۰۵/۰۸/۱۵",
+      "weekday": "جمعه",
+      "is_weekend": true,
+      "demand_level": "normal",
+      "occupancy_rate": 0.0,
+      "free_cells": 10,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479852,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-06T08:00:00+03:30",
+              "end": "2026-11-06T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479853,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-06T20:00:00+03:30",
+              "end": "2026-11-07T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479852,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-06T08:00:00+03:30",
+              "end": "2026-11-06T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479853,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-06T20:00:00+03:30",
+              "end": "2026-11-07T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479852,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-06T08:00:00+03:30",
+              "end": "2026-11-06T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479853,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-06T20:00:00+03:30",
+              "end": "2026-11-07T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479852,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-06T08:00:00+03:30",
+              "end": "2026-11-06T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479853,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-06T20:00:00+03:30",
+              "end": "2026-11-07T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479852,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-06T08:00:00+03:30",
+              "end": "2026-11-06T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479853,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-06T20:00:00+03:30",
+              "end": "2026-11-07T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-11-07",
+      "date_jalali": "۱۴۰۵/۰۸/۱۶",
+      "weekday": "شنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.0,
+      "free_cells": 10,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479854,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-07T08:00:00+03:30",
+              "end": "2026-11-07T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479855,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-07T20:00:00+03:30",
+              "end": "2026-11-08T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479854,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-07T08:00:00+03:30",
+              "end": "2026-11-07T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479855,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-07T20:00:00+03:30",
+              "end": "2026-11-08T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479854,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-07T08:00:00+03:30",
+              "end": "2026-11-07T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479855,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-07T20:00:00+03:30",
+              "end": "2026-11-08T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479854,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-07T08:00:00+03:30",
+              "end": "2026-11-07T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479855,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-07T20:00:00+03:30",
+              "end": "2026-11-08T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479854,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-07T08:00:00+03:30",
+              "end": "2026-11-07T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479855,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-07T20:00:00+03:30",
+              "end": "2026-11-08T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-11-08",
+      "date_jalali": "۱۴۰۵/۰۸/۱۷",
+      "weekday": "یک‌شنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.0,
+      "free_cells": 10,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479856,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-08T08:00:00+03:30",
+              "end": "2026-11-08T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479857,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-08T20:00:00+03:30",
+              "end": "2026-11-09T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479856,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-08T08:00:00+03:30",
+              "end": "2026-11-08T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479857,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-08T20:00:00+03:30",
+              "end": "2026-11-09T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479856,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-08T08:00:00+03:30",
+              "end": "2026-11-08T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479857,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-08T20:00:00+03:30",
+              "end": "2026-11-09T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479856,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-08T08:00:00+03:30",
+              "end": "2026-11-08T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479857,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-08T20:00:00+03:30",
+              "end": "2026-11-09T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479856,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-08T08:00:00+03:30",
+              "end": "2026-11-08T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479857,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-08T20:00:00+03:30",
+              "end": "2026-11-09T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "day": "2026-11-09",
+      "date_jalali": "۱۴۰۵/۰۸/۱۸",
+      "weekday": "دوشنبه",
+      "is_weekend": false,
+      "demand_level": "normal",
+      "occupancy_rate": 0.0,
+      "free_cells": 10,
+      "total_cells": 10,
+      "units": [
+        {
+          "code": "A1",
+          "title": "سوئیت طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479858,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-09T08:00:00+03:30",
+              "end": "2026-11-09T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479859,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-09T20:00:00+03:30",
+              "end": "2026-11-10T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B1",
+          "title": "اتاق بزرگ طبقهٔ اول",
+          "floor_number": 1,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479858,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-09T08:00:00+03:30",
+              "end": "2026-11-09T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479859,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-09T20:00:00+03:30",
+              "end": "2026-11-10T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "A2",
+          "title": "سوئیت طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "suite",
+          "capacity_total": 6,
+          "cells": [
+            {
+              "index": 1479858,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-09T08:00:00+03:30",
+              "end": "2026-11-09T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479859,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-09T20:00:00+03:30",
+              "end": "2026-11-10T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B2",
+          "title": "اتاق بزرگ طبقهٔ دوم",
+          "floor_number": 2,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479858,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-09T08:00:00+03:30",
+              "end": "2026-11-09T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479859,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-09T20:00:00+03:30",
+              "end": "2026-11-10T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        },
+        {
+          "code": "B3",
+          "title": "اتاق بزرگ طبقهٔ سوم",
+          "floor_number": 3,
+          "unit_type": "large_room",
+          "capacity_total": 8,
+          "cells": [
+            {
+              "index": 1479858,
+              "kind": "day",
+              "label": "روزانه",
+              "start": "2026-11-09T08:00:00+03:30",
+              "end": "2026-11-09T20:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            },
+            {
+              "index": 1479859,
+              "kind": "night",
+              "label": "شبانه",
+              "start": "2026-11-09T20:00:00+03:30",
+              "end": "2026-11-10T08:00:00+03:30",
+              "status": "free",
+              "detail": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "max_cells": 14,
+  "min_cells": 1,
+  "horizon_days": 90,
+  "lattice": {
+    "cell_hours": 12,
+    "grid_start_hour": 8
+  }
+}

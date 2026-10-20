@@ -1,0 +1,28 @@
+{
+  "results": [
+    {
+      "id": "0192f0a0-0000-7000-8000-0000000000bb",
+      "code": "MHD-7K3Q9",
+      "status": "confirmed",
+      "status_label": "تأییدشده",
+      "is_active": true,
+      "unit_code": "A2",
+      "unit_title": "سوئیت طبقهٔ دوم",
+      "floor_number": 2,
+      "start": "2026-10-23T20:00:00+03:30",
+      "end": "2026-10-25T20:00:00+03:30",
+      "date_jalali": "۱۴۰۵/۰۸/۰۱",
+      "weekday": "جمعه",
+      "cells_count": 4,
+      "duration_label": "۲ شبانه‌روز",
+      "guests_count": 4,
+      "can_cancel": true,
+      "free_cancel_until": "2026-10-22T20:00:00+03:30",
+      "created_at": "2026-10-19T09:12:00+03:30"
+    }
+  ],
+  "meta": {
+    "count": 1,
+    "scope": "upcoming"
+  }
+}

@@ -1,0 +1,324 @@
+[
+  {
+    "number": 1,
+    "title": "طبقهٔ اول",
+    "description": "دسترسی آسان از ورودی؛ مناسب زائران کم‌توان و سالمند.",
+    "accessibility_notes": "بدون پله تا ورودی واحدها",
+    "units": [
+      {
+        "id": "01a15890-2708-7513-aa69-8057cc733543",
+        "code": "A1",
+        "title": "سوئیت طبقهٔ اول",
+        "unit_type": "suite",
+        "type_label": "سوئیت",
+        "floor_number": 1,
+        "capacity_adults": 4,
+        "capacity_children": 2,
+        "capacity_total": 6,
+        "cleaning_buffer_minutes": null,
+        "features": [
+          {
+            "code": "wifi",
+            "title": "اینترنت بی‌سیم",
+            "icon": "📶",
+            "is_highlight": true
+          },
+          {
+            "code": "private-bath",
+            "title": "سرویس بهداشتی اختصاصی",
+            "icon": "🚿",
+            "is_highlight": true
+          },
+          {
+            "code": "kitchen",
+            "title": "آشپزخانهٔ مشترک",
+            "icon": "🍲",
+            "is_highlight": true
+          },
+          {
+            "code": "prayer",
+            "title": "سجاده و مهر",
+            "icon": "🕌",
+            "is_highlight": true
+          },
+          {
+            "code": "parking",
+            "title": "پارکینگ",
+            "icon": "🚗",
+            "is_highlight": false
+          },
+          {
+            "code": "elevator",
+            "title": "آسانسور",
+            "icon": "🛗",
+            "is_highlight": false
+          },
+          {
+            "code": "fridge",
+            "title": "یخچال",
+            "icon": "🧊",
+            "is_highlight": false
+          },
+          {
+            "code": "heating",
+            "title": "گرمایش و سرمایش",
+            "icon": "🌡",
+            "is_highlight": false
+          },
+          {
+            "code": "laundry",
+            "title": "رختشویخانه",
+            "icon": "🧺",
+            "is_highlight": false
+          },
+          {
+            "code": "locker",
+            "title": "صندوق امانات",
+            "icon": "🔐",
+            "is_highlight": false
+          }
+        ]
+      },
+      {
+        "id": "01a15890-2714-786f-9f9c-c8992912851b",
+        "code": "B1",
+        "title": "اتاق بزرگ طبقهٔ اول",
+        "unit_type": "large_room",
+        "type_label": "اتاق بزرگ",
+        "floor_number": 1,
+        "capacity_adults": 6,
+        "capacity_children": 2,
+        "capacity_total": 8,
+        "cleaning_buffer_minutes": null,
+        "features": [
+          {
+            "code": "wifi",
+            "title": "اینترنت بی‌سیم",
+            "icon": "📶",
+            "is_highlight": true
+          },
+          {
+            "code": "prayer",
+            "title": "سجاده و مهر",
+            "icon": "🕌",
+            "is_highlight": true
+          },
+          {
+            "code": "fridge",
+            "title": "یخچال",
+            "icon": "🧊",
+            "is_highlight": false
+          },
+          {
+            "code": "heating",
+            "title": "گرمایش و سرمایش",
+            "icon": "🌡",
+            "is_highlight": false
+          },
+          {
+            "code": "laundry",
+            "title": "رختشویخانه",
+            "icon": "🧺",
+            "is_highlight": false
+          },
+          {
+            "code": "locker",
+            "title": "صندوق امانات",
+            "icon": "🔐",
+            "is_highlight": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "number": 2,
+    "title": "طبقهٔ دوم",
+    "description": "طبقهٔ میانی با دسترسی آسان به آبدارخانه و نمازخانه.",
+    "accessibility_notes": "دسترسی با پله و آسانسور",
+    "units": [
+      {
+        "id": "01a15890-271d-7864-a88f-b1b29e1b688d",
+        "code": "A2",
+        "title": "سوئیت طبقهٔ دوم",
+        "unit_type": "suite",
+        "type_label": "سوئیت",
+        "floor_number": 2,
+        "capacity_adults": 4,
+        "capacity_children": 2,
+        "capacity_total": 6,
+        "cleaning_buffer_minutes": null,
+        "features": [
+          {
+            "code": "wifi",
+            "title": "اینترنت بی‌سیم",
+            "icon": "📶",
+            "is_highlight": true
+          },
+          {
+            "code": "private-bath",
+            "title": "سرویس بهداشتی اختصاصی",
+            "icon": "🚿",
+            "is_highlight": true
+          },
+          {
+            "code": "kitchen",
+            "title": "آشپزخانهٔ مشترک",
+            "icon": "🍲",
+            "is_highlight": true
+          },
+          {
+            "code": "prayer",
+            "title": "سجاده و مهر",
+            "icon": "🕌",
+            "is_highlight": true
+          },
+          {
+            "code": "parking",
+            "title": "پارکینگ",
+            "icon": "🚗",
+            "is_highlight": false
+          },
+          {
+            "code": "elevator",
+            "title": "آسانسور",
+            "icon": "🛗",
+            "is_highlight": false
+          },
+          {
+            "code": "fridge",
+            "title": "یخچال",
+            "icon": "🧊",
+            "is_highlight": false
+          },
+          {
+            "code": "heating",
+            "title": "گرمایش و سرمایش",
+            "icon": "🌡",
+            "is_highlight": false
+          },
+          {
+            "code": "laundry",
+            "title": "رختشویخانه",
+            "icon": "🧺",
+            "is_highlight": false
+          },
+          {
+            "code": "locker",
+            "title": "صندوق امانات",
+            "icon": "🔐",
+            "is_highlight": false
+          }
+        ]
+      },
+      {
+        "id": "01a15890-272a-74fe-b206-ee835120b62c",
+        "code": "B2",
+        "title": "اتاق بزرگ طبقهٔ دوم",
+        "unit_type": "large_room",
+        "type_label": "اتاق بزرگ",
+        "floor_number": 2,
+        "capacity_adults": 6,
+        "capacity_children": 2,
+        "capacity_total": 8,
+        "cleaning_buffer_minutes": null,
+        "features": [
+          {
+            "code": "wifi",
+            "title": "اینترنت بی‌سیم",
+            "icon": "📶",
+            "is_highlight": true
+          },
+          {
+            "code": "prayer",
+            "title": "سجاده و مهر",
+            "icon": "🕌",
+            "is_highlight": true
+          },
+          {
+            "code": "fridge",
+            "title": "یخچال",
+            "icon": "🧊",
+            "is_highlight": false
+          },
+          {
+            "code": "heating",
+            "title": "گرمایش و سرمایش",
+            "icon": "🌡",
+            "is_highlight": false
+          },
+          {
+            "code": "laundry",
+            "title": "رختشویخانه",
+            "icon": "🧺",
+            "is_highlight": false
+          },
+          {
+            "code": "locker",
+            "title": "صندوق امانات",
+            "icon": "🔐",
+            "is_highlight": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "number": 3,
+    "title": "طبقهٔ سوم",
+    "description": "آرام‌ترین طبقه؛ یک اتاق بزرگ با دید باز.",
+    "accessibility_notes": "دسترسی با آسانسور",
+    "units": [
+      {
+        "id": "01a15890-2732-7a51-8c53-e31bc688909a",
+        "code": "B3",
+        "title": "اتاق بزرگ طبقهٔ سوم",
+        "unit_type": "large_room",
+        "type_label": "اتاق بزرگ",
+        "floor_number": 3,
+        "capacity_adults": 6,
+        "capacity_children": 2,
+        "capacity_total": 8,
+        "cleaning_buffer_minutes": null,
+        "features": [
+          {
+            "code": "wifi",
+            "title": "اینترنت بی‌سیم",
+            "icon": "📶",
+            "is_highlight": true
+          },
+          {
+            "code": "prayer",
+            "title": "سجاده و مهر",
+            "icon": "🕌",
+            "is_highlight": true
+          },
+          {
+            "code": "fridge",
+            "title": "یخچال",
+            "icon": "🧊",
+            "is_highlight": false
+          },
+          {
+            "code": "heating",
+            "title": "گرمایش و سرمایش",
+            "icon": "🌡",
+            "is_highlight": false
+          },
+          {
+            "code": "laundry",
+            "title": "رختشویخانه",
+            "icon": "🧺",
+            "is_highlight": false
+          },
+          {
+            "code": "locker",
+            "title": "صندوق امانات",
+            "icon": "🔐",
+            "is_highlight": false
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,2034 @@
+{
+  "schema_version": 1,
+  "site": {
+    "name": "مهدیه",
+    "timezone": "Asia/Tehran",
+    "support_phone": "",
+    "support_address": "مشهد، نوغان، کوچه ۱۱ شهید قائمی، درب سوم"
+  },
+  "features": {
+    "international_phones": false,
+    "staff_mfa_required": true
+  },
+  "auth": {
+    "otp_length": 5,
+    "otp_ttl_seconds": 120,
+    "otp_resend_seconds": 60,
+    "mfa_code_length": 6
+  },
+  "lattice": {
+    "cell_hours": 12,
+    "grid_start_hour": 8,
+    "cells_per_day": 2
+  },
+  "policies": [
+    {
+      "key": "data.guest_retention_days",
+      "value": 1095,
+      "label": "نگهداری دادهٔ زائر",
+      "description": "پس از این مدت بی‌فعالیتی، نام و کد ملی پاک (کمینه) می‌شود"
+    },
+    {
+      "key": "data.idempotency_retention_days",
+      "value": 30,
+      "label": "نگهداری کلیدهای هم‌توانی",
+      "description": "کلیدهای تکراری‌سنج پس از این مدت پاک می‌شوند"
+    },
+    {
+      "key": "data.sms_ledger_retention_days",
+      "value": 180,
+      "label": "نگهداری دفتر پیامک",
+      "description": "ردیف‌های دفتر پیامک پس از این مدت پاک می‌شوند"
+    },
+    {
+      "key": "lattice.cell_hours",
+      "value": 12,
+      "label": "طول نیم‌روز",
+      "description": "ساعت هر سلول شبکه"
+    },
+    {
+      "key": "lattice.checkin_cutoff",
+      "value": 14,
+      "label": "مهلت پذیرش روز",
+      "description": "ساعت پایانی پذیرش در سانس روز"
+    },
+    {
+      "key": "lattice.checkout_cutoff",
+      "value": 12,
+      "label": "مهلت تخلیه روز",
+      "description": "ساعت پایانی تخلیه در سانس روز"
+    },
+    {
+      "key": "lattice.default_cleaning_buffer_minutes",
+      "value": 0,
+      "label": "بافر نظافت",
+      "description": "فاصلهٔ پاک‌سازی میان دو اقامت"
+    },
+    {
+      "key": "lattice.grid_start_local",
+      "value": 8,
+      "label": "ساعت شروع شبکه",
+      "description": "ساعت محلی آغاز نخستین نیم‌روز"
+    },
+    {
+      "key": "notification.quiet_hours_end",
+      "value": 7,
+      "label": "پایان شب سکوت",
+      "description": "از این ساعت، پیامک‌ها از سر گرفته می‌شوند"
+    },
+    {
+      "key": "notification.quiet_hours_start",
+      "value": 23,
+      "label": "آغاز شب سکوت",
+      "description": "از این ساعت، پیامک ارسال نمی‌شود"
+    },
+    {
+      "key": "notification.reminder_lead_hours",
+      "value": 24,
+      "label": "یادآور پیش از پذیرش",
+      "description": "چند ساعت پیش از ورود، یادآور برود"
+    },
+    {
+      "key": "reservation.allow_off_grid",
+      "value": false,
+      "label": "رزرو بیرون شبکه",
+      "description": "اجازهٔ بازه‌های خارج از مرزهای نیم‌روز"
+    },
+    {
+      "key": "reservation.booking_horizon_days",
+      "value": 90,
+      "label": "افق رزرو",
+      "description": "تا چند روز آینده می‌توان رزرو کرد"
+    },
+    {
+      "key": "reservation.cancel_free_before_hours",
+      "value": 24,
+      "label": "لغو رایگان تا",
+      "description": "تا چند ساعت پیش از ورود، لغو «دیرهنگام» حساب نمی‌شود"
+    },
+    {
+      "key": "reservation.cells_window_days",
+      "value": 30,
+      "label": "طول پنجرهٔ سهمیه",
+      "description": "پنجرهٔ سهمیهٔ نیم‌روز به روز"
+    },
+    {
+      "key": "reservation.checkin_early_hours",
+      "value": 12,
+      "label": "پذیرش زودهنگام",
+      "description": "پذیرش حداکثر چند ساعت پیش از آغاز اقامت مجاز است"
+    },
+    {
+      "key": "reservation.hold_ttl_minutes",
+      "value": 15,
+      "label": "عمر نگه‌داشت",
+      "description": "مدت نگه‌داشت سانس پیش از تأیید"
+    },
+    {
+      "key": "reservation.holds_enabled",
+      "value": false,
+      "label": "نگه‌داشت موقت",
+      "description": "آیا نگه‌داشت چنددقیقه‌ای سانس فعال باشد"
+    },
+    {
+      "key": "reservation.late_cancel_cooldown_hours",
+      "value": 24,
+      "label": "خنک‌شدن پس از لغو دیرهنگام",
+      "description": "فاصلهٔ اجباری پیش از رزرو بعدی"
+    },
+    {
+      "key": "reservation.max_active_per_user",
+      "value": 1,
+      "label": "رزرو فعال هم‌زمان",
+      "description": "سقف رزرو فعال برای هر زائر"
+    },
+    {
+      "key": "reservation.max_cells",
+      "value": 14,
+      "label": "بلندترین اقامت",
+      "description": "بیشترین تعداد نیم‌روز هر رزرو"
+    },
+    {
+      "key": "reservation.max_cells_per_window",
+      "value": 14,
+      "label": "سقف نیم‌روز در پنجره",
+      "description": "سهمیهٔ نیم‌روز در بازهٔ زمانی"
+    },
+    {
+      "key": "reservation.max_cells_per_year",
+      "value": 60,
+      "label": "سهمیهٔ سالانه",
+      "description": "سقف نیم‌روز هر زائر در سال"
+    },
+    {
+      "key": "reservation.min_cells",
+      "value": 1,
+      "label": "کوتاه‌ترین اقامت",
+      "description": "کمترین تعداد نیم‌روز هر رزرو"
+    },
+    {
+      "key": "reservation.min_gap_between_bookings_hours",
+      "value": 24,
+      "label": "فاصلهٔ میان رزروها",
+      "description": "حداقل فاصلهٔ پایان یک اقامت تا آغاز بعدی"
+    },
+    {
+      "key": "reservation.min_lead_time_hours",
+      "value": 2,
+      "label": "مهلت پیش از ورود",
+      "description": "حداقل فاصلهٔ رزرو تا آغاز اقامت"
+    },
+    {
+      "key": "reservation.no_show_grace_hours",
+      "value": 6,
+      "label": "فرصت عدم‌حضور",
+      "description": "چند ساعت پس از آغاز، عدم‌حضور ثبت می‌شود"
+    },
+    {
+      "key": "reservation.no_show_suspension_days",
+      "value": 7,
+      "label": "محرومیت عدم‌حضور",
+      "description": "مدت محرومیت پس از عدم‌حضور"
+    },
+    {
+      "key": "waitlist.auto_offer_enabled",
+      "value": true,
+      "label": "پیشنهاد خودکار صف",
+      "description": "آیا آزادشدن سانس، خودکار به صف پیشنهاد شود"
+    },
+    {
+      "key": "waitlist.max_active_per_guest",
+      "value": 1,
+      "label": "درخواست فعال صف",
+      "description": "سقف درخواست در جریان هر زائر"
+    },
+    {
+      "key": "waitlist.max_cells_per_entry",
+      "value": 14,
+      "label": "سقف نیم‌روز درخواست",
+      "description": "بیشترین طول یک درخواست انتظار"
+    },
+    {
+      "key": "waitlist.max_offers_before_requeue",
+      "value": 3,
+      "label": "سقف پیشنهادها",
+      "description": "پس از چند پیشنهاد، درخواست به انتهای صف برمی‌گردد"
+    },
+    {
+      "key": "waitlist.offer_window_minutes",
+      "value": 30,
+      "label": "مهلت پاسخ به پیشنهاد",
+      "description": "چند دقیقه برای پذیرش سانس آزادشده"
+    }
+  ],
+  "units": [
+    {
+      "code": "A1",
+      "title": "سوئیت طبقهٔ اول",
+      "floor_number": 1,
+      "unit_type": "suite",
+      "capacity_total": 6
+    },
+    {
+      "code": "B1",
+      "title": "اتاق بزرگ طبقهٔ اول",
+      "floor_number": 1,
+      "unit_type": "large_room",
+      "capacity_total": 8
+    },
+    {
+      "code": "A2",
+      "title": "سوئیت طبقهٔ دوم",
+      "floor_number": 2,
+      "unit_type": "suite",
+      "capacity_total": 6
+    },
+    {
+      "code": "B2",
+      "title": "اتاق بزرگ طبقهٔ دوم",
+      "floor_number": 2,
+      "unit_type": "large_room",
+      "capacity_total": 8
+    },
+    {
+      "code": "B3",
+      "title": "اتاق بزرگ طبقهٔ سوم",
+      "floor_number": 3,
+      "unit_type": "large_room",
+      "capacity_total": 8
+    }
+  ],
+  "provinces": [
+    {
+      "value": "tehran",
+      "label": "تهران"
+    },
+    {
+      "value": "alborz",
+      "label": "البرز"
+    },
+    {
+      "value": "ardabil",
+      "label": "اردبیل"
+    },
+    {
+      "value": "isfahan",
+      "label": "اصفهان"
+    },
+    {
+      "value": "ilam",
+      "label": "ایلام"
+    },
+    {
+      "value": "bushehr",
+      "label": "بوشهر"
+    },
+    {
+      "value": "chaharmahal",
+      "label": "چهارمحال و بختیاری"
+    },
+    {
+      "value": "khorasan_south",
+      "label": "خراسان جنوبی"
+    },
+    {
+      "value": "khorasan_razavi",
+      "label": "خراسان رضوی"
+    },
+    {
+      "value": "khorasan_north",
+      "label": "خراسان شمالی"
+    },
+    {
+      "value": "khuzestan",
+      "label": "خوزستان"
+    },
+    {
+      "value": "zanjan",
+      "label": "زنجان"
+    },
+    {
+      "value": "semnan",
+      "label": "سمنان"
+    },
+    {
+      "value": "sistan",
+      "label": "سیستان و بلوچستان"
+    },
+    {
+      "value": "fars",
+      "label": "فارس"
+    },
+    {
+      "value": "qazvin",
+      "label": "قزوین"
+    },
+    {
+      "value": "qom",
+      "label": "قم"
+    },
+    {
+      "value": "kurdistan",
+      "label": "کردستان"
+    },
+    {
+      "value": "kerman",
+      "label": "کرمان"
+    },
+    {
+      "value": "kermanshah",
+      "label": "کرمانشاه"
+    },
+    {
+      "value": "kohgiluyeh",
+      "label": "کهگیلویه و بویراحمد"
+    },
+    {
+      "value": "golestan",
+      "label": "گلستان"
+    },
+    {
+      "value": "gilan",
+      "label": "گیلان"
+    },
+    {
+      "value": "lorestan",
+      "label": "لرستان"
+    },
+    {
+      "value": "mazandaran",
+      "label": "مازندران"
+    },
+    {
+      "value": "markazi",
+      "label": "مرکزی"
+    },
+    {
+      "value": "hormozgan",
+      "label": "هرمزگان"
+    },
+    {
+      "value": "hamedan",
+      "label": "همدان"
+    },
+    {
+      "value": "yazd",
+      "label": "یزد"
+    },
+    {
+      "value": "west_azerbaijan",
+      "label": "آذربایجان غربی"
+    },
+    {
+      "value": "east_azerbaijan",
+      "label": "آذربایجان شرقی"
+    }
+  ],
+  "countries": [
+    {
+      "code": "AR",
+      "title": "آرژانتین",
+      "title_en": "Argentina",
+      "priority": false
+    },
+    {
+      "code": "AW",
+      "title": "آروبا",
+      "title_en": "Aruba",
+      "priority": false
+    },
+    {
+      "code": "AL",
+      "title": "آلبانی",
+      "title_en": "Albania",
+      "priority": false
+    },
+    {
+      "code": "DE",
+      "title": "آلمان",
+      "title_en": "Germany",
+      "priority": false
+    },
+    {
+      "code": "AG",
+      "title": "آنتیگوا و باربودا",
+      "title_en": "Antigua & Barbuda",
+      "priority": false
+    },
+    {
+      "code": "AD",
+      "title": "آندورا",
+      "title_en": "Andorra",
+      "priority": false
+    },
+    {
+      "code": "AO",
+      "title": "آنگولا",
+      "title_en": "Angola",
+      "priority": false
+    },
+    {
+      "code": "AI",
+      "title": "آنگویلا",
+      "title_en": "Anguilla",
+      "priority": false
+    },
+    {
+      "code": "AT",
+      "title": "اتریش",
+      "title_en": "Austria",
+      "priority": false
+    },
+    {
+      "code": "ET",
+      "title": "اتیوپی",
+      "title_en": "Ethiopia",
+      "priority": false
+    },
+    {
+      "code": "JO",
+      "title": "اردن",
+      "title_en": "Jordan",
+      "priority": false
+    },
+    {
+      "code": "AM",
+      "title": "ارمنستان",
+      "title_en": "Armenia",
+      "priority": false
+    },
+    {
+      "code": "UY",
+      "title": "اروگوئه",
+      "title_en": "Uruguay",
+      "priority": false
+    },
+    {
+      "code": "ER",
+      "title": "اریتره",
+      "title_en": "Eritrea",
+      "priority": false
+    },
+    {
+      "code": "UZ",
+      "title": "ازبکستان",
+      "title_en": "Uzbekistan",
+      "priority": false
+    },
+    {
+      "code": "ES",
+      "title": "اسپانیا",
+      "title_en": "Spain",
+      "priority": false
+    },
+    {
+      "code": "AU",
+      "title": "استرالیا",
+      "title_en": "Australia",
+      "priority": false
+    },
+    {
+      "code": "EE",
+      "title": "استونی",
+      "title_en": "Estonia",
+      "priority": false
+    },
+    {
+      "code": "IL",
+      "title": "اسرائیل",
+      "title_en": "Israel",
+      "priority": false
+    },
+    {
+      "code": "SK",
+      "title": "اسلواکی",
+      "title_en": "Slovakia",
+      "priority": false
+    },
+    {
+      "code": "SI",
+      "title": "اسلوونی",
+      "title_en": "Slovenia",
+      "priority": false
+    },
+    {
+      "code": "SZ",
+      "title": "اسواتینی",
+      "title_en": "Eswatini",
+      "priority": false
+    },
+    {
+      "code": "ZA",
+      "title": "افریقای جنوبی",
+      "title_en": "South Africa",
+      "priority": false
+    },
+    {
+      "code": "AF",
+      "title": "افغانستان",
+      "title_en": "Afghanistan",
+      "priority": true
+    },
+    {
+      "code": "EC",
+      "title": "اکوادور",
+      "title_en": "Ecuador",
+      "priority": false
+    },
+    {
+      "code": "DZ",
+      "title": "الجزایر",
+      "title_en": "Algeria",
+      "priority": false
+    },
+    {
+      "code": "SV",
+      "title": "السالوادور",
+      "title_en": "El Salvador",
+      "priority": false
+    },
+    {
+      "code": "AE",
+      "title": "امارات متحدهٔ عربی",
+      "title_en": "United Arab Emirates",
+      "priority": false
+    },
+    {
+      "code": "ID",
+      "title": "اندونزی",
+      "title_en": "Indonesia",
+      "priority": false
+    },
+    {
+      "code": "UA",
+      "title": "اوکراین",
+      "title_en": "Ukraine",
+      "priority": false
+    },
+    {
+      "code": "UG",
+      "title": "اوگاندا",
+      "title_en": "Uganda",
+      "priority": false
+    },
+    {
+      "code": "US",
+      "title": "ایالات متحده",
+      "title_en": "United States",
+      "priority": false
+    },
+    {
+      "code": "IT",
+      "title": "ایتالیا",
+      "title_en": "Italy",
+      "priority": false
+    },
+    {
+      "code": "IR",
+      "title": "ایران",
+      "title_en": "Iran",
+      "priority": true
+    },
+    {
+      "code": "IE",
+      "title": "ایرلند",
+      "title_en": "Ireland",
+      "priority": false
+    },
+    {
+      "code": "IS",
+      "title": "ایسلند",
+      "title_en": "Iceland",
+      "priority": false
+    },
+    {
+      "code": "BB",
+      "title": "باربادوس",
+      "title_en": "Barbados",
+      "priority": false
+    },
+    {
+      "code": "BS",
+      "title": "باهاما",
+      "title_en": "Bahamas",
+      "priority": false
+    },
+    {
+      "code": "BH",
+      "title": "بحرین",
+      "title_en": "Bahrain",
+      "priority": true
+    },
+    {
+      "code": "BR",
+      "title": "برزیل",
+      "title_en": "Brazil",
+      "priority": false
+    },
+    {
+      "code": "BM",
+      "title": "برمودا",
+      "title_en": "Bermuda",
+      "priority": false
+    },
+    {
+      "code": "BN",
+      "title": "برونئی",
+      "title_en": "Brunei",
+      "priority": false
+    },
+    {
+      "code": "GB",
+      "title": "بریتانیا",
+      "title_en": "United Kingdom",
+      "priority": false
+    },
+    {
+      "code": "BY",
+      "title": "بلاروس",
+      "title_en": "Belarus",
+      "priority": false
+    },
+    {
+      "code": "BE",
+      "title": "بلژیک",
+      "title_en": "Belgium",
+      "priority": false
+    },
+    {
+      "code": "BG",
+      "title": "بلغارستان",
+      "title_en": "Bulgaria",
+      "priority": false
+    },
+    {
+      "code": "BZ",
+      "title": "بلیز",
+      "title_en": "Belize",
+      "priority": false
+    },
+    {
+      "code": "BD",
+      "title": "بنگلادش",
+      "title_en": "Bangladesh",
+      "priority": false
+    },
+    {
+      "code": "BJ",
+      "title": "بنین",
+      "title_en": "Benin",
+      "priority": false
+    },
+    {
+      "code": "BT",
+      "title": "بوتان",
+      "title_en": "Bhutan",
+      "priority": false
+    },
+    {
+      "code": "BW",
+      "title": "بوتسوانا",
+      "title_en": "Botswana",
+      "priority": false
+    },
+    {
+      "code": "BF",
+      "title": "بورکینافاسو",
+      "title_en": "Burkina Faso",
+      "priority": false
+    },
+    {
+      "code": "BI",
+      "title": "بوروندی",
+      "title_en": "Burundi",
+      "priority": false
+    },
+    {
+      "code": "BA",
+      "title": "بوسنی و هرزگوین",
+      "title_en": "Bosnia & Herzegovina",
+      "priority": false
+    },
+    {
+      "code": "BO",
+      "title": "بولیوی",
+      "title_en": "Bolivia",
+      "priority": false
+    },
+    {
+      "code": "PG",
+      "title": "پاپوا گینهٔ نو",
+      "title_en": "Papua New Guinea",
+      "priority": false
+    },
+    {
+      "code": "PY",
+      "title": "پاراگوئه",
+      "title_en": "Paraguay",
+      "priority": false
+    },
+    {
+      "code": "PK",
+      "title": "پاکستان",
+      "title_en": "Pakistan",
+      "priority": true
+    },
+    {
+      "code": "PW",
+      "title": "پالائو",
+      "title_en": "Palau",
+      "priority": false
+    },
+    {
+      "code": "PA",
+      "title": "پاناما",
+      "title_en": "Panama",
+      "priority": false
+    },
+    {
+      "code": "PT",
+      "title": "پرتغال",
+      "title_en": "Portugal",
+      "priority": false
+    },
+    {
+      "code": "PE",
+      "title": "پرو",
+      "title_en": "Peru",
+      "priority": false
+    },
+    {
+      "code": "PF",
+      "title": "پلی‌نزی فرانسه",
+      "title_en": "French Polynesia",
+      "priority": false
+    },
+    {
+      "code": "PR",
+      "title": "پورتوریکو",
+      "title_en": "Puerto Rico",
+      "priority": false
+    },
+    {
+      "code": "TJ",
+      "title": "تاجیکستان",
+      "title_en": "Tajikistan",
+      "priority": true
+    },
+    {
+      "code": "TZ",
+      "title": "تانزانیا",
+      "title_en": "Tanzania",
+      "priority": false
+    },
+    {
+      "code": "TH",
+      "title": "تایلند",
+      "title_en": "Thailand",
+      "priority": false
+    },
+    {
+      "code": "TW",
+      "title": "تایوان",
+      "title_en": "Taiwan",
+      "priority": false
+    },
+    {
+      "code": "TM",
+      "title": "ترکمنستان",
+      "title_en": "Turkmenistan",
+      "priority": false
+    },
+    {
+      "code": "TR",
+      "title": "ترکیه",
+      "title_en": "Türkiye",
+      "priority": true
+    },
+    {
+      "code": "TT",
+      "title": "ترینیداد و توباگو",
+      "title_en": "Trinidad & Tobago",
+      "priority": false
+    },
+    {
+      "code": "TK",
+      "title": "توکلائو",
+      "title_en": "Tokelau",
+      "priority": false
+    },
+    {
+      "code": "TG",
+      "title": "توگو",
+      "title_en": "Togo",
+      "priority": false
+    },
+    {
+      "code": "TN",
+      "title": "تونس",
+      "title_en": "Tunisia",
+      "priority": false
+    },
+    {
+      "code": "TO",
+      "title": "تونگا",
+      "title_en": "Tonga",
+      "priority": false
+    },
+    {
+      "code": "TV",
+      "title": "تووالو",
+      "title_en": "Tuvalu",
+      "priority": false
+    },
+    {
+      "code": "TL",
+      "title": "تیمور-لسته",
+      "title_en": "Timor-Leste",
+      "priority": false
+    },
+    {
+      "code": "JM",
+      "title": "جامائیکا",
+      "title_en": "Jamaica",
+      "priority": false
+    },
+    {
+      "code": "GI",
+      "title": "جبل‌الطارق",
+      "title_en": "Gibraltar",
+      "priority": false
+    },
+    {
+      "code": "JE",
+      "title": "جرزی",
+      "title_en": "Jersey",
+      "priority": false
+    },
+    {
+      "code": "AX",
+      "title": "جزایر آلاند",
+      "title_en": "Åland Islands",
+      "priority": false
+    },
+    {
+      "code": "PN",
+      "title": "جزایر پیت‌کرن",
+      "title_en": "Pitcairn Islands",
+      "priority": false
+    },
+    {
+      "code": "TC",
+      "title": "جزایر تورکس و کایکوس",
+      "title_en": "Turks & Caicos Islands",
+      "priority": false
+    },
+    {
+      "code": "UM",
+      "title": "جزایر دورافتادهٔ ایالات متحده",
+      "title_en": "U.S. Outlying Islands",
+      "priority": false
+    },
+    {
+      "code": "SB",
+      "title": "جزایر سلیمان",
+      "title_en": "Solomon Islands",
+      "priority": false
+    },
+    {
+      "code": "FO",
+      "title": "جزایر فارو",
+      "title_en": "Faroe Islands",
+      "priority": false
+    },
+    {
+      "code": "FK",
+      "title": "جزایر فالکلند",
+      "title_en": "Falkland Islands",
+      "priority": false
+    },
+    {
+      "code": "BQ",
+      "title": "جزایر کارائیب هلند",
+      "title_en": "Caribbean Netherlands",
+      "priority": false
+    },
+    {
+      "code": "CK",
+      "title": "جزایر کوک",
+      "title_en": "Cook Islands",
+      "priority": false
+    },
+    {
+      "code": "CC",
+      "title": "جزایر کوکوس",
+      "title_en": "Cocos (Keeling) Islands",
+      "priority": false
+    },
+    {
+      "code": "KY",
+      "title": "جزایر کِیمن",
+      "title_en": "Cayman Islands",
+      "priority": false
+    },
+    {
+      "code": "MH",
+      "title": "جزایر مارشال",
+      "title_en": "Marshall Islands",
+      "priority": false
+    },
+    {
+      "code": "MP",
+      "title": "جزایر ماریانای شمالی",
+      "title_en": "Northern Mariana Islands",
+      "priority": false
+    },
+    {
+      "code": "VI",
+      "title": "جزایر ویرجین ایالات متحده",
+      "title_en": "U.S. Virgin Islands",
+      "priority": false
+    },
+    {
+      "code": "VG",
+      "title": "جزایر ویرجین بریتانیا",
+      "title_en": "British Virgin Islands",
+      "priority": false
+    },
+    {
+      "code": "BV",
+      "title": "جزیرهٔ بووه",
+      "title_en": "Bouvet Island",
+      "priority": false
+    },
+    {
+      "code": "CX",
+      "title": "جزیرهٔ کریسمس",
+      "title_en": "Christmas Island",
+      "priority": false
+    },
+    {
+      "code": "IM",
+      "title": "جزیرهٔ من",
+      "title_en": "Isle of Man",
+      "priority": false
+    },
+    {
+      "code": "NF",
+      "title": "جزیرهٔ نورفولک",
+      "title_en": "Norfolk Island",
+      "priority": false
+    },
+    {
+      "code": "AZ",
+      "title": "جمهوری آذربایجان",
+      "title_en": "Azerbaijan",
+      "priority": true
+    },
+    {
+      "code": "CF",
+      "title": "جمهوری افریقای مرکزی",
+      "title_en": "Central African Republic",
+      "priority": false
+    },
+    {
+      "code": "DO",
+      "title": "جمهوری دومینیکن",
+      "title_en": "Dominican Republic",
+      "priority": false
+    },
+    {
+      "code": "AQ",
+      "title": "جنوبگان",
+      "title_en": "Antarctica",
+      "priority": false
+    },
+    {
+      "code": "GS",
+      "title": "جورجیای جنوبی و جزایر ساندویچ جنوبی",
+      "title_en": "South Georgia & South Sandwich Islands",
+      "priority": false
+    },
+    {
+      "code": "DJ",
+      "title": "جیبوتی",
+      "title_en": "Djibouti",
+      "priority": false
+    },
+    {
+      "code": "TD",
+      "title": "چاد",
+      "title_en": "Chad",
+      "priority": false
+    },
+    {
+      "code": "CZ",
+      "title": "چک",
+      "title_en": "Czechia",
+      "priority": false
+    },
+    {
+      "code": "CN",
+      "title": "چین",
+      "title_en": "China",
+      "priority": false
+    },
+    {
+      "code": "DK",
+      "title": "دانمارک",
+      "title_en": "Denmark",
+      "priority": false
+    },
+    {
+      "code": "DM",
+      "title": "دومینیکا",
+      "title_en": "Dominica",
+      "priority": false
+    },
+    {
+      "code": "RW",
+      "title": "رواندا",
+      "title_en": "Rwanda",
+      "priority": false
+    },
+    {
+      "code": "RU",
+      "title": "روسیه",
+      "title_en": "Russia",
+      "priority": false
+    },
+    {
+      "code": "RO",
+      "title": "رومانی",
+      "title_en": "Romania",
+      "priority": false
+    },
+    {
+      "code": "RE",
+      "title": "رئونیون",
+      "title_en": "Réunion",
+      "priority": false
+    },
+    {
+      "code": "ZM",
+      "title": "زامبیا",
+      "title_en": "Zambia",
+      "priority": false
+    },
+    {
+      "code": "ZW",
+      "title": "زیمبابوه",
+      "title_en": "Zimbabwe",
+      "priority": false
+    },
+    {
+      "code": "JP",
+      "title": "ژاپن",
+      "title_en": "Japan",
+      "priority": false
+    },
+    {
+      "code": "CI",
+      "title": "ساحل عاج",
+      "title_en": "Côte d’Ivoire",
+      "priority": false
+    },
+    {
+      "code": "WS",
+      "title": "ساموآ",
+      "title_en": "Samoa",
+      "priority": false
+    },
+    {
+      "code": "AS",
+      "title": "ساموآی امریکا",
+      "title_en": "American Samoa",
+      "priority": false
+    },
+    {
+      "code": "SM",
+      "title": "سان‌مارینو",
+      "title_en": "San Marino",
+      "priority": false
+    },
+    {
+      "code": "ST",
+      "title": "سائوتومه و پرینسیپ",
+      "title_en": "São Tomé & Príncipe",
+      "priority": false
+    },
+    {
+      "code": "TF",
+      "title": "سرزمین‌های جنوبی فرانسه",
+      "title_en": "French Southern Territories",
+      "priority": false
+    },
+    {
+      "code": "PS",
+      "title": "سرزمین‌های فلسطینی",
+      "title_en": "Palestinian Territories",
+      "priority": false
+    },
+    {
+      "code": "LK",
+      "title": "سری‌لانکا",
+      "title_en": "Sri Lanka",
+      "priority": false
+    },
+    {
+      "code": "KN",
+      "title": "سنت کیتس و نویس",
+      "title_en": "St. Kitts & Nevis",
+      "priority": false
+    },
+    {
+      "code": "LC",
+      "title": "سنت لوسیا",
+      "title_en": "St. Lucia",
+      "priority": false
+    },
+    {
+      "code": "SX",
+      "title": "سنت مارتن",
+      "title_en": "Sint Maarten",
+      "priority": false
+    },
+    {
+      "code": "MF",
+      "title": "سنت مارتین",
+      "title_en": "St. Martin",
+      "priority": false
+    },
+    {
+      "code": "VC",
+      "title": "سنت وینسنت و گرنادین",
+      "title_en": "St. Vincent & Grenadines",
+      "priority": false
+    },
+    {
+      "code": "SH",
+      "title": "سنت هلن",
+      "title_en": "St. Helena",
+      "priority": false
+    },
+    {
+      "code": "SG",
+      "title": "سنگاپور",
+      "title_en": "Singapore",
+      "priority": false
+    },
+    {
+      "code": "SN",
+      "title": "سنگال",
+      "title_en": "Senegal",
+      "priority": false
+    },
+    {
+      "code": "BL",
+      "title": "سن بارتلمی",
+      "title_en": "St. Barthélemy",
+      "priority": false
+    },
+    {
+      "code": "PM",
+      "title": "سن پیر و میکلن",
+      "title_en": "St. Pierre & Miquelon",
+      "priority": false
+    },
+    {
+      "code": "SJ",
+      "title": "سوالبارد و یان ماین",
+      "title_en": "Svalbard & Jan Mayen",
+      "priority": false
+    },
+    {
+      "code": "SD",
+      "title": "سودان",
+      "title_en": "Sudan",
+      "priority": false
+    },
+    {
+      "code": "SS",
+      "title": "سودان جنوبی",
+      "title_en": "South Sudan",
+      "priority": false
+    },
+    {
+      "code": "SR",
+      "title": "سورینام",
+      "title_en": "Suriname",
+      "priority": false
+    },
+    {
+      "code": "SY",
+      "title": "سوریه",
+      "title_en": "Syria",
+      "priority": true
+    },
+    {
+      "code": "SO",
+      "title": "سومالی",
+      "title_en": "Somalia",
+      "priority": false
+    },
+    {
+      "code": "SE",
+      "title": "سوئد",
+      "title_en": "Sweden",
+      "priority": false
+    },
+    {
+      "code": "CH",
+      "title": "سوئیس",
+      "title_en": "Switzerland",
+      "priority": false
+    },
+    {
+      "code": "SL",
+      "title": "سیرالئون",
+      "title_en": "Sierra Leone",
+      "priority": false
+    },
+    {
+      "code": "SC",
+      "title": "سیشل",
+      "title_en": "Seychelles",
+      "priority": false
+    },
+    {
+      "code": "CL",
+      "title": "شیلی",
+      "title_en": "Chile",
+      "priority": false
+    },
+    {
+      "code": "EH",
+      "title": "صحرای غربی",
+      "title_en": "Western Sahara",
+      "priority": false
+    },
+    {
+      "code": "RS",
+      "title": "صربستان",
+      "title_en": "Serbia",
+      "priority": false
+    },
+    {
+      "code": "IQ",
+      "title": "عراق",
+      "title_en": "Iraq",
+      "priority": true
+    },
+    {
+      "code": "SA",
+      "title": "عربستان سعودی",
+      "title_en": "Saudi Arabia",
+      "priority": true
+    },
+    {
+      "code": "OM",
+      "title": "عمان",
+      "title_en": "Oman",
+      "priority": true
+    },
+    {
+      "code": "GH",
+      "title": "غنا",
+      "title_en": "Ghana",
+      "priority": false
+    },
+    {
+      "code": "FR",
+      "title": "فرانسه",
+      "title_en": "France",
+      "priority": false
+    },
+    {
+      "code": "FI",
+      "title": "فنلاند",
+      "title_en": "Finland",
+      "priority": false
+    },
+    {
+      "code": "FJ",
+      "title": "فیجی",
+      "title_en": "Fiji",
+      "priority": false
+    },
+    {
+      "code": "PH",
+      "title": "فیلیپین",
+      "title_en": "Philippines",
+      "priority": false
+    },
+    {
+      "code": "CY",
+      "title": "قبرس",
+      "title_en": "Cyprus",
+      "priority": false
+    },
+    {
+      "code": "KG",
+      "title": "قرقیزستان",
+      "title_en": "Kyrgyzstan",
+      "priority": false
+    },
+    {
+      "code": "KZ",
+      "title": "قزاقستان",
+      "title_en": "Kazakhstan",
+      "priority": false
+    },
+    {
+      "code": "QA",
+      "title": "قطر",
+      "title_en": "Qatar",
+      "priority": false
+    },
+    {
+      "code": "IO",
+      "title": "قلمرو بریتانیا در اقیانوس هند",
+      "title_en": "British Indian Ocean Territory",
+      "priority": false
+    },
+    {
+      "code": "CR",
+      "title": "کاستاریکا",
+      "title_en": "Costa Rica",
+      "priority": false
+    },
+    {
+      "code": "NC",
+      "title": "کالدونیای جدید",
+      "title_en": "New Caledonia",
+      "priority": false
+    },
+    {
+      "code": "KH",
+      "title": "کامبوج",
+      "title_en": "Cambodia",
+      "priority": false
+    },
+    {
+      "code": "CM",
+      "title": "کامرون",
+      "title_en": "Cameroon",
+      "priority": false
+    },
+    {
+      "code": "CA",
+      "title": "کانادا",
+      "title_en": "Canada",
+      "priority": false
+    },
+    {
+      "code": "HR",
+      "title": "کرواسی",
+      "title_en": "Croatia",
+      "priority": false
+    },
+    {
+      "code": "KR",
+      "title": "کرهٔ جنوبی",
+      "title_en": "South Korea",
+      "priority": false
+    },
+    {
+      "code": "KP",
+      "title": "کرهٔ شمالی",
+      "title_en": "North Korea",
+      "priority": false
+    },
+    {
+      "code": "CO",
+      "title": "کلمبیا",
+      "title_en": "Colombia",
+      "priority": false
+    },
+    {
+      "code": "CG",
+      "title": "کنگو - برازویل",
+      "title_en": "Congo - Brazzaville",
+      "priority": false
+    },
+    {
+      "code": "CD",
+      "title": "کنگو - کینشاسا",
+      "title_en": "Congo - Kinshasa",
+      "priority": false
+    },
+    {
+      "code": "KE",
+      "title": "کنیا",
+      "title_en": "Kenya",
+      "priority": false
+    },
+    {
+      "code": "CU",
+      "title": "کوبا",
+      "title_en": "Cuba",
+      "priority": false
+    },
+    {
+      "code": "CW",
+      "title": "کوراسائو",
+      "title_en": "Curaçao",
+      "priority": false
+    },
+    {
+      "code": "KM",
+      "title": "کومور",
+      "title_en": "Comoros",
+      "priority": false
+    },
+    {
+      "code": "KW",
+      "title": "کویت",
+      "title_en": "Kuwait",
+      "priority": true
+    },
+    {
+      "code": "CV",
+      "title": "کیپ‌ورد",
+      "title_en": "Cape Verde",
+      "priority": false
+    },
+    {
+      "code": "KI",
+      "title": "کیریباتی",
+      "title_en": "Kiribati",
+      "priority": false
+    },
+    {
+      "code": "GA",
+      "title": "گابن",
+      "title_en": "Gabon",
+      "priority": false
+    },
+    {
+      "code": "GM",
+      "title": "گامبیا",
+      "title_en": "Gambia",
+      "priority": false
+    },
+    {
+      "code": "GE",
+      "title": "گرجستان",
+      "title_en": "Georgia",
+      "priority": false
+    },
+    {
+      "code": "GD",
+      "title": "گرنادا",
+      "title_en": "Grenada",
+      "priority": false
+    },
+    {
+      "code": "GG",
+      "title": "گرنزی",
+      "title_en": "Guernsey",
+      "priority": false
+    },
+    {
+      "code": "GL",
+      "title": "گرینلند",
+      "title_en": "Greenland",
+      "priority": false
+    },
+    {
+      "code": "GT",
+      "title": "گواتمالا",
+      "title_en": "Guatemala",
+      "priority": false
+    },
+    {
+      "code": "GP",
+      "title": "گوادلوپ",
+      "title_en": "Guadeloupe",
+      "priority": false
+    },
+    {
+      "code": "GU",
+      "title": "گوام",
+      "title_en": "Guam",
+      "priority": false
+    },
+    {
+      "code": "GY",
+      "title": "گویان",
+      "title_en": "Guyana",
+      "priority": false
+    },
+    {
+      "code": "GF",
+      "title": "گویان فرانسه",
+      "title_en": "French Guiana",
+      "priority": false
+    },
+    {
+      "code": "GN",
+      "title": "گینه",
+      "title_en": "Guinea",
+      "priority": false
+    },
+    {
+      "code": "GQ",
+      "title": "گینهٔ استوایی",
+      "title_en": "Equatorial Guinea",
+      "priority": false
+    },
+    {
+      "code": "GW",
+      "title": "گینهٔ بیسائو",
+      "title_en": "Guinea-Bissau",
+      "priority": false
+    },
+    {
+      "code": "LA",
+      "title": "لائوس",
+      "title_en": "Laos",
+      "priority": false
+    },
+    {
+      "code": "LB",
+      "title": "لبنان",
+      "title_en": "Lebanon",
+      "priority": true
+    },
+    {
+      "code": "LV",
+      "title": "لتونی",
+      "title_en": "Latvia",
+      "priority": false
+    },
+    {
+      "code": "LS",
+      "title": "لسوتو",
+      "title_en": "Lesotho",
+      "priority": false
+    },
+    {
+      "code": "LU",
+      "title": "لوکزامبورگ",
+      "title_en": "Luxembourg",
+      "priority": false
+    },
+    {
+      "code": "PL",
+      "title": "لهستان",
+      "title_en": "Poland",
+      "priority": false
+    },
+    {
+      "code": "LR",
+      "title": "لیبریا",
+      "title_en": "Liberia",
+      "priority": false
+    },
+    {
+      "code": "LY",
+      "title": "لیبی",
+      "title_en": "Libya",
+      "priority": false
+    },
+    {
+      "code": "LT",
+      "title": "لیتوانی",
+      "title_en": "Lithuania",
+      "priority": false
+    },
+    {
+      "code": "LI",
+      "title": "لیختن‌اشتاین",
+      "title_en": "Liechtenstein",
+      "priority": false
+    },
+    {
+      "code": "MG",
+      "title": "ماداگاسکار",
+      "title_en": "Madagascar",
+      "priority": false
+    },
+    {
+      "code": "MQ",
+      "title": "مارتینیک",
+      "title_en": "Martinique",
+      "priority": false
+    },
+    {
+      "code": "MO",
+      "title": "ماکائو، منطقهٔ ویژهٔ اداری چین",
+      "title_en": "Macao SAR China",
+      "priority": false
+    },
+    {
+      "code": "MW",
+      "title": "مالاوی",
+      "title_en": "Malawi",
+      "priority": false
+    },
+    {
+      "code": "MT",
+      "title": "مالت",
+      "title_en": "Malta",
+      "priority": false
+    },
+    {
+      "code": "MV",
+      "title": "مالدیو",
+      "title_en": "Maldives",
+      "priority": false
+    },
+    {
+      "code": "MY",
+      "title": "مالزی",
+      "title_en": "Malaysia",
+      "priority": false
+    },
+    {
+      "code": "ML",
+      "title": "مالی",
+      "title_en": "Mali",
+      "priority": false
+    },
+    {
+      "code": "YT",
+      "title": "مایوت",
+      "title_en": "Mayotte",
+      "priority": false
+    },
+    {
+      "code": "HU",
+      "title": "مجارستان",
+      "title_en": "Hungary",
+      "priority": false
+    },
+    {
+      "code": "MA",
+      "title": "مراکش",
+      "title_en": "Morocco",
+      "priority": false
+    },
+    {
+      "code": "EG",
+      "title": "مصر",
+      "title_en": "Egypt",
+      "priority": false
+    },
+    {
+      "code": "MN",
+      "title": "مغولستان",
+      "title_en": "Mongolia",
+      "priority": false
+    },
+    {
+      "code": "MK",
+      "title": "مقدونیهٔ شمالی",
+      "title_en": "North Macedonia",
+      "priority": false
+    },
+    {
+      "code": "MX",
+      "title": "مکزیک",
+      "title_en": "Mexico",
+      "priority": false
+    },
+    {
+      "code": "MR",
+      "title": "موریتانی",
+      "title_en": "Mauritania",
+      "priority": false
+    },
+    {
+      "code": "MU",
+      "title": "موریس",
+      "title_en": "Mauritius",
+      "priority": false
+    },
+    {
+      "code": "MZ",
+      "title": "موزامبیک",
+      "title_en": "Mozambique",
+      "priority": false
+    },
+    {
+      "code": "MD",
+      "title": "مولداوی",
+      "title_en": "Moldova",
+      "priority": false
+    },
+    {
+      "code": "MC",
+      "title": "موناکو",
+      "title_en": "Monaco",
+      "priority": false
+    },
+    {
+      "code": "ME",
+      "title": "مونته‌نگرو",
+      "title_en": "Montenegro",
+      "priority": false
+    },
+    {
+      "code": "MS",
+      "title": "مونت‌سرات",
+      "title_en": "Montserrat",
+      "priority": false
+    },
+    {
+      "code": "MM",
+      "title": "میانمار (برمه)",
+      "title_en": "Myanmar (Burma)",
+      "priority": false
+    },
+    {
+      "code": "FM",
+      "title": "میکرونزی",
+      "title_en": "Micronesia",
+      "priority": false
+    },
+    {
+      "code": "NA",
+      "title": "نامیبیا",
+      "title_en": "Namibia",
+      "priority": false
+    },
+    {
+      "code": "NR",
+      "title": "نائورو",
+      "title_en": "Nauru",
+      "priority": false
+    },
+    {
+      "code": "NP",
+      "title": "نپال",
+      "title_en": "Nepal",
+      "priority": false
+    },
+    {
+      "code": "NO",
+      "title": "نروژ",
+      "title_en": "Norway",
+      "priority": false
+    },
+    {
+      "code": "NE",
+      "title": "نیجر",
+      "title_en": "Niger",
+      "priority": false
+    },
+    {
+      "code": "NG",
+      "title": "نیجریه",
+      "title_en": "Nigeria",
+      "priority": false
+    },
+    {
+      "code": "NI",
+      "title": "نیکاراگوئه",
+      "title_en": "Nicaragua",
+      "priority": false
+    },
+    {
+      "code": "NZ",
+      "title": "نیوزیلند",
+      "title_en": "New Zealand",
+      "priority": false
+    },
+    {
+      "code": "NU",
+      "title": "نیوئه",
+      "title_en": "Niue",
+      "priority": false
+    },
+    {
+      "code": "VA",
+      "title": "واتیکان",
+      "title_en": "Vatican City",
+      "priority": false
+    },
+    {
+      "code": "WF",
+      "title": "والیس و فوتونا",
+      "title_en": "Wallis & Futuna",
+      "priority": false
+    },
+    {
+      "code": "VU",
+      "title": "وانواتو",
+      "title_en": "Vanuatu",
+      "priority": false
+    },
+    {
+      "code": "VE",
+      "title": "ونزوئلا",
+      "title_en": "Venezuela",
+      "priority": false
+    },
+    {
+      "code": "VN",
+      "title": "ویتنام",
+      "title_en": "Vietnam",
+      "priority": false
+    },
+    {
+      "code": "HT",
+      "title": "هائیتی",
+      "title_en": "Haiti",
+      "priority": false
+    },
+    {
+      "code": "HM",
+      "title": "هرد و جزایر مک‌دونالد",
+      "title_en": "Heard & McDonald Islands",
+      "priority": false
+    },
+    {
+      "code": "NL",
+      "title": "هلند",
+      "title_en": "Netherlands",
+      "priority": false
+    },
+    {
+      "code": "IN",
+      "title": "هند",
+      "title_en": "India",
+      "priority": true
+    },
+    {
+      "code": "HN",
+      "title": "هندوراس",
+      "title_en": "Honduras",
+      "priority": false
+    },
+    {
+      "code": "HK",
+      "title": "هنگ‌کنگ، منطقهٔ ویژهٔ اداری چین",
+      "title_en": "Hong Kong SAR China",
+      "priority": false
+    },
+    {
+      "code": "YE",
+      "title": "یمن",
+      "title_en": "Yemen",
+      "priority": false
+    },
+    {
+      "code": "GR",
+      "title": "یونان",
+      "title_en": "Greece",
+      "priority": false
+    }
+  ],
+  "labels": {
+    "reservation_status": [
+      {
+        "value": "hold",
+        "label": "نگه‌داشت موقت"
+      },
+      {
+        "value": "confirmed",
+        "label": "تأییدشده"
+      },
+      {
+        "value": "checked_in",
+        "label": "پذیرش‌شده"
+      },
+      {
+        "value": "completed",
+        "label": "پایان‌یافته"
+      },
+      {
+        "value": "cancelled_by_guest",
+        "label": "لغو توسط زائر"
+      },
+      {
+        "value": "cancelled_by_staff",
+        "label": "لغو توسط کارکنان"
+      },
+      {
+        "value": "no_show",
+        "label": "عدم‌حضور"
+      },
+      {
+        "value": "expired",
+        "label": "منقضی‌شده"
+      },
+      {
+        "value": "superseded",
+        "label": "جانشین‌شده"
+      }
+    ],
+    "reservation_source": [
+      {
+        "value": "web",
+        "label": "وب (خود زائر)"
+      },
+      {
+        "value": "phone",
+        "label": "تلفنی"
+      },
+      {
+        "value": "desk",
+        "label": "پذیرش حضوری"
+      },
+      {
+        "value": "admin",
+        "label": "پنل مدیریت"
+      },
+      {
+        "value": "waitlist",
+        "label": "پذیرش پیشنهاد صف انتظار"
+      }
+    ],
+    "cancel_reason_kind": [
+      {
+        "value": "guest_request",
+        "label": "درخواست زائر"
+      },
+      {
+        "value": "maintenance",
+        "label": "تعمیر و نگهداری"
+      },
+      {
+        "value": "overbooking",
+        "label": "اصلاح رزرو"
+      },
+      {
+        "value": "duplicate",
+        "label": "رزرو تکراری"
+      },
+      {
+        "value": "no_show",
+        "label": "عدم‌حضور"
+      },
+      {
+        "value": "other",
+        "label": "سایر"
+      }
+    ],
+    "event_kind": [
+      {
+        "value": "created",
+        "label": "ایجاد"
+      },
+      {
+        "value": "confirmed",
+        "label": "تأیید"
+      },
+      {
+        "value": "cancelled",
+        "label": "لغو"
+      },
+      {
+        "value": "moved",
+        "label": "جابه‌جایی"
+      },
+      {
+        "value": "checked_in",
+        "label": "پذیرش"
+      },
+      {
+        "value": "checked_out",
+        "label": "تخلیه"
+      },
+      {
+        "value": "no_show",
+        "label": "عدم‌حضور"
+      },
+      {
+        "value": "expired",
+        "label": "انقضای نگه‌داشت"
+      },
+      {
+        "value": "note",
+        "label": "یادداشت"
+      }
+    ],
+    "unit_type": [
+      {
+        "value": "suite",
+        "label": "سوئیت"
+      },
+      {
+        "value": "large_room",
+        "label": "اتاق بزرگ"
+      }
+    ],
+    "id_document_type": [
+      {
+        "value": "national_id",
+        "label": "کد ملی"
+      },
+      {
+        "value": "passport",
+        "label": "گذرنامه"
+      }
+    ]
+  },
+  "status_groups": {
+    "active": ["hold", "confirmed", "checked_in"],
+    "cancellable": ["hold", "confirmed"],
+    "terminal": ["completed", "cancelled_by_guest", "cancelled_by_staff", "no_show", "expired", "superseded"]
+  }
+}

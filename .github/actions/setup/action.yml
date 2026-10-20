@@ -1,0 +1,13 @@
+name: آماده‌سازی Node و pnpm
+description: Node و pnpm قفل‌شده (package.json) + نصب دقیق وابستگی‌ها از lockfile
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v4 # نسخه از «packageManager» در package.json
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .node-version
+        cache: pnpm
+    - name: نصب وابستگی‌ها (lockfile منجمد)
+      shell: bash
+      run: pnpm install --frozen-lockfile

@@ -1,0 +1,31 @@
+{
+  "can_book": false,
+  "profile_complete": true,
+  "blockers": [
+    {
+      "code": "cooldown",
+      "message": "به دلیل لغو دیرهنگام، تا ۲۴ ساعت امکان رزرو تازه ندارید."
+    }
+  ],
+  "active": {
+    "limit": 1,
+    "remaining": 1,
+    "used": 0,
+    "window_days": null
+  },
+  "window": {
+    "limit": 14,
+    "remaining": 10,
+    "used": 4,
+    "window_days": 30
+  },
+  "year": {
+    "limit": 60,
+    "remaining": 56,
+    "used": 4,
+    "window_days": null
+  },
+  "cooldown_until": "2026-10-21T12:00:00+03:30",
+  "next_eligible_at": "2026-10-21T12:00:00+03:30",
+  "suspended_until": null
+}
