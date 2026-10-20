@@ -405,3 +405,35 @@
     }
   }
 }
+
+@layer components {
+  .not-found {
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+    padding-block: 72px 96px;
+    text-align: center;
+  }
+  .not-found__code {
+    color: var(--color-gold);
+    font-size: 5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.04em;
+  }
+  .not-found h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+  .not-found > p:not(.not-found__code) {
+    max-width: 460px;
+    color: var(--color-text-muted);
+  }
+  .not-found__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+  }
+}
