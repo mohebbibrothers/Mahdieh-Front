@@ -6,7 +6,7 @@ import { useEasyMode } from "@/features/easy-mode/easy-mode";
 import { draftStore } from "@/features/booking-draft/store";
 import { useAvailability } from "@/features/booking-draft/use-availability";
 import type { CellStatus } from "@/shared/api/schemas";
-import { faDigits, formatDayLabel } from "@/shared/lib/fa";
+import { faDigits, formatClock, formatDayLabel } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
 import { SHRINE_SVG } from "@/shared/ui/shrine.generated";
 
@@ -76,7 +76,13 @@ export function BuildingModel({ children }: { children: ReactNode }) {
     (target instanceof Element ? target.closest<SVGGElement>(".building-room") : null)?.dataset.unit ?? null;
 
   const hovered = rooms.find((r) => r.code === hover);
-  const dateText = draft.day ? `${formatDayLabel(draft.day)} · ${draft.period === "day" ? "روز" : "شب"}` : "…";
+  // ساعت شروع از خود سانسِ بک‌اند (نه عدد ثابت)؛ «شب» بی‌ساعت برای زائر مبهم بود.
+  const day = draft.day;
+  const slotStart = day ? timeline?.units.map((u) => cellAt(u, day, draft.period)).find(Boolean)?.start : undefined;
+  const periodText = draft.period === "day" ? "روز" : "شب";
+  const dateText = draft.day
+    ? `${formatDayLabel(draft.day)} · ${periodText}${slotStart ? `، از ساعت ${formatClock(slotStart)}` : ""}`
+    : "…";
 
   return (
     <figure className="building-figure" aria-labelledby="building-caption">

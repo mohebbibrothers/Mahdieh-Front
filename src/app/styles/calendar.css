@@ -188,6 +188,17 @@
     color: var(--color-text-subtle);
     opacity: 0.6;
   }
+  /* آزاد ولی در حداقل فاصلهٔ ثبت: نه «گذشته»، نه «قابل انتخاب» — کم‌رنگ با هاشور ملایم */
+  .cell[data-soon] {
+    border-style: dashed;
+    border-color: var(--color-free-border);
+    background:
+      repeating-linear-gradient(45deg, transparent 0 6px, oklch(from var(--color-free-fg) l c h / 0.08) 6px 7px),
+      var(--color-free-bg);
+    color: var(--color-free-fg);
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
   .cell[data-range] {
     outline: 2px solid var(--color-gold);
     outline-offset: 1px;

@@ -26,12 +26,12 @@ export function Guidance() {
     {
       icon: "ticket",
       title: p.maxActive === 1 ? "یک رزرو فعال" : `${faDigits(p.maxActive)} رزرو فعال`,
-      text: `و تا ${faDigits(p.cellsPerYear)} نیم‌روز در سال؛ فرصتی برابر برای همه`,
+      text: `هر ${faDigits(p.windowDays)} روز تا ${durationLabel(p.cellsPerWindow)} و در سال تا ${durationLabel(p.cellsPerYear)}؛ فرصتی برابر برای همه`,
     },
     {
       icon: "calendar-x",
       title: "لغو به‌موقع",
-      text: `تا ${faDigits(p.cancelFreeHours)} ساعت پیش از ورود، بی‌پیامد؛ دیرتر ⇒ ${faDigits(p.lateCancelCooldownHours)} ساعت بدون رزرو تازه`,
+      text: `تا ${faDigits(p.cancelFreeHours)} ساعت پیش از ورود، بی‌هیچ پیامدی؛ پس از آن، تا ${faDigits(p.lateCancelCooldownHours)} ساعت امکان رزرو تازه نیست`,
     },
   ];
 

@@ -200,6 +200,26 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/auth/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * وضعیت نشست
+         * @description برای مهمان ``authenticated=false`` و ``profile=null``؛ هرگز ۴۰۱ نمی‌دهد.
+         */
+        get: operations["auth_session_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/blocks": {
         parameters: {
             query?: never;
@@ -2125,6 +2145,15 @@ export type components = {
             next_step: "complete_profile" | "home";
             profile: components["schemas"]["Profile"];
         };
+        /** @description وضعیت نشست برای فرانت — همیشه ۲۰۰ (مهمان هم پاسخ معتبر می‌گیرد، نه ۴۰۱). */
+        SessionState: {
+            /** @description آیا کاربری وارد شده است */
+            authenticated: boolean;
+            /** @description کارمندی که هنوز تأیید دومرحله‌ای این نشست را انجام نداده است */
+            mfa_pending: boolean;
+            /** @description نمای ایمن پروفایل یا null برای مهمان */
+            profile: components["schemas"]["Profile"] | null;
+        };
         /** @description نمایش یک پیشنهاد سانس. */
         SlotOffer: {
             /** Format: date-time */
@@ -3383,6 +3412,25 @@ export interface operations {
                     } & {
                         [key: string]: unknown;
                     };
+                };
+            };
+        };
+    };
+    auth_session_retrieve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SessionState"];
                 };
             };
         };

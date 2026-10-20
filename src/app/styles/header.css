@@ -136,6 +136,19 @@
   :root[data-theme="dark"] .theme-icon--moon {
     display: inline-block;
   }
+  /* تعویض تم: آیکون تازه با چرخش و بزرگ‌شدن نرم وارد می‌شود (انیمیشن با هر بار
+     نمایان‌شدن از display:none دوباره اجرا می‌شود؛ بی‌JS). */
+  @media (prefers-reduced-motion: no-preference) {
+    .theme-toggle .theme-icon {
+      animation: theme-icon-in 480ms var(--ease) both;
+    }
+  }
+  @keyframes theme-icon-in {
+    from {
+      opacity: 0;
+      transform: rotate(-90deg) scale(0.6);
+    }
+  }
   .mobile-menu-button {
     display: none;
   }

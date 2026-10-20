@@ -26,7 +26,17 @@ const WEEK = 7;
  * بازهٔ جست‌وجوی جاری روی خانه‌ها پررنگ می‌شود؛ هر خانه = دکمه ⇒ دیالوگ همان واحد و زمان.
  */
 export function WeekCalendar() {
-  const { timeline, draft, calendar, policies } = useAvailability();
+  const { timeline, draft, calendar, policies, now } = useAvailability();
+  // سانس «آزاد» ولی نزدیک‌تر از حداقل فاصلهٔ ثبت (سیاست بک‌اند) ⇒ قابل رزرو آنلاین نیست.
+  const earliest = now.getTime() + policies.minLeadHours * 3_600_000;
+  const leadText = `کمتر از ${faDigits(policies.minLeadHours)} ساعت به شروع مانده؛ رزرو آنلاین بسته است`;
+  const runningText = "این سانس آغاز شده است؛ رزرو آنلاین بسته است";
+  const soonOf = (c: CalendarCell): string | undefined => {
+    if (c.status !== "free") return undefined;
+    const start = Date.parse(c.start);
+    if (start <= now.getTime()) return runningText;
+    return start < earliest ? leadText : undefined;
+  };
   const today = tehranToday();
   const occasions = useQuery(occasionsQuery(today, addDays(today, 14)));
   const occasionByDay = new Map(occasions.data?.map((o) => [o.date_gregorian, o]));
@@ -67,6 +77,12 @@ export function WeekCalendar() {
               {STATUS_LABEL[s]}
             </li>
           ))}
+          <li>
+            <i data-status="soon" aria-hidden="true">
+              <Icon name="clock" size={14} />
+            </i>
+            <span title={leadText}>رزرو آنلاین بسته</span>
+          </li>
         </ul>
         <p className="week-note">
           <Icon name="mouse-pointer" size={16} /> برای دیدن جزئیات، یک خانه را انتخاب کنید
@@ -138,7 +154,14 @@ export function WeekCalendar() {
                   const c = cellAt(u, d.day, kind);
                   if (!c) return <div key={`${d.day}-${kind}`} className="cell-wrap" role="cell" />;
                   return (
-                    <Cell key={c.index} cell={c} unit={u.title} range={inRange(c)} onPick={() => pick(u.code, c)} />
+                    <Cell
+                      key={c.index}
+                      cell={c}
+                      unit={u.title}
+                      range={inRange(c)}
+                      soon={soonOf(c)}
+                      onPick={() => pick(u.code, c)}
+                    />
                   );
                 }),
               )}
@@ -221,6 +244,7 @@ export function WeekCalendar() {
                           cell={c}
                           unit={u.title}
                           range={inRange(c)}
+                          soon={soonOf(c)}
                           onPick={() => pick(u.code, c)}
                           wide
                         />
@@ -254,14 +278,18 @@ function Cell({
   range,
   onPick,
   wide,
+  soon,
 }: {
   cell: CalendarCell;
   unit: string;
   range: boolean;
   onPick: () => void;
   wide?: boolean;
+  /** متن دلیل اگر سانس آزاد است ولی در حداقل فاصلهٔ ثبت افتاده است. */
+  soon?: string | undefined;
 }) {
-  const label = `${unit}، ${formatDayLabel(cell.start.slice(0, 10))}، ${cell.kind === "day" ? "روز" : "شب"} از ساعت ${formatClock(cell.start)} — ${STATUS_LABEL[cell.status]}${cell.detail ? `، ${cell.detail}` : ""}`;
+  const state = soon ?? STATUS_LABEL[cell.status];
+  const label = `${unit}، ${formatDayLabel(cell.start.slice(0, 10))}، ${cell.kind === "day" ? "روز" : "شب"} از ساعت ${formatClock(cell.start)} — ${state}${cell.detail ? `، ${cell.detail}` : ""}`;
   return (
     <div role={wide ? undefined : "cell"} className="cell-wrap">
       <button
@@ -271,13 +299,14 @@ function Cell({
         data-kind={cell.kind}
         data-range={range || undefined}
         data-wide={wide || undefined}
+        data-soon={soon ? "" : undefined}
         aria-label={label}
         title={label}
-        disabled={cell.status === "past"}
+        disabled={cell.status === "past" || Boolean(soon)}
         onClick={onPick}
       >
-        <Icon name={STATUS_ICON[cell.status]} size={16} />
-        {wide ? <span>{STATUS_LABEL[cell.status]}</span> : null}
+        <Icon name={soon ? "clock" : STATUS_ICON[cell.status]} size={16} />
+        {wide ? <span>{soon ? "رزرو بسته" : STATUS_LABEL[cell.status]}</span> : null}
       </button>
     </div>
   );

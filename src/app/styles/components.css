@@ -298,6 +298,13 @@
     background: var(--color-danger-bg);
     color: var(--color-danger-fg);
   }
+  .status-legend i[data-status="soon"] {
+    border-style: dashed;
+    background:
+      repeating-linear-gradient(45deg, transparent 0 4px, oklch(from var(--color-free-fg) l c h / 0.1) 4px 5px),
+      var(--color-free-bg);
+    opacity: 0.75;
+  }
   .status-legend i[data-status="fit"] {
     border: 2px solid var(--color-gold);
     background: var(--color-free-bg);

@@ -6,12 +6,13 @@ import {
   helpSchema,
   metaSchema,
   occasionsSchema,
-  profileSchema,
   propertySchema,
   quoteSchema,
   reservationListSchema,
+  sessionStateSchema,
   standingSchema,
   verificationSchema,
+  type SessionState,
 } from "./schemas";
 
 /**
@@ -25,7 +26,7 @@ export const qk = {
   calendar: (days: number) => ["calendar", days] as const,
   occasions: (from: string, to: string) => ["occasions", from, to] as const,
   help: ["help"] as const,
-  me: ["me"] as const,
+  session: ["session"] as const,
   standing: ["me", "standing"] as const,
   reservations: (scope: "upcoming" | "past" | "all") => ["me", "reservations", scope] as const,
 };
@@ -76,18 +77,29 @@ export const helpQuery = queryOptions({
 });
 
 /** نشست: ۴۰۱ یعنی مهمان (null)، نه خطا. */
+/**
+ * وضعیت نشست — ‎`/auth/session` برای مهمان هم ۲۰۰ است (نه ۴۰۱)، پس کنسول تمیز می‌ماند.
+ * خروجی همان پروفایل یا null است تا مصرف‌کننده‌ها فقط «وارد شده؟» را بپرسند.
+ */
+const SESSION_STALE_MS = 60_000;
+const fetchSession = ({ signal }: { signal: AbortSignal }) =>
+  unwrap(api.GET("/api/v1/auth/session", { signal }), (d) => sessionStateSchema.parse(d));
+const retryUnlessClientError = (count: number, e: Error) => !(e instanceof ApiError && e.status < 500) && count < 2;
+
+export const sessionQuery = queryOptions({
+  queryKey: qk.session,
+  queryFn: fetchSession,
+  staleTime: SESSION_STALE_MS,
+  retry: retryUnlessClientError,
+});
+
+/** همان کش نشست؛ فقط پروفایل (یا null برای مهمان) را برمی‌گرداند. */
 export const meQuery = queryOptions({
-  queryKey: qk.me,
-  queryFn: async ({ signal }) => {
-    try {
-      return await unwrap(api.GET("/api/v1/me", { signal }), (d) => profileSchema.parse(d));
-    } catch (e) {
-      if (e instanceof ApiError && (e.status === 401 || e.status === 403)) return null;
-      throw e;
-    }
-  },
-  staleTime: 60_000,
-  retry: (count, e) => !(e instanceof ApiError && e.status < 500) && count < 2,
+  queryKey: qk.session,
+  queryFn: fetchSession,
+  staleTime: SESSION_STALE_MS,
+  retry: retryUnlessClientError,
+  select: (s: SessionState) => s.profile,
 });
 
 export const standingQuery = queryOptions({

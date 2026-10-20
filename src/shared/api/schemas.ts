@@ -140,6 +140,13 @@ export const profileSchema = z.object({
 }) satisfies z.ZodMiniType<S["Profile"]>;
 export type Profile = z.infer<typeof profileSchema>;
 
+export const sessionStateSchema = z.object({
+  authenticated: z.boolean(),
+  profile: z.nullable(profileSchema),
+  mfa_pending: z.boolean(),
+}) satisfies z.ZodMiniType<S["SessionState"]>;
+export type SessionState = z.infer<typeof sessionStateSchema>;
+
 const quota = z.object({
   limit: z.number(),
   remaining: z.number(),
