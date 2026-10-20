@@ -80,14 +80,15 @@ export function BuildingModel({ children }: { children: ReactNode }) {
   const day = draft.day;
   const slotStart = day ? timeline?.units.map((u) => cellAt(u, day, draft.period)).find(Boolean)?.start : undefined;
   const periodText = draft.period === "day" ? "روز" : "شب";
-  const dateText = draft.day
-    ? `${formatDayLabel(draft.day)} · ${periodText}${slotStart ? `، از ساعت ${formatClock(slotStart)}` : ""}`
-    : "…";
+  const dateText = draft.day ? `${formatDayLabel(draft.day)} · ${periodText}` : "…";
 
   return (
     <figure className="building-figure" aria-labelledby="building-caption">
       <div className="model-toolbar">
-        <p className="model-date" title="وضعیت واحدها مطابق زمان ورود انتخاب‌شده است">
+        <p
+          className="model-date"
+          title={`وضعیت واحدها مطابق زمان ورود انتخاب‌شده است${slotStart ? ` (از ساعت ${formatClock(slotStart)})` : ""}`}
+        >
           <Icon name="calendar" size={16} />
           <span>{dateText}</span>
         </p>

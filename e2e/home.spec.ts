@@ -9,7 +9,9 @@ test.describe("P-01 صفحهٔ خانه", () => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("اقامتی با آرامش");
     // تاریخ هیرو = نخستین سانس قابل رزرو، با ساعت واقعی شروع از بک‌اند
-    await expect(page.getByText(/سه‌شنبه، ۲۸ مهر · شب، از ساعت ۲۰:۰۰/)).toBeVisible();
+    const heroDate = page.locator(".model-date");
+    await expect(heroDate).toContainText("سه‌شنبه، ۲۸ مهر · شب");
+    await expect(heroDate).toHaveAttribute("title", /از ساعت ۲۰:۰۰/);
     await expect(cells(page).first()).toBeVisible();
     // درخواست‌ها: نشست بی‌۴۰۱ و تقویم با پارامتر روزها
     expect(api.calls).toContain("GET /api/v1/auth/session");
@@ -27,6 +29,8 @@ test.describe("P-01 صفحهٔ خانه", () => {
     // ۱۸:۳۰: شب هنوز آزاد است ولی کمتر از ۲ ساعت مانده
     await page.clock.setFixedTime(new Date("2026-10-20T18:30:00+03:30"));
     await page.reload();
+    // پس از بارگذاری دوباره، نخست اسکلت شبکه می‌آید؛ صبر برای خانه‌های واقعی (زیر بار CI کندتر است)
+    await expect(page.locator(".week-grid button.cell").first()).toBeVisible({ timeout: 15_000 });
     await expect(today.nth(1)).toBeDisabled();
     await expect(today.nth(1)).toHaveAttribute("aria-label", /کمتر از ۲ ساعت/);
     expect(api.unexpected).toEqual([]);
@@ -165,6 +169,26 @@ test.describe("کیفیت سراسری", () => {
               .join(" | ")}`,
         );
       expect(serious).toEqual([]);
+      expect(api.unexpected).toEqual([]);
+    });
+  }
+
+  // نقطه‌های شکست طرح: تا ۶۲۱px جدول هفتگی کامل (با پیمایش افقی داخلی) و هیروی دوستونه؛ زیر آن تقویم روزانهٔ موبایل
+  for (const width of [768, 1024]) {
+    test(`تبلت/لپ‌تاپ ${width}px: هیروی دوستونه، جدول هفتگی، بدون سرریز صفحه`, async ({ page, api }, info) => {
+      test.skip(info.project.name !== "desktop", "اندازهٔ صفحه در خود آزمون تنظیم می‌شود");
+      await page.setViewportSize({ width, height: 1000 });
+      await page.goto("/");
+      await expect(page.locator(".week-grid .cell").first()).toBeVisible();
+      await expect(page.locator(".mobile-calendar")).toBeHidden();
+      await expect(page.locator(".mobile-bottom")).toBeHidden();
+      const [copy, figure] = await Promise.all([
+        page.locator(".hero-copy").boundingBox(),
+        page.locator(".building-figure").boundingBox(),
+      ]);
+      expect(copy && figure && Math.abs(copy.y - figure.y) < 200 && copy.x > figure.x).toBe(true);
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      expect(await horizontalOverflow(page)).toBeNull();
       expect(api.unexpected).toEqual([]);
     });
   }

@@ -133,6 +133,8 @@ test.describe("ورود، حساب و پیوندها", () => {
       await route.fulfill({ status: 204 });
     });
     await page.goto("/");
+    // تا نشست از سرور نرسیده، دکمه حالت «مهمان» دارد؛ کلیک زودهنگام پنجرهٔ ورود را باز می‌کند نه منوی حساب.
+    await expect(page.locator('header .account-button[data-state="in"]')).toBeVisible();
     if (info.project.name === "mobile")
       await page.getByRole("navigation", { name: "میان‌بُرها" }).getByRole("button", { name: "حساب من" }).click();
     else await page.locator("header .account-button").click();

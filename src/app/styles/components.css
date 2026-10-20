@@ -11,7 +11,7 @@
     border-radius: 10px;
     font-size: 0.875rem;
     font-weight: 550;
-    line-height: 1.6;
+    line-height: 1.85;
     white-space: nowrap;
     transition:
       background-color var(--fast) var(--ease),
@@ -217,7 +217,7 @@
     min-width: 72px;
     text-align: center;
     font-size: 0.9375rem;
-    font-weight: 600;
+    font-weight: 400;
   }
 
   .segment {
@@ -238,7 +238,7 @@
     border-radius: 7px;
     background: transparent;
     color: var(--color-text-muted);
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     font-weight: 550;
     transition:
       background-color var(--fast) var(--ease),
@@ -451,7 +451,7 @@
   .app-dialog__actions .btn-primary {
     flex: 1 1 260px;
   }
-  @media (max-width: 640px) {
+  @media (max-width: 620px) {
     .app-dialog,
     .app-dialog--sm,
     .app-dialog--lg {
@@ -566,7 +566,7 @@
       margin-inline: auto;
     }
   }
-  @media (max-width: 640px) {
+  @media (max-width: 620px) {
     .popover:not(.menu-popover) {
       position-area: none;
       inset: auto 0 0;
@@ -589,7 +589,7 @@
   .popover::backdrop {
     background: transparent;
   }
-  @media (max-width: 640px) {
+  @media (max-width: 620px) {
     .popover:not(.menu-popover)::backdrop {
       background: var(--color-overlay);
     }

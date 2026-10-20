@@ -102,6 +102,11 @@
     margin-bottom: 4px;
     color: var(--color-brand-ink);
   }
+  .rules-intro .section-eyebrow,
+  .rules-intro .section-sub {
+    font-size: 0.875rem;
+    line-height: 2;
+  }
   .rule-tile strong {
     font-size: 0.875rem;
     font-weight: 650;
@@ -113,7 +118,7 @@
   }
   .faq-title {
     margin-bottom: 10px;
-    font-size: 1.375rem;
+    font-size: 1.625rem;
     font-weight: 650;
   }
   .faq-area details {
@@ -203,7 +208,7 @@
   .farewell p {
     margin-top: 4px;
     opacity: 0.85;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
   }
   .farewell__art {
     width: 86px;
@@ -285,7 +290,7 @@
   .mobile-bottom {
     display: none;
   }
-  @media (max-width: 900px) {
+  @media (max-width: 620px) {
     .how-section {
       margin-top: 56px;
       padding: 44px 0 48px;
@@ -432,15 +437,9 @@
       font-weight: 700;
     }
   }
-  @media (max-width: 480px) {
+  @media (max-width: 580px) {
     .footer-main {
       grid-template-columns: 1fr;
-    }
-    .rule-grid {
-      grid-template-columns: 1fr;
-    }
-    .mobile-cta p span {
-      display: none;
     }
   }
 }

@@ -77,14 +77,25 @@
   }
   .unit-card__title {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
     font-size: 1.125rem;
     font-weight: 650;
   }
   .unit-card__title h3 {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
     font-size: inherit;
     font-weight: inherit;
+  }
+  .unit-card__title h3 small {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-weight: 400;
   }
   .unit-card__meta {
     display: flex;
@@ -92,7 +103,7 @@
     flex-wrap: wrap;
     gap: 6px;
     color: var(--color-text-muted);
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
   }
   .unit-feature-row {
     display: flex;
@@ -103,13 +114,14 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 2px 10px;
-    border-radius: 999px;
-    background: var(--color-sunken);
+    color: var(--color-text-muted);
     font-size: 0.75rem;
   }
   .unit-feature-row .icon {
     color: var(--color-brand-ink);
+  }
+  .unit-card__foot .btn {
+    font-size: 0.75rem;
   }
   .unit-card__foot {
     display: flex;
@@ -160,7 +172,7 @@
     transform: none;
     box-shadow: none;
   }
-  @media (max-width: 900px) {
+  @media (max-width: 620px) {
     .unit-rail {
       grid-auto-columns: minmax(270px, 82%);
       gap: 14px;

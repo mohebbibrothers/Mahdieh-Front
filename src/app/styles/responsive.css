@@ -1,0 +1,940 @@
+/*
+ * لایهٔ واکنش‌گرای مطابق طرح (P-01-home-v2): نقطه‌های شکست دقیقاً همان طراح —
+ * ۱۲۰۰ / ۱۱۲۰ / ۱۱۰۰ / ۱۰۰۰ / ۹۰۰ / ۸۵۰ / ۶۲۰ / ۵۲۰ / ۳۷۰. مقادیر از قواعد نهاییِ آبشار طرح
+ * (پس از refinements و revision2) برداشته شده و با مقایسهٔ تصویری در ۸ عرض QA طراح
+ * (۱۴۴۰، ۱۲۰۰، ۱۱۵۲، ۱۱۰۰، ۱۰۲۴، ۷۶۸، ۳۷۵، ۳۶۰) راستی‌آزمایی می‌شود.
+ * این پرونده آخر از همه وارد می‌شود تا بر قواعد پایه مقدم باشد.
+ */
+@layer components {
+  /* ── لپ‌تاپ ۹۰۱–۱۲۰۰: سربرگ یک‌خطی، برچسب‌های کوتاه ── */
+  @media (min-width: 901px) and (max-width: 1200px) {
+    .header-inner {
+      gap: 12px;
+    }
+    .brand-lockup {
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+    }
+    .brand-type {
+      font-size: 1.625rem;
+    }
+    .main-nav {
+      gap: 12px;
+      flex-wrap: nowrap;
+    }
+    .main-nav a {
+      padding: 6px 3px;
+      font-size: 0.8125rem;
+      white-space: nowrap;
+    }
+    .nav-actions {
+      gap: 8px;
+      flex-shrink: 0;
+    }
+  }
+  @media (min-width: 901px) and (max-width: 1120px) {
+    .account-button {
+      justify-content: center;
+      width: 44px;
+      padding: 0;
+      border-radius: 50%;
+    }
+    .account-button__text,
+    .account-button__chev {
+      display: none;
+    }
+    .account-button__avatar {
+      margin: 0;
+    }
+    .main-nav {
+      gap: 10px;
+    }
+    .main-nav a {
+      padding: 6px 2px;
+      font-size: 0.78125rem;
+    }
+  }
+
+  /* ── ≤۱۱۰۰ ── */
+  @media (max-width: 1100px) {
+    .hero-description {
+      font-size: 0.875rem;
+    }
+    .hero-meta span {
+      padding-inline: 18px;
+    }
+    .search-card {
+      padding: 22px;
+    }
+    .form-field {
+      padding-inline: 14px;
+    }
+    .search-heading p {
+      font-size: 0.75rem;
+    }
+    .search-submit {
+      padding-inline-start: 14px;
+    }
+    .btn-search {
+      padding-inline: 12px;
+      font-size: 0.75rem;
+    }
+    .week-grid {
+      grid-template-columns: 155px repeat(14, minmax(0, 1fr));
+      gap: 4px;
+    }
+    .grid-unit-label .code-tag {
+      display: none;
+    }
+    .unit-card__body {
+      padding: 16px;
+    }
+    .unit-card__title h3 {
+      font-size: 1rem;
+    }
+    .unit-feature-row li:nth-child(3) {
+      display: none;
+    }
+    .model-date {
+      white-space: nowrap;
+    }
+    .destination-cartouche > span:last-child {
+      display: none;
+    }
+    .guidance-section {
+      gap: 40px;
+    }
+  }
+
+  /* ── ۶۲۱–۱۰۰۰: جدول هفتگی کامل با پیمایش افقی و ستون واحدِ چسبان ── */
+  @media (min-width: 621px) and (max-width: 1000px) {
+    .week-card {
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+    .week-grid {
+      min-width: 916px;
+      grid-template-columns: 160px repeat(14, minmax(44px, 1fr));
+    }
+    .week-grid .cell {
+      min-height: 44px;
+    }
+    .week-grid .grid-unit-label,
+    .week-grid__corner {
+      position: sticky;
+      inset-inline-start: 0;
+      z-index: 2;
+      background: var(--color-surface);
+    }
+  }
+
+  /* ── ≤۹۰۰: ناوبری اصلی پنهان، دکمه‌های گرد ۴۲px ── */
+  @media (max-width: 900px) {
+    .nav-actions {
+      gap: 6px;
+    }
+    .nav-actions .icon-button,
+    .account-button {
+      width: 42px;
+      height: 42px;
+      min-height: 42px;
+    }
+  }
+
+  /* ── ≤۸۵۰ (تبلت): هیرو دوستونه می‌ماند ── */
+  @media (max-width: 850px) {
+    :root {
+      --header-h: 80px;
+    }
+    .hero {
+      grid-template-columns: 1fr 1.08fr;
+      min-height: 550px;
+    }
+    .hero-title {
+      font-size: 2.25rem;
+    }
+    .hero-description {
+      font-size: 0.8125rem;
+    }
+    .hero-actions {
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .hero-actions .btn {
+      padding: 10px 14px;
+      font-size: 0.75rem;
+    }
+    .hero-actions .btn-ghost {
+      display: none;
+    }
+    .hero-meta {
+      margin-top: 26px;
+    }
+    .hero-meta span {
+      padding-inline: 12px;
+      font-size: 0.75rem;
+    }
+    .hero-meta b {
+      font-size: 1.1875rem;
+    }
+    .hero-reassurance,
+    .eyebrow {
+      font-size: 0.75rem;
+    }
+    .building-foot {
+      flex-direction: column;
+      gap: 9px;
+    }
+    .floor-selector {
+      top: 24%;
+      padding: 3px;
+    }
+    .floor-selector button {
+      width: 29px;
+      height: 32px;
+      font-size: 0.75rem;
+    }
+    .search-form {
+      grid-template-columns: 1fr 1.3fr 1fr;
+    }
+    .search-submit {
+      grid-column: 1 / -1;
+      padding: 20px 0 0;
+    }
+    .btn-search {
+      min-height: 46px;
+      border-radius: var(--radius-md, 12px);
+      font-size: 0.875rem;
+    }
+    .section-title {
+      font-size: 1.5rem;
+    }
+    .week-card {
+      padding: 14px;
+    }
+    .week-note {
+      display: none;
+    }
+    .unit-rail {
+      grid-auto-columns: calc((100% - 20px) / 2);
+    }
+    .how-steps {
+      gap: 28px;
+    }
+    .how-step h3 {
+      font-size: 0.9375rem;
+    }
+    .how-step p {
+      font-size: 0.75rem;
+    }
+    .guidance-section {
+      grid-template-columns: 1fr 1.1fr;
+      gap: 32px;
+    }
+    .rule-grid {
+      gap: 8px;
+    }
+    .rule-tile {
+      padding: 12px;
+    }
+    .rule-tile strong,
+    .faq-area summary {
+      font-size: 0.75rem;
+    }
+    .faq-title {
+      font-size: 1.375rem;
+    }
+    .farewell {
+      padding: 30px;
+    }
+    .farewell h2 {
+      font-size: 1.3125rem;
+    }
+    .footer-main {
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    .footer-about {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* ── ≤۶۲۰ (موبایل) ── */
+  @media (max-width: 620px) {
+    :root {
+      --header-h: 76px;
+    }
+    .header-inner {
+      gap: 10px;
+    }
+    .brand-mark {
+      width: 39px;
+      height: 39px;
+    }
+    .brand-type {
+      font-size: 1.6875rem;
+    }
+    .brand-sub {
+      margin-top: 4px;
+      font-size: 0.75rem;
+    }
+    .brand-lockup {
+      gap: 6px;
+    }
+
+    /* هیرو: یک ستون؛ دکمه‌ها و آمار پنهان (طرح)، اطمینان‌بخشی زیر توضیح */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      min-height: 0;
+      padding-top: 19px;
+      padding-bottom: 28px;
+    }
+    .hero-copy {
+      width: 100%;
+      padding-top: 0;
+      text-align: center;
+    }
+    .eyebrow {
+      justify-content: center;
+      margin-bottom: 13px;
+      font-size: 0.75rem;
+    }
+    .hero-title {
+      font-size: 2.125rem;
+      line-height: 1.53;
+      letter-spacing: -0.055em;
+    }
+    .hero-description {
+      max-width: 355px;
+      margin: 13px auto 0;
+      padding-inline: 10px;
+      font-size: 0.875rem;
+      line-height: 1.95;
+    }
+    .hero-actions,
+    .hero-meta {
+      display: none;
+    }
+    .hero-reassurance {
+      justify-content: center;
+      margin-top: 13px;
+      font-size: 0.75rem;
+    }
+    .building-figure {
+      width: 100%;
+      max-width: none;
+      margin-top: 23px;
+    }
+    .model-toolbar {
+      gap: 6px;
+      padding: 0 1px;
+    }
+    .model-date {
+      gap: 5px;
+      font-size: 0.75rem;
+    }
+    .building-stage {
+      min-height: 0;
+      height: auto;
+      aspect-ratio: 1.13;
+    }
+    .building-foot {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px 5px;
+      margin-top: 7px;
+    }
+    .building-foot .status-legend {
+      gap: 7px;
+      font-size: 0.75rem;
+    }
+    .building-foot .segment button {
+      min-height: 32px;
+      padding: 3px 8px;
+      font-size: 0.75rem;
+    }
+    .building-caption {
+      margin-top: 8px;
+      font-size: 0.75rem;
+    }
+    .floor-selector {
+      inset-inline-end: -9px;
+      top: 22%;
+      border-radius: 9px;
+    }
+    .floor-selector button {
+      width: 44px;
+      height: 44px;
+      font-size: 0.75rem;
+    }
+    .building-tooltip {
+      display: none;
+    }
+
+    /* جست‌وجو: دو ستون «نفرات | زمان ورود»، مدت در ردیف کامل */
+    .search-wrap {
+      margin-top: 0;
+    }
+    .search-card {
+      padding: 19px 16px;
+      border-radius: 14px;
+    }
+    .search-heading {
+      display: block;
+      margin-bottom: 18px;
+    }
+    .search-heading h2 {
+      font-size: 1rem;
+    }
+    .search-heading p {
+      margin: 6px 0 0;
+      padding-inline-start: 28px;
+      font-size: 0.75rem;
+    }
+    .search-form {
+      grid-template-columns: 1fr 1fr;
+      gap: 15px 0;
+      border: 0;
+      border-radius: 0;
+      overflow: visible;
+      background: none;
+    }
+    .search-form .form-field {
+      padding: 0 0 0 12px;
+      border: 0;
+      border-inline-end: 0;
+      border-bottom: 0;
+    }
+    .search-form .form-field:first-child {
+      padding: 0 0 0 12px;
+      border-inline-end: 1px solid var(--color-border);
+    }
+    .search-form .form-field:nth-child(2) {
+      padding: 0 12px 0 0;
+    }
+    .search-form .form-field:nth-child(3) {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      align-items: center;
+      padding: 13px 0 0;
+      border-top: 1px solid var(--color-border);
+    }
+    .search-form .form-field:nth-child(3) .field-label {
+      margin: 0;
+    }
+    .search-form .form-field:nth-child(3) .field-help {
+      display: none;
+    }
+    .field-label,
+    .field-value,
+    .field-help {
+      font-size: 0.75rem;
+    }
+    .field-help {
+      line-height: 1.9;
+    }
+    .search-submit {
+      grid-column: 1 / -1;
+      padding: 0;
+    }
+    .search-form .stepper {
+      justify-content: space-between;
+      gap: 3px;
+    }
+    .search-form .stepper__value {
+      flex: 0 1 auto;
+      min-width: 32px;
+      font-size: 0.75rem;
+      font-weight: 400;
+    }
+    .btn-search {
+      min-height: 48px;
+      font-size: 0.8125rem;
+    }
+    .form-note {
+      align-items: flex-start;
+      margin-top: 12px;
+      font-size: 0.75rem;
+      line-height: 1.9;
+    }
+
+    /* بخش‌ها */
+    .section {
+      padding-top: 43px;
+      margin-top: 0;
+    }
+    .section-head {
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section-eyebrow {
+      margin-bottom: 5px;
+      font-size: 0.75rem;
+    }
+    .rules-intro .section-eyebrow {
+      font-size: 0.875rem;
+    }
+
+    .section-title {
+      font-size: 1.375rem;
+      line-height: 1.65;
+    }
+    .section-sub {
+      margin-top: 6px;
+      font-size: 0.875rem;
+    }
+    .section-link {
+      gap: 4px;
+      font-size: 0.75rem;
+    }
+    .availability-section .section-head {
+      display: block;
+    }
+    .availability-section .section-link {
+      margin-top: 5px;
+    }
+    .week-tools {
+      margin-bottom: 12px;
+    }
+    .week-tools .status-legend {
+      gap: 9px;
+      font-size: 0.75rem;
+    }
+    .week-card {
+      min-height: 260px;
+      padding: 13px;
+      border-radius: 13px;
+    }
+
+    /* تقویم موبایل (طرح): سربرگ روز، نوار ۷ روزه ۴۹px، ردیف واحدها با ستون‌های ۶۵px */
+    .mobile-cal-nav {
+      padding: 10px;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      background: var(--color-sunken);
+    }
+    .mobile-cal-nav .icon-button {
+      width: 36px;
+      height: 36px;
+    }
+    .mobile-cal-nav__title small {
+      justify-self: center;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: var(--color-free-bg);
+      color: var(--color-free-fg);
+      font-weight: 600;
+    }
+    .mobile-date-rail {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 6px;
+      padding-bottom: 12px;
+      scroll-snap-type: x mandatory;
+    }
+    .mobile-date-rail button {
+      min-width: 0;
+      min-height: 56px;
+      padding: 7px 2px;
+      border-radius: 9px;
+      background: var(--color-canvas);
+      color: var(--color-text-muted);
+      font-size: 0.75rem;
+      line-height: 1.7;
+      scroll-snap-align: center;
+    }
+    .mobile-date-rail button strong {
+      display: block;
+      color: var(--color-text);
+      font-size: 1rem;
+      font-weight: 550;
+    }
+    .mobile-date-rail button small {
+      font-size: 0.625rem;
+      font-weight: 600;
+      line-height: 1.1;
+    }
+    .mobile-date-rail button small:last-of-type {
+      font-size: 0.59375rem;
+    }
+    .mobile-date-rail button[aria-selected="true"] strong {
+      color: inherit;
+    }
+    .mobile-date-rail .date-option__meter {
+      width: 6px;
+      height: 6px;
+      margin-inline: auto;
+      border-radius: 50%;
+    }
+    .mobile-day {
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--color-border);
+    }
+    .mobile-day__head,
+    .mobile-day__row {
+      grid-template-columns: 1fr 65px 65px;
+      gap: 7px;
+    }
+    .mobile-day__head {
+      padding: 10px;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      background: var(--color-sunken);
+    }
+    .mobile-day__head > span {
+      display: grid;
+      min-width: 0;
+      justify-items: center;
+      gap: 2px;
+      font-size: 0.6875rem;
+      text-align: center;
+    }
+    .mobile-day__head > span:first-child {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--color-text);
+      font-weight: 600;
+    }
+    .mobile-day__head b {
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      color: var(--color-text);
+      font-weight: 600;
+    }
+    .mobile-day__head small {
+      font-size: 0.625rem;
+      line-height: 1.6;
+    }
+    .mobile-day__row {
+      padding: 8px;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      background: var(--color-sunken);
+    }
+    .mobile-day__unit {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 48px;
+    }
+    .mobile-day__icon {
+      display: grid;
+      place-items: center;
+      flex: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: var(--color-brand-tint);
+      color: var(--color-brand-ink);
+    }
+    .mobile-day__name {
+      display: grid;
+      gap: 2px;
+      line-height: 1.25;
+    }
+    .mobile-day__name strong {
+      font-size: 0.75rem;
+      font-weight: 650;
+    }
+    .mobile-day__name small {
+      color: var(--color-text-muted);
+      font-size: 0.625rem;
+    }
+    .mobile-day__name .code-tag {
+      display: inline-block;
+      margin-inline-start: 2px;
+      padding: 0 5px;
+      border-radius: 5px;
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-size: 0.625rem;
+      font-weight: 700;
+    }
+    .mobile-day .cell,
+    .mobile-day .cell-wrap {
+      min-height: 50px;
+    }
+    .mobile-day .cell {
+      flex-direction: column;
+      gap: 0;
+      font-size: 0.75rem;
+      line-height: 1.4;
+    }
+    .calendar-footer {
+      margin-top: 12px;
+      padding-top: 10px;
+      font-size: 0.75rem;
+    }
+
+    /* واحدها */
+    .unit-rail {
+      grid-auto-columns: 86%;
+    }
+    .unit-card {
+      border-radius: 13px;
+    }
+    .unit-card__visual {
+      aspect-ratio: 4 / 3;
+    }
+    .unit-card__body {
+      padding: 17px;
+    }
+    .unit-card__title h3 {
+      font-size: 1.0625rem;
+    }
+    .unit-feature-row {
+      gap: 14px;
+      font-size: 0.75rem;
+    }
+    .unit-feature-row {
+      flex-wrap: nowrap;
+      overflow: hidden;
+    }
+    .unit-feature-row li {
+      white-space: nowrap;
+    }
+    .unit-card__meta {
+      font-size: 0.75rem;
+    }
+    .rail-controls {
+      display: flex;
+      gap: 6px;
+    }
+    .rail-controls .icon-button {
+      width: 36px;
+      height: 36px;
+    }
+
+    /* سه قدم */
+    .how-section {
+      margin-top: 45px;
+      padding: 35px 0 36px;
+    }
+    .how-head {
+      margin-bottom: 27px;
+    }
+    .how-head .section-title {
+      font-size: 1.375rem;
+    }
+    .how-steps {
+      grid-template-columns: 1fr;
+      gap: 23px;
+    }
+    .how-step h3 {
+      font-size: 0.9375rem;
+    }
+    .how-step h3 .icon {
+      display: none;
+    }
+    .how-step p {
+      margin-top: 6px;
+      max-width: none;
+      font-size: 0.875rem;
+    }
+    .how-step .step-number {
+      width: 32px;
+      height: 32px;
+      font-size: 0.75rem;
+    }
+
+    /* قواعد و پرسش‌ها */
+    .guidance-section {
+      grid-template-columns: 1fr;
+      gap: 42px;
+      padding-block: 43px;
+      margin-top: 0;
+    }
+    .rules-intro p {
+      margin-top: 10px;
+      font-size: 0.875rem;
+    }
+    .rule-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .rule-tile {
+      padding: 14px;
+    }
+    .rule-tile strong {
+      font-size: 0.8125rem;
+    }
+    .rule-tile small {
+      font-size: 0.75rem;
+    }
+    .faq-area h2 {
+      margin-bottom: 10px;
+      font-size: 1.375rem;
+    }
+    .faq-area summary {
+      min-height: 62px;
+      font-size: 0.75rem;
+      line-height: 1.9;
+    }
+    .faq-area details > p {
+      padding-inline-end: 10px;
+      font-size: 0.875rem;
+    }
+
+    /* بدرقه */
+    .farewell {
+      display: block;
+      margin-bottom: 44px;
+      padding: 28px 22px;
+      border-radius: 14px;
+      text-align: start;
+    }
+    .farewell h2 {
+      font-size: 1.375rem;
+    }
+    .farewell p {
+      max-width: 230px;
+      margin-top: 9px;
+      font-size: 0.75rem;
+    }
+    .farewell .btn {
+      min-height: 44px;
+      margin-top: 20px;
+      font-size: 0.75rem;
+    }
+
+    /* پانویس */
+    .site-footer {
+      padding-top: 28px;
+      padding-bottom: 165px;
+    }
+    .footer-main {
+      grid-template-columns: 1fr 1fr;
+      gap: 28px 22px;
+    }
+    .footer-brand .brand-type {
+      font-size: 1.5625rem;
+    }
+    .footer-description {
+      max-width: none;
+      font-size: 0.8125rem;
+    }
+    .footer-heading {
+      font-size: 0.875rem;
+    }
+    .footer-links,
+    .footer-location {
+      font-size: 0.75rem;
+    }
+    .footer-bottom {
+      display: block;
+      margin-top: 24px;
+      padding-top: 15px;
+      font-size: 0.75rem;
+      line-height: 2.1;
+    }
+    .footer-bottom span {
+      display: block;
+    }
+
+    /* نوار فراخوان */
+    .mobile-cta p {
+      font-size: 0.75rem;
+      line-height: 1.7;
+    }
+    .mobile-cta p strong {
+      display: block;
+      color: var(--color-brand-ink);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .mobile-cta p span {
+      display: block;
+      color: var(--color-text);
+      font-size: 0.75rem;
+    }
+    .mobile-cta .btn {
+      min-height: 43px;
+      padding: 9px 15px;
+      font-size: 0.75rem;
+    }
+    .toast-stack {
+      bottom: 145px;
+    }
+  }
+
+  /* ── ≤۵۲۰: سربرگ ۷۲px، زیرعنوان نشان پنهان ── */
+  @media (max-width: 520px) {
+    :root {
+      --header-h: 72px;
+    }
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+    }
+    .brand-type {
+      font-size: 1.5rem;
+    }
+    .brand-sub {
+      display: none;
+    }
+  }
+
+  @media (max-width: 580px) {
+    .footer-main {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+  }
+
+  /* ── ≤۳۷۰ ── */
+  @media (max-width: 370px) {
+    .hero-title {
+      font-size: 1.9375rem;
+    }
+    .search-card {
+      padding: 17px 14px;
+    }
+    .search-heading h2 {
+      font-size: 0.9375rem;
+    }
+    .mobile-day__head,
+    .mobile-day__row {
+      grid-template-columns: 1fr 59px 59px;
+    }
+    .mobile-date-rail button small {
+      font-size: 0.5625rem;
+    }
+    .mobile-day__name strong {
+      font-size: 0.6875rem;
+    }
+    .mobile-day__name small {
+      font-size: 0.5625rem;
+    }
+    .unit-feature-row {
+      gap: 10px;
+    }
+    .mobile-cta .btn {
+      padding-inline: 12px;
+    }
+    .nav-actions {
+      gap: 4px;
+    }
+    .nav-actions .icon-button,
+    .account-button {
+      width: 38px;
+      height: 38px;
+      min-height: 38px;
+    }
+    .unit-rail {
+      grid-auto-columns: 89%;
+    }
+  }
+}

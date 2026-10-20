@@ -16,7 +16,7 @@
   :root[data-easy="true"] {
     --text-scale: 1.14;
   }
-  @media (max-width: 900px) {
+  @media (max-width: 620px) {
     :root {
       --header-h: 72px;
       --dock-h: 127px;
@@ -43,7 +43,7 @@
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
   }
-  @media (max-width: 900px) {
+  @media (max-width: 620px) {
     body {
       padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom));
     }

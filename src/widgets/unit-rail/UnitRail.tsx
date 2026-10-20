@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRef } from "react";
 import { cellAt, STATUS_LABEL } from "@/entities/slot/timeline";
-import { featureIcon, floorLabel, unitPlan, unitTypeIcon } from "@/entities/unit/unit";
+import { featureIcon, floorLabel, unitPlan } from "@/entities/unit/unit";
 import { draftStore } from "@/features/booking-draft/store";
 import { useAvailability } from "@/features/booking-draft/use-availability";
 import { propertyQuery } from "@/shared/api/queries";
@@ -79,17 +79,16 @@ export function UnitRail() {
                   </div>
                   <div className="unit-card__body">
                     <div className="unit-card__title">
-                      <h3>{u.title}</h3>
-                      <span className="pill">
-                        <Icon name={unitTypeIcon(u.unit_type)} size={14} /> {u.type_label}
-                      </span>
+                      <h3>
+                        {u.type_label} <small>{floorLabel(u.floor_number)}</small>
+                      </h3>
                     </div>
                     <p className="unit-card__meta">
                       <span>
-                        <Icon name="building" size={16} /> {floorLabel(u.floor_number)}
+                        <Icon name="users" size={16} /> تا {faDigits(u.capacity_total)} نفر
                       </span>
                       <span>
-                        <Icon name="users" size={16} /> تا {faDigits(u.capacity_total)} نفر
+                        <Icon name="building" size={16} /> {floorLabel(u.floor_number)}
                       </span>
                     </p>
                     <ul className="unit-feature-row">

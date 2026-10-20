@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { cellAt, STATUS_ICON, STATUS_LABEL } from "@/entities/slot/timeline";
-import { unitTypeIcon } from "@/entities/unit/unit";
+import { floorLabel, shortWeekday, unitShortName, unitTypeIcon } from "@/entities/unit/unit";
 import { draftStore } from "@/features/booking-draft/store";
 import { useAvailability } from "@/features/booking-draft/use-availability";
 import { occasionsQuery } from "@/shared/api/queries";
@@ -211,8 +211,9 @@ export function WeekCalendar() {
                 onClick={() => setMobileDay(i)}
                 data-today={d.day === today || undefined}
               >
-                <small>{d.day === today ? "امروز" : formatWeekday(d.day)}</small>
-                <strong>{formatDayMonth(d.day)}</strong>
+                <small>{shortWeekday(formatWeekday(d.day))}</small>
+                <strong>{formatDayMonth(d.day).split(" ")[0]}</strong>
+                <small>{formatDayMonth(d.day).split(" ").slice(1).join(" ")}</small>
                 <span
                   className="date-option__meter"
                   data-level={d.free_cells === 0 ? "none" : d.free_cells < d.total_cells / 2 ? "low" : "ok"}
@@ -222,20 +223,39 @@ export function WeekCalendar() {
           </div>
           <div className="mobile-day" role="tabpanel">
             <div className="mobile-day__head" aria-hidden="true">
-              <span>واحد</span>
               <span>
-                <Icon name="sun" size={14} /> روز <bdi>۰۸:۰۰</bdi>–<bdi>۲۰:۰۰</bdi>
+                <Icon name="building" size={14} /> واحد اقامتی
               </span>
               <span>
-                <Icon name="moon" size={14} /> شب <bdi>۲۰:۰۰</bdi>–<bdi>۰۸:۰۰</bdi>
+                <b>
+                  <Icon name="sun" size={14} /> سانس روز
+                </b>
+                <small>
+                  <bdi>۰۸:۰۰</bdi> تا <bdi>۲۰:۰۰</bdi>
+                </small>
+              </span>
+              <span>
+                <b>
+                  <Icon name="moon" size={14} /> سانس شب
+                </b>
+                <small>
+                  <bdi>۲۰:۰۰</bdi> تا <bdi>۰۸:۰۰</bdi> صبح
+                </small>
               </span>
             </div>
             {days[mobileDay]
               ? (timeline?.units ?? []).map((u) => (
                   <div key={u.code} className="mobile-day__row">
                     <span className="mobile-day__unit">
-                      <strong>{u.title}</strong>
-                      <small>تا {faDigits(u.capacity)} نفر</small>
+                      <span className="mobile-day__icon" aria-hidden="true">
+                        <Icon name={unitTypeIcon(u.unitType)} size={18} />
+                      </span>
+                      <span className="mobile-day__name">
+                        <strong>{unitShortName(u.title)}</strong>
+                        <small>
+                          · {floorLabel(u.floor)} <bdi className="code-tag latin">{u.code}</bdi>
+                        </small>
+                      </span>
                     </span>
                     {(["day", "night"] as const).map((kind) => {
                       const c = cellAt(u, days[mobileDay]?.day ?? "", kind);
