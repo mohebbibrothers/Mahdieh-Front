@@ -25,10 +25,13 @@ export function SiteHeader({ current = "/" }: { current?: string }) {
             </a>
           ))}
         </nav>
+        {/* ترتیب DOM = ترتیب دیداری راست‌به‌چپ = ترتیب Tab: ابزارهای نمایش، سپس حساب در لبهٔ چپ
+            (≤۹۰۰ حساب پنهان است و دکمهٔ فهرست همان لبه را می‌گیرد). بدون CSS order تا ترتیب
+            کانونی صفحه‌کلید با چشم یکی بماند. */}
         <div className="nav-actions">
-          <AccountButton />
-          <ThemeMenu />
           <EasyToggle />
+          <ThemeMenu />
+          <AccountButton />
           <MobileMenu current={current} />
         </div>
       </div>

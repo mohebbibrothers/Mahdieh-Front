@@ -1,7 +1,9 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { meQuery } from "@/shared/api/queries";
+import { destHref } from "@/shared/config/destinations";
 import { cx } from "@/shared/lib/cx";
 import { Icon } from "@/shared/ui/Icon";
 import { openAccount, type AccountIntent } from "./account-store";
@@ -55,14 +57,25 @@ export function AccountTrigger({
   guestReason,
   intent,
   onOpen,
+  portal = false,
 }: {
   className?: string;
   children: ReactNode;
   guestReason?: string;
   intent?: AccountIntent;
   onOpen?: () => void;
+  /** «رزروهای من»/«جزئیات رزرو»: با انتشار پرتال زائر (P-07) پیوند مستقیم آن می‌شود. */
+  portal?: boolean;
 }) {
   const me = useQuery(meQuery);
+  const portalHref = portal ? destHref("portal") : null;
+  if (portalHref) {
+    return (
+      <Link className={className} href={portalHref} onClick={() => onOpen?.()}>
+        {children}
+      </Link>
+    );
+  }
   return (
     <button
       type="button"

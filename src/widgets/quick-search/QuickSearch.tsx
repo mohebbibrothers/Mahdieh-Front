@@ -1,11 +1,14 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useId, useRef } from "react";
 import { cellAt, type Period } from "@/entities/slot/timeline";
 import { floorLabel, unitTypeIcon } from "@/entities/unit/unit";
 import { bookingHref, draftStore } from "@/features/booking-draft/store";
 import { PICKABLE_DAYS, useAvailability, type UnitResult } from "@/features/booking-draft/use-availability";
+import { BookingContinue } from "@/features/session/BookingContinue";
 import { propertyQuery } from "@/shared/api/queries";
+import { destHref } from "@/shared/config/destinations";
 import { cx } from "@/shared/lib/cx";
 import {
   cellsLabel,
@@ -187,6 +190,7 @@ export function QuickSearch() {
 }
 
 function ArrivalPicker({ onDone }: { onDone: () => void }) {
+  const calendarFull = destHref("calendarFull");
   const { timeline, draft } = useAvailability();
   const days = timeline?.days.slice(0, PICKABLE_DAYS) ?? [];
   const setDay = (day: string, period: Period = draft.period) => draftStore.set({ day, period });
@@ -227,11 +231,17 @@ function ArrivalPicker({ onDone }: { onDone: () => void }) {
         </button>
       </div>
       <p className="popover__note">
-        نوار زیر هر روز، میزان آزادی آن روز را نشان می‌دهد. برای روزهای دورتر{" "}
-        <a href="#availability" className="text-link">
-          تقویم کامل
-        </a>{" "}
-        را ببینید.
+        نوار زیر هر روز، میزان آزادی آن روز را نشان می‌دهد.
+        {calendarFull ? (
+          <>
+            {" "}
+            برای روزهای دورتر{" "}
+            <Link href={calendarFull} className="text-link">
+              تقویم کامل
+            </Link>{" "}
+            را ببینید.
+          </>
+        ) : null}
       </p>
       <button type="button" className="btn btn-primary btn-block" onClick={onDone}>
         تأیید زمان ورود <Icon name="check" size={18} />
@@ -293,9 +303,14 @@ function SearchResults({ results }: { results: UnitResult[] }) {
                 >
                   جزئیات
                 </button>
-                <a className="btn btn-primary btn-sm" href={bookingHref(u.code, draft)}>
-                  ادامه با این واحد <Icon name="arrow-left" size={16} />
-                </a>
+                <BookingContinue
+                  className="btn btn-primary btn-sm"
+                  href={bookingHref(u.code, draft)}
+                  label="ادامه با این واحد"
+                  guestLabel="ورود و ادامه"
+                  reason="برای ثبت رزرو، با شمارهٔ همراه وارد شوید؛ انتخاب شما حفظ می‌شود."
+                  iconSize={16}
+                />
               </div>
             </li>
           );

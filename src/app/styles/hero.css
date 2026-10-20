@@ -373,24 +373,39 @@
   .simple-unit-list {
     display: none;
   }
+  /* نمای فهرست (انتخاب «فهرست» یا حالت آسان) — همان قاب نمای ساختمان:
+     · ستون عمودی طبقه‌ها در لبهٔ چپ می‌ماند (فقط از ‎24%‎ به ردیف کارت اول می‌لغزد)؛
+     · صحنه با فهرست رشد می‌کند (flex بی‌انقباض) ⇒ هرگز روی راهنما/دکمه‌های نما نمی‌افتد؛
+     · کمینهٔ ارتفاع همان نمای ساختمان است ⇒ عوض کردن نما یا طبقه بقیهٔ صفحه را نمی‌پراند. */
   .building-stage[data-view="list"] {
+    display: block;
+    /* place-items:center نمای ساختمان در چیدمان بلوکی هم فرزند را جمع و وسط‌چین می‌کند. */
+    place-items: normal;
+    flex: 1 0 auto;
     aspect-ratio: auto;
-    min-height: 0;
+    padding-block: 14px;
+    padding-inline-end: 66px;
   }
   .building-stage[data-view="list"] .building-interactive,
   .building-stage[data-view="list"] .arch-backdrop,
   .building-stage[data-view="list"] .building-tooltip {
     display: none;
   }
+  .floor-selector {
+    transition: top var(--base) var(--ease);
+  }
   .building-stage[data-view="list"] .floor-selector {
-    position: static;
-    flex-direction: row;
-    width: max-content;
-    margin: 4px 0 12px auto;
+    top: 14px;
+  }
+  .building-stage[data-view="list"] + .building-foot {
+    margin-top: 6px;
   }
   .building-stage[data-view="list"] .simple-unit-list {
     display: grid;
     gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
   .simple-unit-list button {
     display: flex;
@@ -403,10 +418,46 @@
     border-radius: 16px;
     background: var(--color-surface);
     text-align: start;
-    transition: border-color var(--fast) var(--ease);
+    transition:
+      border-color var(--fast) var(--ease),
+      background-color var(--fast) var(--ease),
+      translate var(--fast) var(--ease),
+      box-shadow var(--fast) var(--ease);
+  }
+  .simple-unit-list button > .icon {
+    flex: none;
+    color: var(--color-brand);
   }
   .simple-unit-list button:hover {
     border-color: var(--color-border-strong);
+    background: oklch(from var(--color-brand-tint) l c h / 0.55);
+    translate: -3px 0;
+    box-shadow: 0 8px 22px -14px var(--color-shadow-strong);
+  }
+  .simple-unit-list button:active {
+    translate: 0 0;
+  }
+  /* ورود پلکانی کارت‌ها هنگام رفتن به نمای فهرست یا عوض کردن طبقه (کارت ماندگار تکان نمی‌خورد). */
+  @media (prefers-reduced-motion: no-preference) {
+    .building-stage[data-view="list"] .simple-unit-list li {
+      animation: list-card-in 420ms var(--ease) both;
+      animation-delay: calc(var(--i, 0) * 45ms);
+    }
+    .simple-unit-list li:nth-child(2) {
+      --i: 1;
+    }
+    .simple-unit-list li:nth-child(3) {
+      --i: 2;
+    }
+    .simple-unit-list li:nth-child(4) {
+      --i: 3;
+    }
+    .simple-unit-list li:nth-child(5) {
+      --i: 4;
+    }
+    .simple-unit-list li:nth-child(n + 6) {
+      --i: 5;
+    }
   }
   .simple-unit-list button[data-fit="ok"] {
     border-color: var(--color-gold);
@@ -420,6 +471,13 @@
   .simple-unit-list__text small {
     color: var(--color-text-muted);
     font-size: 0.75rem;
+  }
+
+  @keyframes list-card-in {
+    from {
+      opacity: 0;
+      translate: 0 10px;
+    }
   }
 
   .model-error {
@@ -636,8 +694,14 @@
       min-height: 0;
       aspect-ratio: 1.13;
     }
+    /* موبایل: کمینه = همان نسبت ۱٫۱۳ ساختمان، با فهرست بلندتر رشد می‌کند (min-height:auto). */
     .building-stage[data-view="list"] {
-      aspect-ratio: auto;
+      min-height: auto;
+      padding-block: 10px;
+      padding-inline-end: 54px;
+    }
+    .building-stage[data-view="list"] .floor-selector {
+      top: 10px;
     }
     .building-svg {
       width: 110%;

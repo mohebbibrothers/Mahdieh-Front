@@ -1,11 +1,12 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { cellAt, evaluate, nearestFit, STATUS_ICON, STATUS_LABEL } from "@/entities/slot/timeline";
 import { featureIcon, floorLabel, unitPlan } from "@/entities/unit/unit";
 import { bookingHref, draftStore } from "@/features/booking-draft/store";
 import { useAvailability } from "@/features/booking-draft/use-availability";
 import { fetchQuote, meQuery, propertyQuery } from "@/shared/api/queries";
-import { openAccount } from "@/features/session/account-store";
+import { BookingContinue } from "@/features/session/BookingContinue";
 import {
   durationLabel,
   faDigits,
@@ -15,8 +16,10 @@ import {
   formatWeekday,
   guestsLabel,
 } from "@/shared/lib/fa";
+import { destHref, unitPageHref } from "@/shared/config/destinations";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon } from "@/shared/ui/Icon";
+import { PageLink } from "@/shared/ui/PageLink";
 import { Stepper } from "@/shared/ui/Stepper";
 
 /**
@@ -44,6 +47,7 @@ export function UnitDialog() {
       : undefined;
 
   const signedIn = Boolean(me.data);
+  const unitPage = code ? unitPageHref(code) : null;
   const quote = useQuery({
     queryKey: ["quote", code, first?.start, last?.end, draft.guests],
     queryFn: () =>
@@ -98,25 +102,13 @@ export function UnitDialog() {
       actions={
         <>
           {canContinue && code ? (
-            signedIn ? (
-              <a className="btn btn-primary" href={bookingHref(code, draft)}>
-                انتخاب این واحد و ادامه <Icon name="arrow-left" size={18} />
-              </a>
-            ) : (
-              <button
-                type="button"
-                className="btn btn-primary"
-                aria-haspopup="dialog"
-                onClick={() =>
-                  openAccount({
-                    then: bookingHref(code, draft),
-                    reason: "برای ثبت رزرو، با شمارهٔ همراه وارد شوید؛ انتخاب شما حفظ می‌شود.",
-                  })
-                }
-              >
-                ورود و ادامهٔ رزرو <Icon name="arrow-left" size={18} />
-              </button>
-            )
+            <BookingContinue
+              className="btn btn-primary"
+              href={bookingHref(code, draft)}
+              label="انتخاب این واحد و ادامه"
+              guestLabel="ورود و ادامهٔ رزرو"
+              reason="برای ثبت رزرو، با شمارهٔ همراه وارد شوید؛ انتخاب شما حفظ می‌شود."
+            />
           ) : nearest ? (
             <button
               type="button"
@@ -307,6 +299,20 @@ export function UnitDialog() {
               ))}
             </ul>
           </section>
+        ) : null}
+
+        {/* پیوندهای میان‌صفحه‌ای طراح (P-03 / P-02): تا ساخت آن صفحه‌ها خودکار پنهان‌اند. */}
+        {code && (unitPage ?? destHref("unitsCompare")) ? (
+          <nav className="unit-detail__more" aria-label="ادامهٔ بررسی واحدها">
+            {unitPage ? (
+              <Link className="btn btn-secondary" href={unitPage}>
+                صفحهٔ کامل این واحد <Icon name="arrow-left" size={18} />
+              </Link>
+            ) : null}
+            <PageLink to="unitsCompare" className="btn btn-secondary">
+              مقایسه با سایر واحدها <Icon name="building" size={18} />
+            </PageLink>
+          </nav>
         ) : null}
       </div>
     </AppDialog>

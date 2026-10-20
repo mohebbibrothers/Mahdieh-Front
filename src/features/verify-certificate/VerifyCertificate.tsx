@@ -1,8 +1,10 @@
 "use client";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import Link from "next/link";
 import { useId, useState } from "react";
 import { configQuery, verifyCertificate } from "@/shared/api/queries";
 import type { Verification } from "@/shared/api/schemas";
+import { destHref } from "@/shared/config/destinations";
 import { faDigits } from "@/shared/lib/fa";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon } from "@/shared/ui/Icon";
@@ -36,6 +38,7 @@ export function VerifyCertificateButton({ className }: { className?: string }) {
 }
 
 function VerifyCertificateDialog({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: (o: boolean) => void }) {
+  const verifyOffline = destHref("verifyOffline");
   const id = useId();
   const [raw, setRaw] = useState("");
   const [inputError, setInputError] = useState<string | null>(null);
@@ -112,6 +115,14 @@ function VerifyCertificateDialog({ isOpen, onOpenChange }: { isOpen: boolean; on
         </div>
       ) : null}
       {mutation.data ? <VerifyResult result={mutation.data} statusLabel={statusLabel} /> : null}
+      {verifyOffline ? (
+        <p className="verify-foot">
+          گواهی بدون اینترنت در دست دارید؟{" "}
+          <Link href={verifyOffline} className="text-link">
+            بازرسی با مشخصات چاپی و کد کوتاه
+          </Link>
+        </p>
+      ) : null}
     </AppDialog>
   );
 }

@@ -37,7 +37,7 @@ export function MobileDock() {
           <Icon name="calendar" size={22} />
           <span>زمان‌های آزاد</span>
         </a>
-        <AccountTrigger guestReason="برای دیدن رزروهایتان با شمارهٔ همراه وارد شوید.">
+        <AccountTrigger guestReason="برای دیدن رزروهایتان با شمارهٔ همراه وارد شوید." portal>
           <Icon name="ticket" size={22} />
           <span>رزروهای من</span>
         </AccountTrigger>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { destHref } from "@/shared/config/destinations";
 import type { Metadata } from "next";
 import { SITE } from "@/shared/config/site";
 import { Icon } from "@/shared/ui/Icon";
@@ -22,10 +23,10 @@ export default function NotFound() {
           <a className="btn btn-primary" href={SITE.routes.home}>
             صفحهٔ نخست <Icon name="arrow-left" size={18} />
           </a>
-          <Link className="btn btn-secondary" href="/#availability">
+          <Link className="btn btn-secondary" href={destHref("calendar")}>
             <Icon name="calendar" size={18} /> زمان‌های آزاد
           </Link>
-          <Link className="btn btn-secondary" href="/#rules">
+          <Link className="btn btn-secondary" href={destHref("guide")}>
             <Icon name="compass" size={18} /> راهنمای زائر
           </Link>
         </div>

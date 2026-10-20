@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageLink } from "@/shared/ui/PageLink";
 import { AccountTrigger } from "@/features/session/AccountButton";
 import { VerifyCertificateButton } from "@/features/verify-certificate/VerifyCertificate";
 import { SITE } from "@/shared/config/site";
@@ -36,7 +37,7 @@ export function SiteFooter() {
                 <Link href="/#quick-search">انتخاب زمان اقامت</Link>
               </li>
               <li>
-                <AccountTrigger guestReason="برای دیدن رزروهایتان با شمارهٔ همراه وارد شوید.">
+                <AccountTrigger guestReason="برای دیدن رزروهایتان با شمارهٔ همراه وارد شوید." portal>
                   رزروهای من
                 </AccountTrigger>
               </li>
@@ -51,6 +52,9 @@ export function SiteFooter() {
             <h2 className="footer-heading">راهیِ مشهد</h2>
             <FooterContact />
             <VerifyCertificateButton className="section-link verify-link" />
+            <PageLink to="contact" className="section-link contact-link">
+              اطلاعات تماس <Icon name="arrow-left" size={16} />
+            </PageLink>
           </div>
         </div>
         <div className="footer-bottom">

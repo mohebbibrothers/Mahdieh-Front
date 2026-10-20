@@ -1,0 +1,123 @@
+/* اسکرول سراسری — تنها منبع رفتار پیمایش سایت (هیچ پروندهٔ دیگری scrollbar-* تعریف نمی‌کند،
+   جز نوارهای افقیِ عمداً بی‌نوار مثل ‎.unit-rail‎).
+
+   چرا این ساختار: در Chrome/Edge از نسخهٔ ۱۲۱ اگر scrollbar-width یا scrollbar-color روی عنصری
+   مقدار بگیرد، شبه‌عنصرهای ::-webkit-scrollbar نادیده گرفته می‌شوند و اسکرول‌بار بومی ویندوز با
+   دو دکمهٔ مثلثی کشیده می‌شود. پس ویژگی‌های استاندارد فقط برای مرورگرِ بی‌شبه‌عنصر (Firefox) است
+   و Chromium/Safari کپسول سفارشی می‌گیرند — همان راه‌حل فایل طراح (v2.css). */
+@layer base {
+  :root {
+    --scroll-thumb: oklch(from var(--color-text) l c h / 0.2);
+    --scroll-thumb-near: oklch(from var(--color-text) l c h / 0.32);
+    --scroll-thumb-hover: oklch(from var(--color-text) l c h / 0.46);
+    --scroll-thumb-active: var(--color-brand);
+  }
+
+  /* صفحه: بی‌اسکرول‌بار (مطابق طراح و خواست کارفرما)؛ چرخ موش، لمس و صفحه‌کلید دست‌نخورده‌اند و
+     جای نوار را «خط پیشرفت» زیر سرصفحه می‌گیرد. پنهان بودنش پرش عرض هنگام باز شدن پنجره‌ها را هم
+     از میان می‌برد. */
+  html {
+    scrollbar-width: none;
+  }
+  html::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  /* Chromium / Safari: کپسول شناور ۵ پیکسلی — ریل شفاف، بی‌دکمه، دور از گوشه‌های گرد. */
+  ::-webkit-scrollbar {
+    width: 11px;
+    height: 11px;
+    background: transparent;
+  }
+  ::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-track:vertical {
+    margin-block: 12px;
+  }
+  ::-webkit-scrollbar-track:horizontal {
+    margin-inline: 12px;
+  }
+  ::-webkit-scrollbar-thumb {
+    min-width: 40px;
+    min-height: 40px;
+    border: 3px solid transparent;
+    border-radius: 999px;
+    background-color: var(--scroll-thumb);
+    background-clip: padding-box;
+  }
+  /* نزدیک شدن موش به ناحیهٔ پیمایش ⇒ پررنگ‌تر؛ روی خود کپسول ⇒ پهن‌تر (۷px)؛ کشیدن ⇒ رنگ برند. */
+  :hover::-webkit-scrollbar-thumb {
+    background-color: var(--scroll-thumb-near);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    border-width: 2px;
+    background-color: var(--scroll-thumb-hover);
+  }
+  ::-webkit-scrollbar-thumb:active {
+    border-width: 2px;
+    background-color: var(--scroll-thumb-active);
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* Firefox (بی‌شبه‌عنصر): نوار باریک بومی — آن هم بی‌دکمه است. */
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--scroll-thumb-near) transparent;
+    }
+    html {
+      scrollbar-width: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    ::-webkit-scrollbar-thumb {
+      background-color: CanvasText;
+    }
+  }
+}
+
+/* خط پیشرفت مطالعه: موی ۲ پیکسلی برند→طلایی زیر سرصفحهٔ چسبان که با پیمایش از راست (آغاز متن
+   فارسی) پر می‌شود؛ بالای صفحه نامرئی است. «زمان‌بندی وابسته به اسکرول» بی‌JS و بیرون از رشتهٔ
+   اصلی اجرا می‌شود؛ مرورگرِ بی‌پشتیبانی ⇒ هیچ (بی‌اثر جانبی). */
+@supports (animation-timeline: scroll()) {
+  @layer components {
+    .site-header::after {
+      content: "";
+      position: absolute;
+      inset-inline: 0;
+      bottom: -1px;
+      height: 2px;
+      background: linear-gradient(to left, var(--color-brand), var(--color-gold));
+      transform-origin: 100% 50%;
+      scale: 0 1;
+      opacity: 0;
+      pointer-events: none;
+      animation: read-progress linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+}
+@keyframes read-progress {
+  0% {
+    scale: 0 1;
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  100% {
+    scale: 1 1;
+    opacity: 1;
+  }
+}

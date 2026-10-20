@@ -53,7 +53,7 @@ export function AccountBanners() {
             </p>
           </div>
         </div>
-        <AccountTrigger className="btn btn-secondary">
+        <AccountTrigger className="btn btn-secondary" portal>
           جزئیات رزرو
           <Icon name="arrow-left" size={18} />
         </AccountTrigger>

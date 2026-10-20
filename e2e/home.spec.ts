@@ -4,6 +4,20 @@ import { NOW, expect, fixture, horizontalOverflow, test } from "./support/fixtur
 
 const cells = (page: Page) => page.locator(".cell:visible");
 
+/** قالب‌های قدیمی جنگو (apps/web، apps/core) و پیشخوان مدیریت — هیچ پیوندی نباید به آن‌ها برسد. */
+const LEGACY =
+  /^(?:https?:\/\/[^/]+)?\/(?:board|book|calendar|demo|feedback|help|login|logout|my|profile|units|verify|django-admin)(?:[/?#]|$)/;
+
+/** تا پایان ورود پلکانی کارت‌های فهرست (اندازه‌گیری وسط حرکت ۱۰px خطا دارد). */
+async function settleListCards(page: Page) {
+  await page.waitForFunction(() =>
+    document
+      .getAnimations()
+      .filter((a) => (a as CSSAnimation).animationName === "list-card-in")
+      .every((a) => a.playState === "finished"),
+  );
+}
+
 test.describe("P-01 صفحهٔ خانه", () => {
   test("با دادهٔ واقعی API کامل رندر می‌شود", async ({ page, api }) => {
     await page.goto("/");
@@ -105,6 +119,62 @@ test.describe("P-01 صفحهٔ خانه", () => {
     await expect(banner).toContainText("لغو دیرهنگام");
     await expect(banner.getByRole("button", { name: /مشاهدهٔ وضعیت/ })).toBeVisible();
   });
+
+  test("سرصفحه: از چپ «حساب» ← «حالت شب» ← «حالت آسان» (موبایل: «فهرست» در همان لبه)", async ({ page }, info) => {
+    await page.goto("/");
+    const order = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>(".nav-actions > *")]
+        .filter((el) => el.offsetParent !== null)
+        .map((el) => ({ x: el.getBoundingClientRect().x, name: el.className }))
+        .sort((a, b) => a.x - b.x)
+        .map((el) =>
+          /account-button/.test(el.name)
+            ? "account"
+            : /mobile-menu/.test(el.name)
+              ? "menu"
+              : /theme/.test(el.name)
+                ? "theme"
+                : /easy/.test(el.name)
+                  ? "easy"
+                  : el.name,
+        ),
+    );
+    expect(order).toEqual([info.project.name === "mobile" ? "menu" : "account", "theme", "easy"]);
+  });
+
+  for (const mode of ["list", "easy"] as const) {
+    test(`نمای فهرست (${mode === "easy" ? "حالت آسان" : "انتخاب «فهرست»"}): طبقه‌ها عمودی در لبهٔ چپ، بی‌هم‌پوشانی با راهنما`, async ({
+      page,
+    }) => {
+      await page.goto("/");
+      const figure = page.locator(".building-figure");
+      if (mode === "easy") await page.locator(".easy-toggle:visible").click();
+      else await figure.getByRole("button", { name: /فهرست/ }).click();
+      await expect(page.locator(".building-stage")).toHaveAttribute("data-view", "list");
+      await expect(page.locator(".simple-unit-list li")).toHaveCount(5);
+      await settleListCards(page);
+      const geo = await page.evaluate(() => {
+        const rect = (s: string) => document.querySelector(s)!.getBoundingClientRect();
+        const cards = [...document.querySelectorAll(".simple-unit-list li")].map((li) => li.getBoundingClientRect());
+        const selector = document.querySelector(".floor-selector")!;
+        return {
+          direction: getComputedStyle(selector).flexDirection,
+          selectorRight: selector.getBoundingClientRect().right,
+          listLeft: rect(".simple-unit-list").left,
+          lastBottom: Math.max(...cards.map((c) => c.bottom)),
+          footTop: rect(".building-foot").top,
+          stageWidth: rect(".building-stage").width,
+          listWidth: rect(".simple-unit-list").width,
+        };
+      });
+      expect(geo.direction).toBe("column");
+      expect(geo.selectorRight).toBeLessThanOrEqual(geo.listLeft);
+      expect(geo.lastBottom).toBeLessThanOrEqual(geo.footTop);
+      expect(geo.listWidth / geo.stageWidth).toBeGreaterThan(0.75); // پهن مثل طراح، نه جمع‌شده
+      await page.getByRole("group", { name: "نمایش طبقه" }).getByRole("button", { name: "طبقهٔ سوم" }).click();
+      await expect(page.locator(".simple-unit-list li")).toHaveCount(1);
+    });
+  }
 
   test("خطای تقویم: پیام قابل‌فهم و «تلاش دوباره» بازیابی می‌کند", async ({ page, api }) => {
     let fail = true;
@@ -227,8 +297,6 @@ test.describe("ورود درون‌برنامه‌ای (بدون صفحهٔ قد
    * مدیریت نمی‌رسد — نه برای مهمان، نه برای کاربر واردشده، نه داخل منوی کشویی موبایل.
    */
   test("هیچ پیوند یا فرمی به صفحه‌های قدیمی جنگو و پیشخوان نمی‌رود", async ({ page, api }, info) => {
-    const LEGACY =
-      /^(?:https?:\/\/[^/]+)?\/(?:board|book|calendar|demo|feedback|help|login|logout|my|profile|units|verify|django-admin)(?:[/?#]|$)/;
     const collect = () =>
       page.evaluate(() => [
         ...[...document.querySelectorAll("a[href]")].map((a) => a.getAttribute("href") ?? ""),
@@ -316,6 +384,49 @@ test.describe("ورود درون‌برنامه‌ای (بدون صفحهٔ قد
       .toMatchObject({ path: "/", day: "2026-10-23", period: "day", cells: "4" });
   });
 
+  test("کاربر واردشده: «انتخاب این واحد و ادامه» هرگز به ‎/book/‎ قدیمی نمی‌رود؛ تا صفحهٔ رزرو «به‌زودی»", async ({
+    page,
+    api,
+  }) => {
+    api.set("/api/v1/auth/session", { body: fixture("session-user") });
+    api.set("/api/v1/reservations", { body: fixture("reservations-empty") });
+    api.set("/api/v1/me/standing", { body: fixture("standing-active") });
+    api.set("/api/v1/auth/csrf", { body: { csrf_token: "e2e-token", header_name: "HTTP_X_CSRFTOKEN" } });
+    api.set("/api/v1/reservations/quote", {
+      body: {
+        allowed: true,
+        is_available: true,
+        alternatives: [],
+        violations: [],
+        notes: [],
+        cells: 4,
+        capacity_total: 6,
+        guests_count: 4,
+        duration_label: "۲ شبانه‌روز",
+        start: "2026-10-23T08:00:00+03:30",
+        end: "2026-10-25T08:00:00+03:30",
+        unit: { code: "A1", title: "سوئیت طبقهٔ اول" },
+      },
+    });
+    await page.goto("/");
+    await page.locator('.cell:visible[data-status="free"]:not([disabled])').first().click();
+    const unit = page.getByRole("dialog");
+    await unit.getByRole("button", { name: "جمعه، ۱ آبان، روز — آزاد" }).click();
+    const next = unit.getByRole("button", { name: /انتخاب این واحد و ادامه/ });
+    await expect(next).toHaveAttribute("aria-disabled", "true");
+    await expect(next).toContainText("به‌زودی");
+    // aria-disabled (نه disabled): فوکوس‌پذیر می‌ماند تا صفحه‌خوان و صفحه‌کلید توضیح «به‌زودی» را بشنوند.
+    await next.focus();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("status").filter({ hasText: "تکمیل و صدور رزرو" })).toBeVisible();
+    expect(new URL(page.url()).pathname).toBe("/");
+    const hrefs = await page.evaluate(() =>
+      [...document.querySelectorAll("a[href]")].map((a) => a.getAttribute("href") ?? ""),
+    );
+    expect(hrefs.filter((h) => LEGACY.test(h))).toEqual([]);
+    expect(api.calls.filter((c) => c === "POST /api/v1/reservations")).toEqual([]);
+  });
+
   test("نوار پایینی موبایل زبانهٔ بخشِ زیر چشم را فعال می‌کند", async ({ page }, info) => {
     test.skip(info.project.name !== "mobile", "نوار پایینی فقط در موبایل است");
     await page.goto("/");
@@ -372,6 +483,29 @@ test.describe("کیفیت سراسری", () => {
       expect(api.unexpected).toEqual([]);
     });
   }
+
+  test("اسکرول: صفحه بی‌نوار با خط پیشرفت؛ هیچ عنصری نوار بومی مثلث‌دار نمی‌گیرد", async ({ page }) => {
+    await page.goto("/");
+    const page0 = await page.evaluate(() => ({
+      html: getComputedStyle(document.documentElement).scrollbarWidth,
+      progress: getComputedStyle(document.querySelector(".site-header")!, "::after").animationName,
+    }));
+    expect(page0.html).toBe("none");
+    expect(page0.progress).toBe("read-progress");
+    // در Chromium هر scrollbar-width/color غیرخودکار، کپسول سفارشی را کنار می‌زند و نوار بومی با دو
+    // دکمهٔ مثلثی می‌کشد ⇒ هیچ عنصر قابل‌پیمایشی (جز نوارهای عمداً بی‌نوار) نباید آن را داشته باشد.
+    await page.locator('.cell:visible[data-status="free"]:not([disabled])').first().click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    const offenders = await page.evaluate(() =>
+      [...document.querySelectorAll<HTMLElement>("body *")]
+        .filter((el) => {
+          const cs = getComputedStyle(el);
+          return cs.scrollbarWidth === "thin" || (cs.scrollbarColor !== "auto" && cs.scrollbarWidth !== "none");
+        })
+        .map((el) => `${el.tagName}.${el.className}`),
+    );
+    expect(offenders).toEqual([]);
+  });
 
   test("بدون سرریز افقی", async ({ page, api }) => {
     await page.goto("/");

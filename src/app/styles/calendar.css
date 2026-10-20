@@ -10,6 +10,12 @@
     gap: 20px; /* طراح: بدون شکست؛ متن جمع می‌شود و ابزارها کنارش می‌مانند */
     margin-bottom: 25px;
   }
+  .section-head__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 22px;
+  }
   .section-eyebrow {
     display: flex;
     align-items: center;
@@ -328,7 +334,6 @@
   @media (min-width: 621px) and (max-width: 1000px) {
     .week-card {
       overflow-x: auto;
-      scrollbar-width: thin;
       overscroll-behavior-x: contain;
     }
     .week-grid {

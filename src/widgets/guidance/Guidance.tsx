@@ -4,6 +4,7 @@ import { configQuery, helpQuery } from "@/shared/api/queries";
 import { readPolicies } from "@/shared/api/policies";
 import { durationLabel, faDigits } from "@/shared/lib/fa";
 import { Icon, type IconName } from "@/shared/ui/Icon";
+import { PageLink } from "@/shared/ui/PageLink";
 import { HelpCenter } from "./HelpCenter";
 
 /** پرسش‌های برگزیدهٔ صفحهٔ نخست — متن زنده از ‎/help‎ (با قواعد فعلی سامانه). */
@@ -78,6 +79,9 @@ export function Guidance() {
             ))
           : null}
         <HelpCenter help={help.data} />
+        <PageLink to="guideFull" className="section-link faq-link">
+          پرسش دیگری دارید؟ راهنمای کامل زائر <Icon name="arrow-left" size={16} />
+        </PageLink>
       </div>
     </section>
   );

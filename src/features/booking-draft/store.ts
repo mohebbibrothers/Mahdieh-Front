@@ -1,6 +1,7 @@
 "use client";
 import { useSyncExternalStore } from "react";
 import type { Period } from "@/entities/slot/timeline";
+import { destHref } from "@/shared/config/destinations";
 
 /**
  * پیش‌نویس رزرو — حالت مشترک ساختمان، جست‌وجو، تقویم و دیالوگ واحد.
@@ -98,12 +99,16 @@ export function useDraft<T>(selector: (d: Draft) => T): T {
 }
 
 /** پیوند تحویل به فرم رزرو جنگو (‎BookView‎ همین پارامترها را می‌خواند). */
-export function bookingHref(unit: string, d: Pick<Draft, "day" | "period" | "cells" | "guests">): string {
-  const p = new URLSearchParams({
+/**
+ * مقصد «ادامهٔ رزرو» با انتخاب فعلی ⇒ صفحهٔ «تکمیل و صدور رزرو» (P-05) از نقشهٔ مقصدها؛
+ * تا ساخته نشدن آن ‎null‎ (هرگز قالب قدیمی ‎/book/‎ جنگو).
+ */
+export function bookingHref(unit: string, d: Pick<Draft, "day" | "period" | "cells" | "guests">): string | null {
+  return destHref("booking", {
+    unit,
     ...(d.day ? { day: d.day } : {}),
     period: d.period,
     cells: String(d.cells),
     guests: String(d.guests),
   });
-  return `/book/${encodeURIComponent(unit)}/?${p.toString()}`;
 }

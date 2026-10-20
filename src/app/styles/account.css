@@ -494,19 +494,10 @@
     border-radius: 18px;
     background: var(--color-surface);
     box-shadow: var(--shadow-pop);
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-border-strong) transparent;
     animation: combo-in var(--fast) var(--ease);
   }
   .combo__list[hidden] {
     display: none;
-  }
-  .combo__list::-webkit-scrollbar {
-    width: 5px;
-  }
-  .combo__list::-webkit-scrollbar-thumb {
-    border-radius: 99px;
-    background: var(--color-border-strong);
   }
   .combo__option {
     display: flex;
