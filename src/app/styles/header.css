@@ -1,0 +1,280 @@
+/* سرصفحه: ≥۱۲۰۰ برچسب کامل؛ ۹۰۱–۱۱۹۹ برچسب کوتاه یک‌خطی؛ ≤۹۰۰ فقط سه دکمهٔ گرد. */
+@layer components {
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    border-bottom: 1px solid oklch(from var(--color-border) l c h / 0.7);
+    background: var(--color-header);
+    backdrop-filter: blur(12px) saturate(1.2);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    height: var(--header-h);
+  }
+  .brand-lockup,
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    flex: none;
+  }
+  .brand-mark {
+    display: block;
+    width: 48px;
+    height: 48px;
+    color: var(--color-brand);
+    --mark-accent: var(--color-gold);
+  }
+  .brand-mark svg {
+    width: 100%;
+    height: 100%;
+  }
+  .brand-words {
+    display: grid;
+  }
+  .brand-type {
+    font-size: 1.75rem;
+    font-weight: 750;
+    line-height: 1.2;
+    letter-spacing: -0.05em;
+  }
+  .brand-sub {
+    margin-top: 3px;
+    color: var(--color-text-muted);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    line-height: 1.6;
+  }
+  .main-nav {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    gap: 22px;
+  }
+  .main-nav a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 4px;
+    color: var(--color-text-muted);
+    font-size: 0.84375rem;
+    font-weight: 650;
+    white-space: nowrap;
+    transition: color var(--fast) var(--ease);
+  }
+  .main-nav a:hover {
+    color: var(--color-text);
+  }
+  .main-nav a[aria-current="page"] {
+    color: var(--color-brand-ink);
+    font-weight: 750;
+  }
+  .main-nav a[aria-current="page"]::after {
+    content: "";
+    position: absolute;
+    bottom: 2px;
+    inset-inline: 30%;
+    height: 3px;
+    border-radius: 99px;
+    background: currentColor;
+  }
+  .nav-short {
+    display: none;
+  }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-inline-start: auto;
+  }
+  .account-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-surface);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px oklch(from var(--color-text) l c h / 0.04);
+    transition:
+      border-color var(--fast) var(--ease),
+      background-color var(--fast) var(--ease);
+  }
+  .account-button:hover {
+    border-color: var(--color-border-strong);
+    background: var(--color-brand-tint);
+  }
+  .account-button__avatar {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    margin-inline-start: -8px;
+    border-radius: 50%;
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+    font-size: 0.75rem;
+  }
+  .account-button__short {
+    display: none;
+  }
+  .theme-icon--moon {
+    display: none;
+  }
+  :root[data-theme="dark"] .theme-icon--sun {
+    display: none;
+  }
+  :root[data-theme="dark"] .theme-icon--moon {
+    display: inline-block;
+  }
+  .mobile-menu-button {
+    display: none;
+  }
+
+  @media (max-width: 1199px) {
+    .header-inner {
+      gap: 18px;
+    }
+    .main-nav {
+      gap: 14px;
+    }
+    .nav-full {
+      display: none;
+    }
+    .nav-short {
+      display: inline;
+    }
+    .account-button__full {
+      display: none;
+    }
+    .account-button__short {
+      display: inline;
+    }
+  }
+  @media (max-width: 900px) {
+    .main-nav,
+    .account-button {
+      display: none;
+    }
+    .mobile-menu-button {
+      display: inline-grid;
+    }
+    .header-inner {
+      gap: 10px;
+    }
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+    }
+    .brand-type {
+      font-size: 1.5rem;
+    }
+    .nav-actions {
+      gap: 8px;
+    }
+  }
+  @media (max-width: 360px) {
+    .brand-sub {
+      display: none;
+    }
+  }
+
+  .sheet-nav {
+    display: grid;
+    gap: 4px;
+  }
+  .sheet-nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 56px;
+    padding: 8px 12px;
+    border-radius: 14px;
+    font-weight: 600;
+  }
+  .sheet-nav a:hover,
+  .sheet-nav a[aria-current="page"] {
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+  }
+  .sheet-nav a span {
+    flex: 1;
+  }
+  .sheet-nav__chev {
+    color: var(--color-text-subtle);
+  }
+
+  .status-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 9px 18px;
+    background: var(--color-warn-bg);
+    color: var(--color-warn-fg);
+    font-size: 0.8125rem;
+  }
+  .trip-banner,
+  .occasion-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 16px;
+    padding: 14px 18px;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background: var(--color-brand-tint);
+    animation: fade-in var(--base) var(--ease);
+  }
+  .trip-banner[data-tone="warn"] {
+    background: var(--color-warn-bg);
+    border-color: oklch(from var(--color-warn-fg) l c h / 0.3);
+  }
+  .trip-banner__copy {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .trip-banner__icon,
+  .occasion-banner__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--color-surface);
+    color: var(--color-brand-ink);
+    flex: none;
+  }
+  .trip-banner strong,
+  .occasion-banner strong {
+    font-size: 0.875rem;
+    font-weight: 700;
+  }
+  .trip-banner p,
+  .occasion-banner p {
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+  }
+  .occasion-banner {
+    justify-content: flex-start;
+    margin-top: 24px;
+    background: oklch(from var(--color-gold) l c h / 0.12);
+    border-color: oklch(from var(--color-gold) l c h / 0.35);
+  }
+  .occasion-banner > div {
+    flex: 1;
+    min-width: 220px;
+  }
+}

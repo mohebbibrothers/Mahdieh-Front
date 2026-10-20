@@ -1,0 +1,4 @@
+# pnpm ≥10: اسکریپت نصب فقط برای بسته‌های صراحتاً مجاز اجرا می‌شود (امنیت زنجیرهٔ تأمین).
+allowBuilds:
+  sharp: false
+  unrs-resolver: false

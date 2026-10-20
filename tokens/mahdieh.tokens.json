@@ -1,0 +1,353 @@
+{
+  "$description": "توکن‌های طراحی مهدیه — مرجع: P-01 v2 (روشن) و «شبِ جنگلی» (تیره). خروجی: src/shared/styles/tokens.css",
+  "color": {
+    "$type": "color",
+    "light": {
+      "canvas": {
+        "$value": "#f7f6f0"
+      },
+      "surface": {
+        "$value": "#fffefa"
+      },
+      "raised": {
+        "$value": "#ffffff"
+      },
+      "sunken": {
+        "$value": "#efeee5"
+      },
+      "plan": {
+        "$value": "#eeeee3"
+      },
+      "text": {
+        "$value": "#203e37"
+      },
+      "text-muted": {
+        "$value": "#556b62"
+      },
+      "text-subtle": {
+        "$value": "#5b6d63"
+      },
+      "border": {
+        "$value": "#d9ded2"
+      },
+      "border-strong": {
+        "$value": "#7c9b8b"
+      },
+      "brand": {
+        "$value": "#126b59"
+      },
+      "brand-hover": {
+        "$value": "#0b5748"
+      },
+      "brand-pressed": {
+        "$value": "#084838"
+      },
+      "on-brand": {
+        "$value": "#fffef7"
+      },
+      "brand-tint": {
+        "$value": "#eaf2e9"
+      },
+      "brand-ink": {
+        "$value": "#126b59"
+      },
+      "emphasis": {
+        "$value": "#1b765f"
+      },
+      "gold": {
+        "$value": "#b59558"
+      },
+      "cta": {
+        "$value": "#126b59"
+      },
+      "cta-hover": {
+        "$value": "#0b5748"
+      },
+      "on-cta": {
+        "$value": "#fffef7"
+      },
+      "free-bg": {
+        "$value": "#edf4ec"
+      },
+      "free-fg": {
+        "$value": "#326c54"
+      },
+      "free-border": {
+        "$value": "#73937f"
+      },
+      "busy-bg": {
+        "$value": "#eee9de"
+      },
+      "busy-fg": {
+        "$value": "#6e604b"
+      },
+      "busy-border": {
+        "$value": "#988b72"
+      },
+      "busy-hatch": {
+        "$value": "#947d5830"
+      },
+      "warn-bg": {
+        "$value": "#fff1d5"
+      },
+      "warn-fg": {
+        "$value": "#795718"
+      },
+      "danger-bg": {
+        "$value": "#fae8e2"
+      },
+      "danger-fg": {
+        "$value": "#943e36"
+      },
+      "focus": {
+        "$value": "#225fd4"
+      },
+      "overlay": {
+        "$value": "#152f2c73"
+      },
+      "shadow": {
+        "$value": "#213f3110"
+      },
+      "shadow-strong": {
+        "$value": "#0a2a224d"
+      },
+      "header": {
+        "$value": "#f7f6f0e0"
+      }
+    },
+    "dark": {
+      "canvas": {
+        "$value": "#132823"
+      },
+      "surface": {
+        "$value": "#1b342e"
+      },
+      "raised": {
+        "$value": "#254137"
+      },
+      "sunken": {
+        "$value": "#10221d"
+      },
+      "plan": {
+        "$value": "#dcdacb"
+      },
+      "text": {
+        "$value": "#f2f2e8"
+      },
+      "text-muted": {
+        "$value": "#bacdc2"
+      },
+      "text-subtle": {
+        "$value": "#a8bdb0"
+      },
+      "border": {
+        "$value": "#486052"
+      },
+      "border-strong": {
+        "$value": "#8ba896"
+      },
+      "brand": {
+        "$value": "#1bb294"
+      },
+      "brand-hover": {
+        "$value": "#22d3aa"
+      },
+      "brand-pressed": {
+        "$value": "#17977e"
+      },
+      "on-brand": {
+        "$value": "#102f23"
+      },
+      "brand-tint": {
+        "$value": "#1f3f35"
+      },
+      "brand-ink": {
+        "$value": "#22d3aa"
+      },
+      "emphasis": {
+        "$value": "#d7bb7b"
+      },
+      "gold": {
+        "$value": "#d7bb7b"
+      },
+      "cta": {
+        "$value": "#d7bb7b"
+      },
+      "cta-hover": {
+        "$value": "#e4cb90"
+      },
+      "on-cta": {
+        "$value": "#132823"
+      },
+      "free-bg": {
+        "$value": "#274537"
+      },
+      "free-fg": {
+        "$value": "#d4ebd9"
+      },
+      "free-border": {
+        "$value": "#91b29a"
+      },
+      "busy-bg": {
+        "$value": "#383b2d"
+      },
+      "busy-fg": {
+        "$value": "#e1d6b9"
+      },
+      "busy-border": {
+        "$value": "#8e8466"
+      },
+      "busy-hatch": {
+        "$value": "#e1d6b926"
+      },
+      "warn-bg": {
+        "$value": "#463d27"
+      },
+      "warn-fg": {
+        "$value": "#f6dca2"
+      },
+      "danger-bg": {
+        "$value": "#4a2a26"
+      },
+      "danger-fg": {
+        "$value": "#f3b8ad"
+      },
+      "focus": {
+        "$value": "#8fb4ff"
+      },
+      "overlay": {
+        "$value": "#050d0bb8"
+      },
+      "shadow": {
+        "$value": "#00000000"
+      },
+      "shadow-strong": {
+        "$value": "#00000066"
+      },
+      "header": {
+        "$value": "#1b342ee6"
+      }
+    }
+  },
+  "font": {
+    "size": {
+      "$type": "dimension",
+      "2xs": {
+        "$value": "11px"
+      },
+      "xs": {
+        "$value": "12px"
+      },
+      "sm": {
+        "$value": "13px"
+      },
+      "md": {
+        "$value": "15px"
+      },
+      "base": {
+        "$value": "16px"
+      },
+      "lg": {
+        "$value": "18px"
+      },
+      "xl": {
+        "$value": "20px"
+      },
+      "2xl": {
+        "$value": "24px"
+      },
+      "3xl": {
+        "$value": "30px"
+      },
+      "4xl": {
+        "$value": "36px"
+      },
+      "5xl": {
+        "$value": "44px"
+      },
+      "hero": {
+        "$value": "54px"
+      }
+    },
+    "family": {
+      "$type": "fontFamily",
+      "sans": {
+        "$value": [
+          "var(--font-vazirmatn)",
+          "Tahoma",
+          "system-ui",
+          "sans-serif"
+        ]
+      }
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "xs": {
+      "$value": "4px"
+    },
+    "sm": {
+      "$value": "8px"
+    },
+    "md": {
+      "$value": "12px"
+    },
+    "lg": {
+      "$value": "16px"
+    },
+    "xl": {
+      "$value": "20px"
+    },
+    "2xl": {
+      "$value": "26px"
+    },
+    "pill": {
+      "$value": "999px"
+    }
+  },
+  "motion": {
+    "duration": {
+      "$type": "duration",
+      "fast": {
+        "$value": "180ms"
+      },
+      "base": {
+        "$value": "260ms"
+      },
+      "slow": {
+        "$value": "520ms"
+      }
+    },
+    "easing": {
+      "$type": "cubicBezier",
+      "out": {
+        "$value": [
+          0.2,
+          0.7,
+          0.2,
+          1
+        ]
+      },
+      "spring": {
+        "$value": [
+          0.34,
+          1.4,
+          0.64,
+          1
+        ]
+      }
+    }
+  },
+  "layout": {
+    "$type": "dimension",
+    "container": {
+      "$value": "1200px"
+    },
+    "gutter": {
+      "$value": "18px"
+    },
+    "header": {
+      "$value": "88px"
+    }
+  }
+}

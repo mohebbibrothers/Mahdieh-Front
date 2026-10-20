@@ -1,0 +1,13 @@
+pnpm-lock.yaml
+openapi/
+src/shared/api/schema.d.ts
+src/shared/styles/tokens.css
+src/shared/ui/icon-names.ts
+public/
+src/shared/ui/icons.sprite.svg
+src/shared/ui/mark.generated.ts
+src/widgets/hero/building.generated.ts
+dist/
+out/
+.next/
+src/shared/ui/shrine.generated.ts

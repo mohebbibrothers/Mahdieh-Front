@@ -1,0 +1,8 @@
+<svg class="mahdieh-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+<path class="mark-arch" d="M12 81V53C12 34 27 22 48 9C69 22 84 34 84 53V81" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path class="mark-dome" d="M30 58C27 49 37 42 42 36C45 33 47 30 48 27C49 30 51 33 54 36C59 42 69 49 66 58Z" fill="var(--mark-accent, #b59558)"/>
+<path d="M48 27V21" stroke="var(--mark-accent, #b59558)" stroke-width="2.8" stroke-linecap="round"/>
+<path d="M30 64H66M26 72H70M19 81H77" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/>
+<path d="M23 65V48M73 65V48" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/>
+<path d="M18 43C18 39 21 37 23 34C25 37 28 39 28 43ZM68 43C68 39 71 37 73 34C75 37 78 39 78 43Z" fill="currentColor"/>
+</svg>

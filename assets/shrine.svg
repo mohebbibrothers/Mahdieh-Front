@@ -1,0 +1,17 @@
+<svg class="shrine-illustration" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180" fill="none" aria-hidden="true">
+<g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+<path d="M31 151H289" stroke-width="1.4"/>
+<path class="shrine-dome" d="M116 103C107 82 130 67 144 52C154 42 159 36 160 29C161 36 166 42 176 52C190 67 213 82 204 103Z" fill="currentColor" fill-opacity=".12" stroke-width="1.8"/>
+<path d="M160 29V17M157 17H163M160 12V9" stroke-width="1.6"/>
+<path d="M139 101C132 81 151 62 160 35C169 62 188 81 181 101M151 102C147 82 157 55 160 35C163 55 173 82 169 102" stroke-width=".8" opacity=".5"/>
+<path d="M115 104H205V111H115ZM120 111H200V126H120Z" stroke-width="1.5"/>
+<path d="M130 112V123M142 112V123M154 112V123M166 112V123M178 112V123M190 112V123" stroke-width=".8" opacity=".6"/>
+<path d="M109 151V127H211V151M147 151V139Q147 132 160 125Q173 132 173 139V151" stroke-width="1.5"/>
+<path d="M121 150V137Q126 130 132 137V150M188 150V137Q194 130 199 137V150" stroke-width=".9"/>
+<path d="M71 149V65H80V149M68 59H83V65H68ZM68 55C68 49 72 46 75.5 40C79 46 83 49 83 55Z" stroke-width="1.4"/>
+<path d="M75.5 39V31M67 57H84M71 80H80M71 123H80M75 84V118" stroke-width=".9"/>
+<path d="M240 149V65H249V149M237 59H252V65H237ZM237 55C237 49 241 46 244.5 40C248 46 252 49 252 55Z" stroke-width="1.4"/>
+<path d="M244.5 39V31M236 57H253M240 80H249M240 123H249M244 84V118" stroke-width=".9"/>
+<path d="M42 149V137H66M85 137H107M213 137H235M254 137H278V149" stroke-width="1.1"/>
+<path d="M93 151V142M226 151V142M52 151V144M268 151V144" stroke-width=".8" opacity=".6"/>
+</g></svg>

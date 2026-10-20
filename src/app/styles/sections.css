@@ -1,0 +1,407 @@
+/* سه قدم، قواعد و پرسش‌ها، بدرقه، پانویس، نوار پایینی موبایل. */
+@layer components {
+  .how-section {
+    margin-top: 80px;
+    padding: 58px 0 64px;
+    background: var(--color-sunken);
+    position: relative;
+    isolation: isolate;
+  }
+  .how-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--color-gold);
+    opacity: 0.05;
+    mask: url("../../shared/assets/girih-pattern.svg") center / 160px auto repeat;
+  }
+  .how-head {
+    margin-bottom: 34px;
+    text-align: center;
+  }
+  .how-head .section-eyebrow {
+    justify-content: center;
+  }
+  .how-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+    counter-reset: step;
+  }
+  .how-step {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    text-align: center;
+  }
+  .how-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 18px;
+    inset-inline-start: calc(50% + 34px);
+    width: calc(100% - 68px + 28px);
+    border-top: 1px dashed var(--color-border-strong);
+  }
+  .step-number {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-brand-ink);
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+  .how-step h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.0625rem;
+    font-weight: 650;
+  }
+  .how-step h3 .icon {
+    color: var(--color-gold);
+  }
+  .how-step p {
+    max-width: 305px;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    line-height: 1.95;
+  }
+
+  .guidance-section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 56px;
+    margin-top: 80px;
+  }
+  .rule-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 22px;
+  }
+  .rule-tile {
+    display: grid;
+    gap: 4px;
+    align-content: start;
+    padding: 15px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-surface);
+    transition: border-color var(--fast) var(--ease);
+  }
+  .rule-tile:hover {
+    border-color: var(--color-border-strong);
+  }
+  .rule-tile .icon {
+    margin-bottom: 4px;
+    color: var(--color-brand-ink);
+  }
+  .rule-tile strong {
+    font-size: 0.875rem;
+    font-weight: 650;
+  }
+  .rule-tile small {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    line-height: 1.9;
+  }
+  .faq-title {
+    margin-bottom: 10px;
+    font-size: 1.375rem;
+    font-weight: 650;
+  }
+  .faq-area details {
+    border-bottom: 1px solid var(--color-border);
+  }
+  .faq-area summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 56px;
+    padding: 14px 0;
+    font-size: 0.875rem;
+    font-weight: 550;
+    cursor: pointer;
+    list-style: none;
+  }
+  .faq-area summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-area summary .icon {
+    color: var(--color-brand-ink);
+    transition: rotate var(--base) var(--ease-spring);
+  }
+  .faq-area details[open] summary .icon {
+    rotate: 45deg;
+  }
+  .faq-area details p {
+    padding: 0 0 20px 24px;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    line-height: 2;
+  }
+  @supports (interpolate-size: allow-keywords) {
+    .faq-area {
+      interpolate-size: allow-keywords;
+    }
+    .faq-area details::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size var(--base) var(--ease),
+        content-visibility var(--base) allow-discrete;
+    }
+    .faq-area details[open]::details-content {
+      block-size: auto;
+    }
+  }
+  .faq-skeleton {
+    padding: 22px 0;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .faq-link {
+    margin-top: 14px;
+  }
+
+  .farewell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin-top: 80px;
+    margin-bottom: 64px;
+    padding: 35px 44px;
+    overflow: hidden;
+    border-radius: 18px;
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+    isolation: isolate;
+  }
+  .farewell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: currentColor;
+    opacity: 0.07;
+    mask: url("../../shared/assets/girih-pattern.svg") left center / 140px auto repeat;
+  }
+  .farewell > div:not(.farewell__art) {
+    flex: 1;
+  }
+  .farewell h2 {
+    font-size: 1.5rem;
+    font-weight: 650;
+  }
+  .farewell p {
+    margin-top: 4px;
+    opacity: 0.85;
+    font-size: 0.875rem;
+  }
+  .farewell__art {
+    width: 86px;
+    flex: none;
+    color: var(--color-gold);
+  }
+  .farewell__art svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .site-footer {
+    padding: 54px 0 36px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+  .footer-main {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 40px;
+  }
+  .footer-description {
+    max-width: 360px;
+    margin-top: 14px;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    line-height: 2;
+  }
+  .footer-heading {
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    font-weight: 650;
+  }
+  .footer-links a {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    transition: color var(--fast) var(--ease);
+  }
+  .footer-links a:hover {
+    color: var(--color-brand-ink);
+  }
+  .footer-location {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    line-height: 1.9;
+  }
+  .footer-location .icon {
+    margin-top: 4px;
+    color: var(--color-brand-ink);
+  }
+  .contact-note {
+    font-size: 0.75rem;
+  }
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-top: 36px;
+    padding-top: 20px;
+    border-top: 1px solid var(--color-border);
+    color: var(--color-text-subtle);
+    font-size: 0.75rem;
+  }
+  .footer-bottom span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .mobile-cta,
+  .mobile-bottom {
+    display: none;
+  }
+  @media (max-width: 900px) {
+    .how-section {
+      margin-top: 56px;
+      padding: 44px 0 48px;
+    }
+    .how-steps {
+      grid-template-columns: 1fr;
+      gap: 22px;
+    }
+    .how-step {
+      grid-template-columns: 36px 1fr;
+      justify-items: start;
+      text-align: start;
+      column-gap: 14px;
+      row-gap: 2px;
+    }
+    .how-step .step-number {
+      grid-row: span 2;
+    }
+    .how-step:not(:last-child)::after {
+      top: 44px;
+      inset-inline-start: 18px;
+      width: 0;
+      height: calc(100% - 30px);
+      border-top: 0;
+      border-inline-start: 1px dashed var(--color-border-strong);
+    }
+    .guidance-section {
+      grid-template-columns: 1fr;
+      gap: 40px;
+      margin-top: 56px;
+    }
+    .farewell {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+      margin-top: 56px;
+      margin-bottom: 40px;
+      padding: 28px 22px;
+      text-align: center;
+    }
+    .farewell__art {
+      align-self: center;
+      width: 64px;
+    }
+    .footer-main {
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .footer-about {
+      grid-column: 1 / -1;
+    }
+    .mobile-cta {
+      position: fixed;
+      inset-inline: 0;
+      bottom: calc(65px + env(safe-area-inset-bottom));
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      height: 62px;
+      padding: 9px 18px;
+      border-top: 1px solid var(--color-border);
+      background: var(--color-surface);
+      box-shadow: 0 -8px 24px -12px var(--color-shadow-strong);
+    }
+    .mobile-cta p {
+      display: grid;
+      line-height: 1.6;
+    }
+    .mobile-cta strong {
+      font-size: 0.8125rem;
+    }
+    .mobile-cta span {
+      color: var(--color-text-muted);
+      font-size: 0.6875rem;
+    }
+    .mobile-cta .btn {
+      min-height: 44px;
+      padding-inline: 16px;
+    }
+    .mobile-bottom {
+      position: fixed;
+      inset-inline: 0;
+      bottom: 0;
+      z-index: 31;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      height: calc(65px + env(safe-area-inset-bottom));
+      padding-bottom: env(safe-area-inset-bottom);
+      border-top: 1px solid var(--color-border);
+      background: var(--color-header);
+      backdrop-filter: blur(12px);
+    }
+    .mobile-bottom a {
+      display: grid;
+      place-items: center;
+      align-content: center;
+      gap: 2px;
+      color: var(--color-text-muted);
+      font-size: 0.6875rem;
+      font-weight: 600;
+    }
+    .mobile-bottom a[aria-current="page"] {
+      color: var(--color-brand-ink);
+    }
+  }
+  @media (max-width: 480px) {
+    .footer-main {
+      grid-template-columns: 1fr;
+    }
+    .rule-grid {
+      grid-template-columns: 1fr;
+    }
+    .mobile-cta p span {
+      display: none;
+    }
+  }
+}
