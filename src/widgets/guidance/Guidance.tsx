@@ -2,9 +2,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { configQuery, helpQuery } from "@/shared/api/queries";
 import { readPolicies } from "@/shared/api/policies";
-import { SITE } from "@/shared/config/site";
 import { durationLabel, faDigits } from "@/shared/lib/fa";
 import { Icon, type IconName } from "@/shared/ui/Icon";
+import { PageLink } from "@/shared/ui/PageLink";
 
 /** پرسش‌های برگزیدهٔ صفحهٔ نخست — متن زنده از ‎/help‎ (با قواعد فعلی سامانه). */
 const FAQ_SLUGS = ["halfday", "limits", "late-cancel", "signup", "join"];
@@ -77,9 +77,9 @@ export function Guidance() {
               </div>
             ))
           : null}
-        <a className="section-link faq-link" href={SITE.routes.help}>
+        <PageLink page="help" className="section-link faq-link" noFallback>
           پرسش دیگری دارید؟ راهنمای کامل زائر <Icon name="arrow-left" size={16} />
-        </a>
+        </PageLink>
       </div>
     </section>
   );

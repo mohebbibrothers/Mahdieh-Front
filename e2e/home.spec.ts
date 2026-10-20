@@ -74,12 +74,19 @@ test.describe("P-01 صفحهٔ خانه", () => {
     expect(api.unexpected).toEqual([]);
   });
 
-  test("سرصفحهٔ موبایل: دکمهٔ حساب پنهان و دقیقاً سه دکمهٔ گرد", async ({ page, api }, info) => {
+  test("سرصفحهٔ موبایل: سه دکمهٔ گرد + دکمهٔ ورود در گوشهٔ چپ", async ({ page, api }, info) => {
     test.skip(info.project.name !== "mobile", "قانون ≤۹۰۰ پیکسل");
     await page.goto("/");
     const header = page.locator("header").first();
-    await expect(header.locator(".account-button")).toBeHidden();
     await expect(header.locator(".icon-button:visible")).toHaveCount(3);
+    const account = header.getByRole("button", { name: "ورود / ثبت‌نام با شمارهٔ همراه" });
+    await expect(account).toBeVisible();
+    // چپ‌ترین دکمهٔ سربرگ (RTL ⇒ گوشهٔ چپ = انتهای ردیف)
+    const xs = await header
+      .locator(".nav-actions > :visible")
+      .evaluateAll((els) => els.map((e) => e.getBoundingClientRect().left));
+    const box = await account.boundingBox();
+    expect(box?.x).toBe(Math.min(...xs));
     expect(api.unexpected).toEqual([]);
   });
 
@@ -103,7 +110,7 @@ test.describe("P-01 صفحهٔ خانه", () => {
     await page.goto("/");
     const banner = page.getByRole("complementary", { name: "وضعیت رزرو شما" });
     await expect(banner).toContainText("لغو دیرهنگام");
-    await expect(banner.getByRole("link", { name: /مشاهدهٔ وضعیت/ })).toBeVisible();
+    await expect(banner.getByRole("button", { name: /مشاهدهٔ وضعیت/ })).toBeVisible();
   });
 
   test("خطای تقویم: پیام قابل‌فهم و «تلاش دوباره» بازیابی می‌کند", async ({ page, api }) => {

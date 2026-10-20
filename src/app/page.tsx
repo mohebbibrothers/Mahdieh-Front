@@ -1,3 +1,4 @@
+import { SessionLayer } from "@/features/session/SessionLayer";
 import { AccountBanners, OccasionBanner, OfflineBanner } from "@/widgets/banners/Banners";
 import { Farewell } from "@/widgets/farewell/Farewell";
 import { Guidance } from "@/widgets/guidance/Guidance";
@@ -31,6 +32,7 @@ export default function HomePage() {
       <SiteFooter />
       <MobileDock />
       <UnitDialog />
+      <SessionLayer />
     </>
   );
 }

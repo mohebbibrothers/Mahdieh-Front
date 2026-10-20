@@ -1,5 +1,6 @@
 import { VerifyCertificateButton } from "@/features/verify-certificate/VerifyCertificate";
-import { SITE } from "@/shared/config/site";
+import { AccountAction } from "@/features/session/SessionActions";
+import { SITE, navHref } from "@/shared/config/site";
 import { Icon } from "@/shared/ui/Icon";
 import { Mark } from "@/shared/ui/Mark";
 import { NAV } from "@/shared/config/nav";
@@ -11,7 +12,7 @@ export function SiteFooter() {
       <div className="page-shell">
         <div className="footer-main">
           <div className="footer-about">
-            <a href={SITE.routes.home} className="footer-brand" aria-label={SITE.name}>
+            <a href={navHref("home")} className="footer-brand" aria-label={SITE.name}>
               <Mark />
               <span className="brand-type">{SITE.name}</span>
             </a>
@@ -30,7 +31,9 @@ export function SiteFooter() {
                 </li>
               ))}
               <li>
-                <a href={SITE.routes.my}>رزروهای من</a>
+                <AccountAction className="footer-link-button" intent="portal">
+                  رزروهای من
+                </AccountAction>
               </li>
             </ul>
           </nav>

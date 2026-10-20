@@ -1,4 +1,5 @@
 "use client";
+import { PAGES } from "@/shared/config/site";
 import { useSyncExternalStore } from "react";
 import type { Period } from "@/entities/slot/timeline";
 
@@ -105,5 +106,5 @@ export function bookingHref(unit: string, d: Pick<Draft, "day" | "period" | "cel
     cells: String(d.cells),
     guests: String(d.guests),
   });
-  return `/book/${encodeURIComponent(unit)}/?${p.toString()}`;
+  return `${PAGES.booking.path}${encodeURIComponent(unit)}/?${p.toString()}`;
 }

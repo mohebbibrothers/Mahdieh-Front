@@ -5,6 +5,7 @@ import { cellAt, type Period } from "@/entities/slot/timeline";
 import { floorLabel, unitTypeIcon } from "@/entities/unit/unit";
 import { bookingHref, draftStore } from "@/features/booking-draft/store";
 import { PICKABLE_DAYS, useAvailability, type UnitResult } from "@/features/booking-draft/use-availability";
+import { ContinueBooking } from "@/features/session/SessionActions";
 import { propertyQuery } from "@/shared/api/queries";
 import { cx } from "@/shared/lib/cx";
 import {
@@ -20,6 +21,7 @@ import {
   guestsLabel,
 } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
+import { PageLink } from "@/shared/ui/PageLink";
 import { Popover } from "@/shared/ui/Popover";
 import { Stepper } from "@/shared/ui/Stepper";
 
@@ -228,9 +230,9 @@ function ArrivalPicker({ onDone }: { onDone: () => void }) {
       </div>
       <p className="popover__note">
         نوار زیر هر روز، میزان آزادی آن روز را نشان می‌دهد. برای روزهای دورتر{" "}
-        <a href="/calendar/" className="text-link">
+        <PageLink page="calendar" className="text-link" noFallback>
           تقویم کامل
-        </a>{" "}
+        </PageLink>{" "}
         را ببینید.
       </p>
       <button type="button" className="btn btn-primary btn-block" onClick={onDone}>
@@ -293,9 +295,17 @@ function SearchResults({ results }: { results: UnitResult[] }) {
                 >
                   جزئیات
                 </button>
-                <a className="btn btn-primary btn-sm" href={bookingHref(u.code, draft)}>
+                <ContinueBooking
+                  className="btn btn-primary btn-sm"
+                  href={bookingHref(u.code, draft)}
+                  guestLabel={
+                    <>
+                      ورود و ادامه <Icon name="arrow-left" size={16} />
+                    </>
+                  }
+                >
                   ادامه با این واحد <Icon name="arrow-left" size={16} />
-                </a>
+                </ContinueBooking>
               </div>
             </li>
           );

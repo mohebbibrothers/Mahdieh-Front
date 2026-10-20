@@ -367,6 +367,7 @@
       min-height: 44px;
       padding-inline: 16px;
     }
+    /* نوار پایینی (طرح: سطح، سایهٔ نرم، زبانهٔ فعال با قرص رنگی پشت آیکون). */
     .mobile-bottom {
       position: fixed;
       inset-inline: 0;
@@ -375,22 +376,60 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       height: calc(65px + env(safe-area-inset-bottom));
-      padding-bottom: env(safe-area-inset-bottom);
+      padding: 4px 8px calc(5px + env(safe-area-inset-bottom));
       border-top: 1px solid var(--color-border);
-      background: var(--color-header);
-      backdrop-filter: blur(12px);
+      background: var(--color-surface);
+      box-shadow: 0 -8px 24px oklch(from var(--color-text) l c h / 0.02);
     }
-    .mobile-bottom a {
+    .mobile-bottom > a,
+    .mobile-bottom > button {
+      position: relative;
+      isolation: isolate;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      min-height: 48px;
+      padding: 0;
+      border: 0;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--color-text-muted);
+      font: inherit;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: color var(--fast) var(--ease);
+    }
+    .mobile-bottom .icon {
+      width: 20px;
+      height: 20px;
+    }
+    .mobile-bottom > [aria-current] {
+      color: var(--color-brand-ink);
+      font-weight: 650;
+    }
+    .mobile-bottom > [aria-current]::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      inset-inline-start: calc(50% - 15px);
+      z-index: -1;
+      width: 30px;
+      height: 27px;
+      border-radius: 8px;
+      background: var(--color-brand-tint);
+    }
+    .mobile-bottom__avatar {
       display: grid;
       place-items: center;
-      align-content: center;
-      gap: 2px;
-      color: var(--color-text-muted);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--color-brand);
+      color: var(--color-on-brand);
       font-size: 0.6875rem;
-      font-weight: 600;
-    }
-    .mobile-bottom a[aria-current="page"] {
-      color: var(--color-brand-ink);
+      font-weight: 700;
     }
   }
   @media (max-width: 480px) {

@@ -2,7 +2,7 @@
 import { useId, useRef, useState, type ReactNode } from "react";
 import { cx } from "@/shared/lib/cx";
 
-export type PopoverAnchor = "arrival" | "duration" | "theme";
+export type PopoverAnchor = "arrival" | "duration" | "theme" | "account";
 
 /**
  * پاپ‌اور بومی (HTML popover + CSS Anchor Positioning): بستن با Esc و کلیک بیرون، لایهٔ بالا،

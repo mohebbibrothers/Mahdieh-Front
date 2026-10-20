@@ -127,6 +127,35 @@
   .account-button__short {
     display: none;
   }
+  .account-button {
+    color: var(--color-text);
+    font-family: inherit;
+    cursor: pointer;
+  }
+  .account-button[data-state="out"] {
+    border-color: var(--color-brand);
+    color: var(--color-brand-ink);
+  }
+  .account-button__avatar {
+    position: relative;
+  }
+  .account-button__dot {
+    position: absolute;
+    top: -1px;
+    inset-inline-end: -1px;
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--color-surface);
+    border-radius: 50%;
+    background: var(--color-cta);
+  }
+  .account-button__chev {
+    color: var(--color-text-subtle);
+    transition: transform var(--fast) var(--ease);
+  }
+  .account-button[aria-expanded="true"] .account-button__chev {
+    transform: rotate(180deg);
+  }
   .theme-icon--moon {
     display: none;
   }
@@ -174,9 +203,27 @@
     }
   }
   @media (max-width: 900px) {
-    .main-nav,
-    .account-button {
+    .main-nav {
       display: none;
+    }
+    /* حساب در گوشهٔ چپ می‌ماند (خواست کارفرما) — دایره‌ای، هم‌خانوادهٔ سه دکمهٔ دیگر. */
+    .account-button {
+      justify-content: center;
+      width: 44px;
+      min-height: 44px;
+      padding: 0;
+      border-color: transparent;
+      background: var(--color-brand-tint);
+      color: var(--color-brand-ink);
+    }
+    .account-button__text,
+    .account-button__chev {
+      display: none;
+    }
+    .account-button__avatar {
+      width: 32px;
+      height: 32px;
+      margin: 0;
     }
     .mobile-menu-button {
       display: inline-grid;
@@ -205,7 +252,8 @@
     display: grid;
     gap: 4px;
   }
-  .sheet-nav a {
+  .sheet-nav a,
+  .sheet-nav__account {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -214,11 +262,18 @@
     border-radius: 14px;
     font-weight: 600;
   }
+  .sheet-nav__account {
+    width: 100%;
+    margin-top: 6px;
+    border: 1px solid var(--color-border);
+  }
+  .sheet-nav__account:hover,
   .sheet-nav a:hover,
   .sheet-nav a[aria-current="page"] {
     background: var(--color-brand-tint);
     color: var(--color-brand-ink);
   }
+  .sheet-nav__account span,
   .sheet-nav a span {
     flex: 1;
   }

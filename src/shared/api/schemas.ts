@@ -270,3 +270,17 @@ export const verificationSchema = z.object({
   payload: z.record(z.string(), z.unknown()),
 }) satisfies z.ZodMiniType<S["CertificateVerification"]>;
 export type Verification = z.infer<typeof verificationSchema>;
+
+export const otpRequestResultSchema = z.object({
+  expires_in: z.number(),
+  resend_after: z.number(),
+  delivery_status: z.string(),
+}) satisfies z.ZodMiniType<S["OtpRequestResult"]>;
+export type OtpRequestResult = z.infer<typeof otpRequestResultSchema>;
+
+export const sessionResultSchema = z.object({
+  profile: profileSchema,
+  is_new_user: z.boolean(),
+  next_step: z.enum(["complete_profile", "home"]),
+}) satisfies z.ZodMiniType<S["SessionResult"]>;
+export type SessionResult = z.infer<typeof sessionResultSchema>;

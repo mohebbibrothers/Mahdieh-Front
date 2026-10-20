@@ -1,5 +1,5 @@
 import { queryOptions } from "@tanstack/react-query";
-import { ApiError, api, unwrap } from "./client";
+import { ApiError, api, toApiError, unwrap } from "./client";
 import {
   calendarSchema,
   configSchema,
@@ -9,6 +9,8 @@ import {
   propertySchema,
   quoteSchema,
   reservationListSchema,
+  otpRequestResultSchema,
+  sessionResultSchema,
   sessionStateSchema,
   standingSchema,
   verificationSchema,
@@ -127,4 +129,19 @@ export function verifyCertificate(token: string, signal?: AbortSignal) {
     api.GET("/api/v1/certificates/verify/{token}", { params: { path: { token } }, ...(signal ? { signal } : {}) }),
     (d) => verificationSchema.parse(d),
   );
+}
+
+/** ورود با کد یک‌بارمصرف — پاسخ برای همهٔ شماره‌ها یکسان است (ضد شمارش کاربران). */
+export function requestOtp(phone: string) {
+  return unwrap(api.POST("/api/v1/auth/otp/request", { body: { phone } }), (d) => otpRequestResultSchema.parse(d));
+}
+
+export function verifyOtp(phone: string, code: string) {
+  return unwrap(api.POST("/api/v1/auth/otp/verify", { body: { phone, code } }), (d) => sessionResultSchema.parse(d));
+}
+
+export async function logout(): Promise<void> {
+  const { response } = await api.POST("/api/v1/auth/logout");
+  // ۴۰۱ یعنی نشست پیش‌تر تمام شده — نتیجهٔ مطلوب همان است.
+  if (!response.ok && response.status !== 401) throw toApiError(response.status, null);
 }

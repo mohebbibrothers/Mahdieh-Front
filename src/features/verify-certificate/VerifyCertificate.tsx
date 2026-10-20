@@ -3,10 +3,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useId, useState } from "react";
 import { configQuery, verifyCertificate } from "@/shared/api/queries";
 import type { Verification } from "@/shared/api/schemas";
-import { SITE } from "@/shared/config/site";
 import { faDigits } from "@/shared/lib/fa";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon } from "@/shared/ui/Icon";
+import { PageLink } from "@/shared/ui/PageLink";
 import { parseCertificateToken } from "./parse-token";
 
 /**
@@ -116,9 +116,9 @@ function VerifyCertificateDialog({ isOpen, onOpenChange }: { isOpen: boolean; on
 
       <p className="verify-foot">
         گواهی بدون اینترنت در دست دارید؟{" "}
-        <a href={SITE.routes.verify} className="text-link">
+        <PageLink page="verify" className="text-link">
           بازرسی با مشخصات چاپی و کد کوتاه
-        </a>
+        </PageLink>
       </p>
     </AppDialog>
   );

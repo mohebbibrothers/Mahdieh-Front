@@ -18,6 +18,7 @@ import {
   tehranToday,
 } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
+import { PageLink } from "@/shared/ui/PageLink";
 
 const WEEK = 7;
 
@@ -62,9 +63,9 @@ export function WeekCalendar() {
           </h2>
           <p className="section-sub">هر خانه یک نیم‌روز است؛ روز از ۸ تا ۲۰، شب از ۲۰ تا ۸ صبح.</p>
         </div>
-        <a className="section-link" href="/calendar/">
+        <PageLink page="calendar" className="section-link" noFallback>
           تقویم کامل {faDigits(policies.horizonDays)} روز آینده <Icon name="arrow-left" size={16} />
-        </a>
+        </PageLink>
       </div>
 
       <div className="week-tools">

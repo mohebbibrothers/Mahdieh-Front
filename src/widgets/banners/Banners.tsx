@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSyncExternalStore } from "react";
 import { meQuery, occasionsQuery, reservationsQuery, standingQuery } from "@/shared/api/queries";
-import { SITE } from "@/shared/config/site";
+import { AccountAction } from "@/features/session/SessionActions";
 import { addDays, formatDayLabel, formatMoment, tehranToday } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
 
@@ -53,10 +53,10 @@ export function AccountBanners() {
             </p>
           </div>
         </div>
-        <a className="btn btn-secondary" href={SITE.routes.my}>
+        <AccountAction className="btn btn-secondary" intent="portal">
           جزئیات و گواهی
           <Icon name="arrow-left" size={18} />
-        </a>
+        </AccountAction>
       </aside>
     );
   }
@@ -73,10 +73,10 @@ export function AccountBanners() {
             <p>{blocker.message}</p>
           </div>
         </div>
-        <a className="btn btn-secondary" href={SITE.routes.my}>
+        <AccountAction className="btn btn-secondary" intent="portal">
           {standing.data?.profile_complete ? "مشاهدهٔ وضعیت" : "تکمیل اطلاعات"}
           <Icon name="arrow-left" size={18} />
-        </a>
+        </AccountAction>
       </aside>
     );
   }

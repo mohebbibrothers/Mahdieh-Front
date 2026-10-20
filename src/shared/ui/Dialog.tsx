@@ -37,8 +37,11 @@ export function AppDialog({
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
-    if (isOpen && !d.open) d.showModal();
-    else if (!isOpen && d.open) d.close();
+    if (isOpen && !d.open) {
+      d.showModal();
+      // فیلد اصلی فرم (data-autofocus) بر دکمهٔ بستن مقدم است.
+      d.querySelector<HTMLElement>("[data-autofocus]")?.focus();
+    } else if (!isOpen && d.open) d.close();
   }, [isOpen]);
 
   return (

@@ -5,7 +5,7 @@ import { featureIcon, floorLabel, unitPlan } from "@/entities/unit/unit";
 import { bookingHref, draftStore } from "@/features/booking-draft/store";
 import { useAvailability } from "@/features/booking-draft/use-availability";
 import { fetchQuote, meQuery, propertyQuery } from "@/shared/api/queries";
-import { loginHref } from "@/shared/config/site";
+import { ContinueBooking } from "@/features/session/SessionActions";
 import {
   durationLabel,
   faDigits,
@@ -98,12 +98,17 @@ export function UnitDialog() {
       actions={
         <>
           {canContinue && code ? (
-            <a
+            <ContinueBooking
               className="btn btn-primary"
-              href={signedIn ? bookingHref(code, draft) : loginHref(bookingHref(code, draft))}
+              href={bookingHref(code, draft)}
+              guestLabel={
+                <>
+                  ورود و ادامهٔ رزرو <Icon name="arrow-left" size={18} />
+                </>
+              }
             >
-              {signedIn ? "انتخاب این واحد و ادامه" : "ورود و ادامهٔ رزرو"} <Icon name="arrow-left" size={18} />
-            </a>
+              انتخاب این واحد و ادامه <Icon name="arrow-left" size={18} />
+            </ContinueBooking>
           ) : nearest ? (
             <button
               type="button"

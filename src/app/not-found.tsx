@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { SITE } from "@/shared/config/site";
+import { SessionLayer } from "@/features/session/SessionLayer";
+import { navHref } from "@/shared/config/site";
 import { Icon } from "@/shared/ui/Icon";
 import { SiteFooter } from "@/widgets/site-footer/SiteFooter";
 import { SiteHeader } from "@/widgets/site-header/SiteHeader";
@@ -18,18 +19,19 @@ export default function NotFound() {
         <h1>این نشانی در مهدیه پیدا نشد.</h1>
         <p>شاید پیوند قدیمی است یا اشتباه تایپ شده. از یکی از این راه‌ها ادامه دهید:</p>
         <div className="not-found__actions">
-          <a className="btn btn-primary" href={SITE.routes.home}>
+          <a className="btn btn-primary" href={navHref("home")}>
             صفحهٔ نخست <Icon name="arrow-left" size={18} />
           </a>
-          <a className="btn btn-secondary" href={SITE.routes.calendar}>
+          <a className="btn btn-secondary" href={navHref("calendar")}>
             <Icon name="calendar" size={18} /> زمان‌های آزاد
           </a>
-          <a className="btn btn-secondary" href={SITE.routes.help}>
+          <a className="btn btn-secondary" href={navHref("help")}>
             <Icon name="compass" size={18} /> راهنمای زائر
           </a>
         </div>
       </main>
       <SiteFooter />
+      <SessionLayer />
     </>
   );
 }

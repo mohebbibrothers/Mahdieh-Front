@@ -1,0 +1,483 @@
+/* ورود با کد پیامکی (طرح گام ۱ P-05) + منوی حساب + دکمهٔ حساب سربرگ. */
+@layer components {
+  .login-flow {
+    display: grid;
+    gap: 12px;
+  }
+  .login-steps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 0 0 4px;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+  .login-steps li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 10px;
+    border-top: 3px solid var(--color-border);
+    counter-increment: step;
+    transition:
+      border-color var(--fast) var(--ease),
+      color var(--fast) var(--ease);
+  }
+  .login-steps li::before {
+    content: counter(step, persian);
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-sunken);
+    font-weight: 700;
+  }
+  .login-steps li[aria-current="step"] {
+    border-color: var(--color-brand);
+    color: var(--color-text);
+    font-weight: 700;
+  }
+  .login-steps li[aria-current="step"]::before {
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+  }
+  .login-steps li[data-done] {
+    border-color: var(--color-free-border);
+  }
+  .login-steps li[data-done]::before {
+    content: "✓";
+    background: var(--color-free-bg);
+    color: var(--color-free-fg);
+  }
+  .login-lead {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 2;
+    color: var(--color-text-muted);
+  }
+  .login-lead--center {
+    text-align: center;
+    color: var(--color-text);
+  }
+  .login-lead bdi {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .form-label {
+    margin-top: 4px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+  .phone-field {
+    display: flex;
+    align-items: stretch;
+    direction: ltr;
+    min-height: 52px;
+    border: 1.5px solid var(--color-border-strong);
+    border-radius: 14px;
+    background: var(--color-canvas);
+    overflow: hidden;
+    transition:
+      border-color var(--fast) var(--ease),
+      box-shadow var(--fast) var(--ease);
+  }
+  .phone-field:focus-within {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 4px var(--color-brand-tint);
+  }
+  .phone-field[data-invalid] {
+    border-color: var(--color-danger-fg);
+    animation: field-shake 360ms var(--ease);
+  }
+  .phone-field__prefix {
+    display: grid;
+    place-items: center;
+    padding-inline: 14px;
+    border-inline-end: 1px solid var(--color-border);
+    background: var(--color-sunken);
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+  .phone-field__input {
+    flex: 1;
+    min-width: 0;
+    padding: 0 14px;
+    border: 0;
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-size: 1.0625rem;
+    letter-spacing: 0.06em;
+    outline: none;
+  }
+  .phone-field__input::placeholder {
+    color: var(--color-text-subtle);
+    letter-spacing: 0.04em;
+  }
+  .form-hint {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.9;
+    color: var(--color-text-muted);
+  }
+  .form-error {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0;
+    padding: 9px 12px;
+    border-radius: 12px;
+    background: var(--color-danger-bg);
+    color: var(--color-danger-fg);
+    font-size: 0.8125rem;
+    line-height: 1.8;
+  }
+  .form-error .icon {
+    flex: none;
+    margin-top: 4px;
+  }
+  .form-error--center {
+    justify-content: center;
+    text-align: center;
+  }
+  .login-privacy {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 2px 0 0;
+    font-size: 0.75rem;
+    line-height: 1.9;
+    color: var(--color-text-muted);
+  }
+  .login-privacy .icon {
+    flex: none;
+    margin-top: 4px;
+  }
+  .login-notice {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0;
+    padding: 11px 13px;
+    border: 1px solid oklch(from var(--color-warn-fg) l c h / 0.3);
+    border-radius: 14px;
+    background: var(--color-warn-bg);
+    color: var(--color-warn-fg);
+    font-size: 0.8125rem;
+    line-height: 1.9;
+  }
+  .login-notice .icon {
+    flex: none;
+    margin-top: 4px;
+  }
+  .text-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-inline-start: 8px;
+    padding: 2px 6px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--color-brand-ink);
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    cursor: pointer;
+  }
+  .text-button:hover {
+    background: var(--color-brand-tint);
+  }
+
+  /* خانه‌های کد — ۵۴×۶۰ (طراح)، ≤۴۸۰px: ۴۸×۵۴. */
+  .otp-boxes {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-block: 6px 2px;
+  }
+  .otp-box {
+    width: 54px;
+    height: 60px;
+    padding: 0;
+    border: 2px solid var(--color-border-strong);
+    border-radius: 12px;
+    background: var(--color-canvas);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    caret-color: var(--color-brand);
+    transition:
+      border-color var(--fast) var(--ease),
+      box-shadow var(--fast) var(--ease),
+      transform var(--fast) var(--ease),
+      background-color var(--fast) var(--ease);
+  }
+  .otp-box:focus {
+    outline: none;
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 4px var(--color-brand-tint);
+    transform: scale(1.05);
+  }
+  .otp-box:not(:placeholder-shown):not([value=""]) {
+    border-color: var(--color-brand);
+  }
+  .otp-box:disabled {
+    opacity: 0.55;
+  }
+  .otp-boxes--invalid .otp-box {
+    border-color: var(--color-danger-fg);
+    background: var(--color-danger-bg);
+  }
+  .otp-boxes--invalid {
+    animation: field-shake 360ms var(--ease);
+  }
+  @keyframes field-shake {
+    20%,
+    60% {
+      transform: translateX(-6px);
+    }
+    40%,
+    80% {
+      transform: translateX(6px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .otp-boxes--invalid,
+    .phone-field[data-invalid] {
+      animation: none;
+    }
+  }
+  .otp-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 0.8125rem;
+    color: var(--color-text-muted);
+  }
+  .otp-meta__expired {
+    color: var(--color-danger-fg);
+    font-weight: 600;
+  }
+  .spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: 50%;
+    animation: spin 700ms linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @media (max-width: 480px) {
+    .otp-boxes {
+      gap: 9px;
+    }
+    .otp-box {
+      width: 48px;
+      height: 54px;
+      font-size: 1.25rem;
+    }
+  }
+  @media (max-width: 340px) {
+    .otp-box {
+      width: 42px;
+    }
+  }
+
+  /* ── منوی حساب (پاپ‌اور سربرگ / برگهٔ موبایل) ── */
+  .anchor--account {
+    anchor-name: --mahdieh-account;
+  }
+  .popover--account {
+    position-anchor: --mahdieh-account;
+    width: min(360px, calc(100vw - 24px));
+  }
+  @supports (position-area: bottom) {
+    .popover--account {
+      position-area: bottom span-x-start;
+      position-try-fallbacks: flip-inline;
+      margin-block: 10px;
+    }
+  }
+  .account-panel {
+    display: grid;
+    gap: 14px;
+  }
+  .account-panel__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .account-panel__head > div {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+  }
+  .account-panel__head strong {
+    font-size: 1rem;
+  }
+  .account-panel__phone {
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    text-align: start;
+  }
+  .account-panel__avatar {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+  .account-panel__alert,
+  .account-panel__trip {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    border-radius: 14px;
+    font-size: 0.8125rem;
+    line-height: 1.85;
+  }
+  .account-panel__alert {
+    background: var(--color-warn-bg);
+    color: var(--color-warn-fg);
+  }
+  .account-panel__alert .icon {
+    flex: none;
+    margin-top: 3px;
+  }
+  .account-panel__alert p,
+  .account-panel__trip p {
+    display: grid;
+    margin: 0;
+  }
+  .account-panel__trip {
+    border: 1px solid var(--color-border);
+    background: var(--color-sunken);
+  }
+  .account-panel__trip span:not(.pill) {
+    color: var(--color-text-muted);
+  }
+  .account-panel__trip .pill {
+    margin-inline-start: 6px;
+  }
+  .account-panel__trip-icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+  }
+  .account-panel__trip .skeleton--line {
+    width: 100%;
+    height: 40px;
+  }
+  .account-panel__quota {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin: 0;
+  }
+  .account-panel__quota div {
+    padding: 9px 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    text-align: center;
+  }
+  .account-panel__quota dt {
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+  }
+  .account-panel__quota dd {
+    margin: 2px 0 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+  .account-panel__links {
+    display: grid;
+    border-block: 1px solid var(--color-border);
+  }
+  .account-panel__links > a,
+  .account-panel__links > button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 4px;
+    border: 0;
+    background: none;
+    color: var(--color-text);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-align: start;
+    cursor: pointer;
+  }
+  .account-panel__links > * + * {
+    border-top: 1px solid var(--color-border);
+  }
+  .account-panel__links > :hover {
+    color: var(--color-brand-ink);
+  }
+  .account-panel__links span {
+    flex: 1;
+  }
+  .account-panel__chev {
+    color: var(--color-text-subtle);
+  }
+
+  /* «به‌زودی»: دکمه‌ای که جای پیوندِ صفحهٔ ساخته‌نشده نشسته — ظاهر همان پیوند. */
+  button[data-soon] {
+    border: 0;
+    font: inherit;
+    cursor: pointer;
+  }
+  button.section-link[data-soon],
+  button.text-link[data-soon] {
+    padding: 0;
+    background: none;
+  }
+
+  .sheet-nav__account {
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+  .footer-link-button {
+    border: 0;
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+  .footer-link-button {
+    padding: 0;
+  }
+  .footer-link-button:hover {
+    color: var(--color-brand-ink);
+  }
+}
