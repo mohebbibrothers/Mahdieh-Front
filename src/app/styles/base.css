@@ -16,10 +16,36 @@
   :root[data-easy="true"] {
     --text-scale: 1.14;
   }
-  @media (max-width: 900px) {
+  /* حاشیهٔ کناری و پهنای ظرف مطابق طراح: ۳۲ · ≤۸۵۰: ۲۴ · ≤۶۲۰: ۱۸ · ≤۳۷۰: ۱۶؛ ≥۱۶۰۰ ظرف ۱۲۸۰. */
+  :root {
+    --page-gutter: 32px;
+    --page-max: var(--container-site);
+  }
+  @media (min-width: 1600px) {
+    :root {
+      --page-max: 1280px;
+    }
+  }
+  @media (max-width: 850px) {
+    :root {
+      --page-gutter: 24px;
+    }
+  }
+  /* نوار پایینی و فراخوان موبایل فقط ≤۶۲۰ (مثل طراح). */
+  @media (max-width: 620px) {
+    :root {
+      --page-gutter: 18px;
+      --dock-h: 127px;
+    }
+  }
+  @media (max-width: 520px) {
     :root {
       --header-h: 72px;
-      --dock-h: 127px;
+    }
+  }
+  @media (max-width: 370px) {
+    :root {
+      --page-gutter: 16px;
     }
   }
   @media (prefers-reduced-motion: no-preference) {
@@ -43,7 +69,7 @@
     -webkit-font-smoothing: antialiased;
     overflow-x: clip;
   }
-  @media (max-width: 900px) {
+  @media (max-width: 620px) {
     body {
       padding-bottom: calc(var(--dock-h) + env(safe-area-inset-bottom));
     }
@@ -91,6 +117,9 @@
     direction: ltr;
     unicode-bidi: isolate;
     letter-spacing: 0.02em;
+    /* بدون ss01 بدنه: کدها (A1، شمارهٔ رزرو، گواهی) با رقم لاتین، مثل طراح؛ ارقام هم‌عرض. */
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
   }
   :focus-visible {
     outline: 3px solid var(--color-focus);
@@ -102,7 +131,7 @@
     color: var(--color-text);
   }
   .page-shell {
-    width: min(var(--container-site), 100% - 2 * var(--spacing-gutter));
+    width: min(var(--page-max), 100% - 2 * var(--page-gutter));
     margin-inline: auto;
   }
   .skip-link {
@@ -125,6 +154,18 @@
   }
   [hidden] {
     display: none !important;
+  }
+  /* فقط برای صفحه‌خوان (برچسب‌ها و اعلان‌های زنده) */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
   }
 }
 

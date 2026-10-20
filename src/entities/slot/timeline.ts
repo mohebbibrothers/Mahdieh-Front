@@ -53,7 +53,7 @@ export function buildTimeline(calendar: Calendar): Timeline {
   for (const row of units.values()) row.cells.sort((a, b) => a.index - b.index);
   return {
     days: calendar.days,
-    units: [...units.values()].sort((a, b) => b.floor - a.floor || a.code.localeCompare(b.code)),
+    units: [...units.values()].sort((a, b) => a.floor - b.floor || a.code.localeCompare(b.code)),
     maxCells: calendar.max_cells,
     minCells: calendar.min_cells,
   };

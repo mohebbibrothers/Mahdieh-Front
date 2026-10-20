@@ -103,7 +103,7 @@ test.describe("P-01 صفحهٔ خانه", () => {
     await page.goto("/");
     const banner = page.getByRole("complementary", { name: "وضعیت رزرو شما" });
     await expect(banner).toContainText("لغو دیرهنگام");
-    await expect(banner.getByRole("link", { name: /مشاهدهٔ وضعیت/ })).toBeVisible();
+    await expect(banner.getByRole("button", { name: /مشاهدهٔ وضعیت/ })).toBeVisible();
   });
 
   test("خطای تقویم: پیام قابل‌فهم و «تلاش دوباره» بازیابی می‌کند", async ({ page, api }) => {
@@ -127,6 +127,100 @@ test.describe("P-01 صفحهٔ خانه", () => {
     await alert.getByRole("button", { name: /تلاش دوباره/ }).click();
     await expect(alert).toBeHidden();
     await expect(cells(page).first()).toBeVisible();
+  });
+});
+
+test.describe("ورود درون‌برنامه‌ای (بدون صفحهٔ قدیمی)", () => {
+  test("شماره ⇐ کد (اشتباه، سپس درست) ⇐ تکمیل پروفایل ⇐ «حساب من»", async ({ page, api }, info) => {
+    type Session = { authenticated: boolean; mfa_pending: boolean; profile: Record<string, unknown> | null };
+    const user = fixture<Session>("session-user");
+    const incomplete = { ...user.profile, first_name: "", last_name: "", display_name: "", is_profile_complete: false };
+    const sent: Record<string, unknown>[] = [];
+    let csrfHeader: string | null = null;
+    api.allowConsole(/status of 422/);
+    api.set("/api/v1/auth/csrf", { body: { csrf_token: "e2e-token", header_name: "HTTP_X_CSRFTOKEN" } });
+    api.set("/api/v1/reservations", { body: fixture("reservations-empty") });
+    api.set("/api/v1/me/standing", { body: fixture("standing-active") });
+    api.set("/api/v1/auth/otp/request", async (route) => {
+      sent.push(route.request().postDataJSON() as Record<string, unknown>);
+      csrfHeader = route.request().headers()["x-csrftoken"] ?? null;
+      await route.fulfill({ status: 202, json: { expires_in: 120, resend_after: 60, delivery_status: "suppressed" } });
+    });
+    api.set("/api/v1/auth/otp/verify", async (route) => {
+      const body = route.request().postDataJSON() as { phone: string; code: string };
+      if (body.code !== "12345") {
+        return route.fulfill({
+          status: 422,
+          json: { code: "otp_mismatch", detail: "کد وارد‌شده درست نیست.", remaining_attempts: 4 },
+        });
+      }
+      api.set("/api/v1/auth/session", { body: { ...user, profile: incomplete } });
+      return route.fulfill({ json: { profile: incomplete, is_new_user: true, next_step: "complete_profile" } });
+    });
+    api.set("/api/v1/me/profile", async (route) => {
+      sent.push(route.request().postDataJSON() as Record<string, unknown>);
+      api.set("/api/v1/auth/session", { body: user });
+      await route.fulfill({ json: user.profile });
+    });
+
+    await page.goto("/");
+    const opener =
+      info.project.name === "mobile"
+        ? page.getByRole("navigation", { name: "میان‌بُرها" }).getByRole("button", { name: "حساب" })
+        : page.getByRole("button", { name: "ورود / ثبت‌نام" });
+    await opener.click();
+    const dialog = page.getByRole("dialog", { name: "ورود یا ثبت‌نام" });
+    await expect(dialog).toBeVisible();
+
+    await dialog.getByRole("button", { name: "دریافت کد ورود" }).click();
+    await expect(dialog.getByRole("alert")).toHaveText("شمارهٔ تلفن همراه را وارد کنید.");
+    expect(sent).toHaveLength(0);
+
+    await dialog.getByLabel("شمارهٔ تلفن همراه").fill("۰۹۱۲ ۳۴۵ ۶۷۸۹");
+    await dialog.getByRole("button", { name: "دریافت کد ورود" }).click();
+    const codeDialog = page.getByRole("dialog", { name: "کد تأیید" });
+    await expect(codeDialog).toBeVisible();
+    expect(sent[0]).toEqual({ phone: "+989123456789" });
+    expect(csrfHeader).toBe("e2e-token");
+    // پیامک خاموش است ⇒ پیام صادقانه، نه «کد ارسال شد»
+    await expect(codeDialog.getByRole("status")).toContainText("خاموش است");
+    await expect(codeDialog.getByText("+98 912 345 6789")).toBeVisible();
+
+    const otp = codeDialog.getByRole("textbox", { name: "کد پنج رقمی" });
+    await otp.fill("11111");
+    await expect(codeDialog.getByRole("alert")).toContainText("چهار بار دیگر");
+    await otp.fill("۱۲۳۴۵");
+
+    const profileDialog = page.getByRole("dialog", { name: "مشخصات سرپرست زائران" });
+    await expect(profileDialog).toBeVisible();
+    await profileDialog.getByRole("button", { name: "ذخیره و ادامه" }).click();
+    await expect(profileDialog.getByText("کد ملی ۱۰ رقمی معتبر نیست؛ دوباره بررسی کنید.")).toBeVisible();
+    expect(sent).toHaveLength(1);
+
+    await profileDialog.getByRole("textbox", { name: /^نام\s*\*?$/ }).fill("زهرا");
+    await profileDialog.getByRole("textbox", { name: /^نام خانوادگی\s*\*?$/ }).fill("محمدی");
+    await profileDialog.getByRole("textbox", { name: /^کد ملی/ }).fill("۰۴۹۹۳۷۰۸۹۹");
+    const province = profileDialog.getByRole("combobox", { name: /استان/ });
+    await province.fill("تهران");
+    await expect(profileDialog.getByRole("option", { name: "تهران" })).toBeVisible();
+    await province.press("Enter");
+    await expect(province).toHaveValue("تهران");
+    await profileDialog.getByRole("textbox", { name: /^شهر\s*\*?$/ }).fill("تهران");
+    await profileDialog.getByRole("button", { name: "ذخیره و ادامه" }).click();
+
+    await expect(profileDialog).toBeHidden();
+    expect(sent[1]).toMatchObject({
+      first_name: "زهرا",
+      last_name: "محمدی",
+      nationality: "IR",
+      province: "tehran",
+      national_id: "0499370899",
+      passport_number: "",
+      city: "تهران",
+    });
+    if (info.project.name === "desktop") {
+      await expect(page.getByRole("button", { name: /^حساب من/ })).toBeVisible();
+    }
   });
 });
 

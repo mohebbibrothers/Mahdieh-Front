@@ -3,19 +3,8 @@ export const SITE = {
   name: "مهدیه",
   tagline: "خانه‌ای برای زائر",
   timeZone: "Asia/Tehran",
-  /** نشانی صفحه‌های قدیمیِ سروشده با جنگو (تا ساخت صفحهٔ فرانت متناظر). */
+  /** مسیرهای فرانت؛ صفحه‌های بعدی (P-02…P-08) با ساخت هر صفحه اینجا اضافه می‌شوند. */
   routes: {
     home: "/",
-    units: "/units/",
-    calendar: "/calendar/",
-    help: "/help/",
-    my: "/my/",
-    login: "/login/",
-    verify: "/verify/",
   },
 } as const;
-
-/** پیوند ورود که پس از موفقیت به همین صفحه برمی‌گردد. */
-export function loginHref(next = "/"): string {
-  return `${SITE.routes.login}?next=${encodeURIComponent(next)}`;
-}

@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { AccountTrigger } from "@/features/session/AccountButton";
 import { VerifyCertificateButton } from "@/features/verify-certificate/VerifyCertificate";
 import { SITE } from "@/shared/config/site";
 import { Icon } from "@/shared/ui/Icon";
@@ -24,14 +26,25 @@ export function SiteFooter() {
               همراه شما
             </h2>
             <ul className="footer-links">
-              {NAV.map((n) => (
+              {/* ترتیب طراح: خانه، واحدها، تقویم، شروع رزرو، پرتال زائر، راهنما */}
+              {NAV.slice(0, 3).map((n) => (
                 <li key={n.href}>
                   <a href={n.href}>{n.label}</a>
                 </li>
               ))}
               <li>
-                <a href={SITE.routes.my}>رزروهای من</a>
+                <Link href="/#quick-search">انتخاب زمان اقامت</Link>
               </li>
+              <li>
+                <AccountTrigger guestReason="برای دیدن رزروهایتان با شمارهٔ همراه وارد شوید.">
+                  رزروهای من
+                </AccountTrigger>
+              </li>
+              {NAV.slice(3).map((n) => (
+                <li key={n.href}>
+                  <a href={n.href}>{n.label}</a>
+                </li>
+              ))}
             </ul>
           </nav>
           <div>

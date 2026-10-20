@@ -3,7 +3,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useId, useState } from "react";
 import { configQuery, verifyCertificate } from "@/shared/api/queries";
 import type { Verification } from "@/shared/api/schemas";
-import { SITE } from "@/shared/config/site";
 import { faDigits } from "@/shared/lib/fa";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon } from "@/shared/ui/Icon";
@@ -11,7 +10,7 @@ import { parseCertificateToken } from "./parse-token";
 
 /**
  * استعلام گواهی اقامت — تأیید امضای سمت سرور (نه هش سمت کاربر که جعل‌پذیر بود) و تطبیق
- * با وضعیت لحظه‌ای رزرو. برای بازرسی با مشخصات چاپی، صفحهٔ بازرسی آفلاین جنگو.
+ * با وضعیت لحظه‌ای رزرو.
  */
 const FIELD_LABELS: Array<[string, string]> = [
   ["code", "کد رزرو"],
@@ -113,13 +112,6 @@ function VerifyCertificateDialog({ isOpen, onOpenChange }: { isOpen: boolean; on
         </div>
       ) : null}
       {mutation.data ? <VerifyResult result={mutation.data} statusLabel={statusLabel} /> : null}
-
-      <p className="verify-foot">
-        گواهی بدون اینترنت در دست دارید؟{" "}
-        <a href={SITE.routes.verify} className="text-link">
-          بازرسی با مشخصات چاپی و کد کوتاه
-        </a>
-      </p>
     </AppDialog>
   );
 }

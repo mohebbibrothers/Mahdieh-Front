@@ -10,6 +10,12 @@ const FA_DIGITS = "۰۱۲۳۴۵۶۷۸۹";
 export function faDigits(value: string | number): string {
   return String(value).replace(/\d/g, (d) => FA_DIGITS[Number(d)] ?? d);
 }
+const COUNT_WORDS = ["صفر", "یک", "دو", "سه", "چهار", "پنج", "شش", "هفت", "هشت", "نه", "ده"];
+/** شمار کوچک در متن روان به حروف («پنج واحد»، مثل طراح)؛ بزرگ‌تر از ده با رقم فارسی. */
+export function faCount(n: number): string {
+  return Number.isInteger(n) && n >= 0 && n <= 10 ? (COUNT_WORDS[n] ?? faDigits(n)) : faDigits(n);
+}
+
 export function latinDigits(value: string): string {
   return value
     .replace(/[۰-۹]/g, (d) => String(FA_DIGITS.indexOf(d)))

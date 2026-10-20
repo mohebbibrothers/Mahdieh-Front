@@ -1,4 +1,6 @@
-/* سرصفحه: ≥۱۲۰۰ برچسب کامل؛ ۹۰۱–۱۱۹۹ برچسب کوتاه یک‌خطی؛ ≤۹۰۰ فقط سه دکمهٔ گرد. */
+/* سرصفحه — نقطه‌های شکست دقیقاً مطابق طراح (اندازه‌گیری‌شده روی P-01-home-v2):
+   >۱۲۰۰ کامل · ۹۰۱–۱۲۰۰ فشرده (نشان ۴۲، فاصله‌ها کوچک‌تر) · ۹۰۱–۱۱۲۰ دکمهٔ ورود گرد ·
+   ≤۹۰۰ فقط سه دکمهٔ گرد ۴۲ پیکسلی (تم، حالت آسان، منو) · ≤۵۲۰ سرصفحهٔ ۷۲ پیکسلی بی‌زیرنویس. */
 @layer components {
   .site-header {
     position: sticky;
@@ -53,7 +55,7 @@
     display: flex;
     flex: 1;
     justify-content: center;
-    gap: 22px;
+    gap: 20px;
   }
   .main-nav a {
     position: relative;
@@ -72,19 +74,18 @@
   }
   .main-nav a[aria-current="page"] {
     color: var(--color-brand-ink);
-    font-weight: 750;
+    font-weight: 700;
   }
+  /* نشانگر طراح: نقطهٔ ۵ پیکسلی زیر بخش فعال. */
   .main-nav a[aria-current="page"]::after {
     content: "";
     position: absolute;
-    bottom: 2px;
-    inset-inline: 30%;
-    height: 3px;
-    border-radius: 99px;
+    bottom: 0;
+    inset-inline-start: calc(50% - 2.5px);
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
     background: currentColor;
-  }
-  .nav-short {
-    display: none;
   }
   .nav-actions {
     display: flex;
@@ -124,9 +125,6 @@
     color: var(--color-on-brand);
     font-size: 0.75rem;
   }
-  .account-button__short {
-    display: none;
-  }
   .theme-icon--moon {
     display: none;
   }
@@ -153,24 +151,54 @@
     display: none;
   }
 
-  @media (max-width: 1199px) {
+  @media (min-width: 901px) and (max-width: 1200px) {
     .header-inner {
-      gap: 18px;
+      gap: 12px;
+      padding-inline: 16px;
+    }
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+    }
+    .brand-type {
+      font-size: 1.625rem;
     }
     .main-nav {
-      gap: 14px;
+      gap: 12px;
     }
-    .nav-full {
-      display: none;
+    .main-nav a {
+      padding: 6px 3px;
+      font-size: 0.8125rem;
     }
-    .nav-short {
-      display: inline;
+    .nav-actions {
+      gap: 8px;
     }
-    .account-button__full {
-      display: none;
+  }
+  /* ۹۰۱–۱۱۲۰: دکمهٔ ورود دایرهٔ ۴۴ پیکسلی (برچسب برای صفحه‌خوان می‌ماند). */
+  @media (min-width: 901px) and (max-width: 1120px) {
+    .main-nav {
+      gap: 10px;
     }
-    .account-button__short {
-      display: inline;
+    .main-nav a {
+      padding: 6px 2px;
+      font-size: 0.78125rem;
+    }
+    .account-button {
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+    }
+    .account-button__label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .account-button__avatar {
+      margin: 0;
     }
   }
   @media (max-width: 900px) {
@@ -181,6 +209,17 @@
     .mobile-menu-button {
       display: inline-grid;
     }
+    .nav-actions {
+      gap: 6px;
+    }
+    .nav-actions .icon-button {
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+      min-height: 42px;
+    }
+  }
+  @media (max-width: 520px) {
     .header-inner {
       gap: 10px;
     }
@@ -191,11 +230,6 @@
     .brand-type {
       font-size: 1.5rem;
     }
-    .nav-actions {
-      gap: 8px;
-    }
-  }
-  @media (max-width: 360px) {
     .brand-sub {
       display: none;
     }
@@ -205,8 +239,10 @@
     display: grid;
     gap: 4px;
   }
-  .sheet-nav a {
+  .sheet-nav :is(a, button) {
     display: flex;
+    width: 100%;
+    text-align: start;
     align-items: center;
     gap: 12px;
     min-height: 56px;
@@ -214,12 +250,12 @@
     border-radius: 14px;
     font-weight: 600;
   }
-  .sheet-nav a:hover,
+  .sheet-nav :is(a, button):hover,
   .sheet-nav a[aria-current="page"] {
     background: var(--color-brand-tint);
     color: var(--color-brand-ink);
   }
-  .sheet-nav a span {
+  .sheet-nav :is(a, button) span {
     flex: 1;
   }
   .sheet-nav__chev {

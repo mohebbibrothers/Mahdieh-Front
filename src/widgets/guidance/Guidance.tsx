@@ -2,12 +2,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { configQuery, helpQuery } from "@/shared/api/queries";
 import { readPolicies } from "@/shared/api/policies";
-import { SITE } from "@/shared/config/site";
 import { durationLabel, faDigits } from "@/shared/lib/fa";
 import { Icon, type IconName } from "@/shared/ui/Icon";
+import { HelpCenter } from "./HelpCenter";
 
 /** پرسش‌های برگزیدهٔ صفحهٔ نخست — متن زنده از ‎/help‎ (با قواعد فعلی سامانه). */
-const FAQ_SLUGS = ["halfday", "limits", "late-cancel", "signup", "join"];
+const FAQ_SLUGS = ["halfday", "cancel", "signup"];
 
 export function Guidance() {
   const config = useQuery(configQuery);
@@ -20,18 +20,18 @@ export function Guidance() {
     { icon: "heart-hand", title: "کاملاً رایگان", text: "بدون پرداخت و درگاه بانکی" },
     {
       icon: "clock",
-      title: `${durationLabel(p.minCells)} تا ${durationLabel(p.maxCells)}`,
+      title: `${durationLabel(p.minCells)} تا ${p.maxCells === 14 ? "یک هفته" : durationLabel(p.maxCells)}`,
       text: "متناسب با زمان سفر شما",
     },
     {
       icon: "ticket",
       title: p.maxActive === 1 ? "یک رزرو فعال" : `${faDigits(p.maxActive)} رزرو فعال`,
-      text: `هر ${faDigits(p.windowDays)} روز تا ${durationLabel(p.cellsPerWindow)} و در سال تا ${durationLabel(p.cellsPerYear)}؛ فرصتی برابر برای همه`,
+      text: "فرصتی برابر برای دیگر زائران",
     },
     {
       icon: "calendar-x",
       title: "لغو به‌موقع",
-      text: `تا ${faDigits(p.cancelFreeHours)} ساعت پیش از ورود، بی‌هیچ پیامدی؛ پس از آن، تا ${faDigits(p.lateCancelCooldownHours)} ساعت امکان رزرو تازه نیست`,
+      text: `تا ${faDigits(p.cancelFreeHours)} ساعت قبل، بدون محدودیت بعدی`,
     },
   ];
 
@@ -46,7 +46,7 @@ export function Guidance() {
         <ul className="rule-grid">
           {tiles.map((t) => (
             <li key={t.icon} className="rule-tile reveal">
-              <Icon name={t.icon} size={22} />
+              <Icon name={t.icon} size={20} />
               <strong>{t.title}</strong>
               <small>{t.text}</small>
             </li>
@@ -77,9 +77,7 @@ export function Guidance() {
               </div>
             ))
           : null}
-        <a className="section-link faq-link" href={SITE.routes.help}>
-          پرسش دیگری دارید؟ راهنمای کامل زائر <Icon name="arrow-left" size={16} />
-        </a>
+        <HelpCenter help={help.data} />
       </div>
     </section>
   );

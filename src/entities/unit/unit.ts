@@ -17,6 +17,9 @@ const FEATURE_ICONS: Record<string, IconName> = {
 };
 export const featureIcon = (code: string): IconName => FEATURE_ICONS[code] ?? "check";
 
+/** برچسب کوتاه نوع واحد (تقویم موبایل: «سوئیت» + کد + طبقه به‌جای عنوان کامل). */
+export const unitTypeLabel = (type: string): string => (type === "suite" ? "سوئیت" : "اتاق بزرگ");
+
 export const unitTypeIcon = (type: string): IconName => (type === "suite" ? "suite" : "room");
 
 /** پلان مفهومی بر اساس نوع واحد (عکس واقعی هنوز نیست؛ UnitDetail.photos در صفحهٔ جزئیات). */

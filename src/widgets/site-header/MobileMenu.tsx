@@ -1,8 +1,8 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
+import { AccountTrigger } from "@/features/session/AccountButton";
 import { useState } from "react";
 import { meQuery } from "@/shared/api/queries";
-import { SITE, loginHref } from "@/shared/config/site";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon } from "@/shared/ui/Icon";
 import { NAV } from "@/shared/config/nav";
@@ -30,19 +30,11 @@ export function MobileMenu({ current }: { current: string }) {
               <Icon name="arrow-left" size={18} className="sheet-nav__chev" />
             </a>
           ))}
-          {me.data ? (
-            <a href={SITE.routes.my}>
-              <Icon name="ticket" size={20} />
-              <span>رزروهای من</span>
-              <Icon name="arrow-left" size={18} className="sheet-nav__chev" />
-            </a>
-          ) : (
-            <a href={loginHref(current)}>
-              <Icon name="user" size={20} />
-              <span>ورود یا ثبت‌نام با شمارهٔ همراه</span>
-              <Icon name="arrow-left" size={18} className="sheet-nav__chev" />
-            </a>
-          )}
+          <AccountTrigger className="sheet-nav__item" onOpen={() => setOpen(false)}>
+            <Icon name="user" size={20} />
+            <span>{me.data ? "حساب من و رزروها" : "ورود یا ثبت‌نام با شمارهٔ همراه"}</span>
+            <Icon name="arrow-left" size={18} className="sheet-nav__chev" />
+          </AccountTrigger>
         </nav>
       </AppDialog>
     </>

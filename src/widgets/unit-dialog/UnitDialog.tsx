@@ -5,7 +5,7 @@ import { featureIcon, floorLabel, unitPlan } from "@/entities/unit/unit";
 import { bookingHref, draftStore } from "@/features/booking-draft/store";
 import { useAvailability } from "@/features/booking-draft/use-availability";
 import { fetchQuote, meQuery, propertyQuery } from "@/shared/api/queries";
-import { loginHref } from "@/shared/config/site";
+import { openAccount } from "@/features/session/account-store";
 import {
   durationLabel,
   faDigits,
@@ -98,12 +98,25 @@ export function UnitDialog() {
       actions={
         <>
           {canContinue && code ? (
-            <a
-              className="btn btn-primary"
-              href={signedIn ? bookingHref(code, draft) : loginHref(bookingHref(code, draft))}
-            >
-              {signedIn ? "انتخاب این واحد و ادامه" : "ورود و ادامهٔ رزرو"} <Icon name="arrow-left" size={18} />
-            </a>
+            signedIn ? (
+              <a className="btn btn-primary" href={bookingHref(code, draft)}>
+                انتخاب این واحد و ادامه <Icon name="arrow-left" size={18} />
+              </a>
+            ) : (
+              <button
+                type="button"
+                className="btn btn-primary"
+                aria-haspopup="dialog"
+                onClick={() =>
+                  openAccount({
+                    then: bookingHref(code, draft),
+                    reason: "برای ثبت رزرو، با شمارهٔ همراه وارد شوید؛ انتخاب شما حفظ می‌شود.",
+                  })
+                }
+              >
+                ورود و ادامهٔ رزرو <Icon name="arrow-left" size={18} />
+              </button>
+            )
           ) : nearest ? (
             <button
               type="button"

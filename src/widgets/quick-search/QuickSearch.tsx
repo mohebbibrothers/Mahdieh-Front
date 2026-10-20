@@ -168,8 +168,8 @@ export function QuickSearch() {
         </form>
 
         <p className="form-note">
-          <Icon name="info" size={16} /> کوتاه‌ترین اقامت {durationLabel(policies.minCells)} و بلندترین{" "}
-          {durationLabel(policies.maxCells)} است. ساعت دقیق ورود و خروج پیش از تأیید نمایش داده می‌شود.
+          <Icon name="info" size={14} /> حداقل اقامت {durationLabel(policies.minCells)} و حداکثر{" "}
+          {durationLabel(policies.maxCells)} است. ورود و خروج را پیش از تأیید دقیق می‌بینید.
         </p>
 
         <div
@@ -228,7 +228,7 @@ function ArrivalPicker({ onDone }: { onDone: () => void }) {
       </div>
       <p className="popover__note">
         نوار زیر هر روز، میزان آزادی آن روز را نشان می‌دهد. برای روزهای دورتر{" "}
-        <a href="/calendar/" className="text-link">
+        <a href="#availability" className="text-link">
           تقویم کامل
         </a>{" "}
         را ببینید.

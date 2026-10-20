@@ -1,15 +1,14 @@
 /* تقویم هفت‌روزه. */
 @layer components {
   .section {
-    margin-top: 80px;
+    padding-top: 84px;
   }
   .section-head {
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px 24px;
-    margin-bottom: 22px;
+    gap: 20px; /* طراح: بدون شکست؛ متن جمع می‌شود و ابزارها کنارش می‌مانند */
+    margin-bottom: 25px;
   }
   .section-eyebrow {
     display: flex;
@@ -22,7 +21,7 @@
   }
   .section-eyebrow::before {
     content: "";
-    width: 18px;
+    width: 15px;
     height: 1px;
     background: var(--color-gold);
   }
@@ -44,7 +43,7 @@
     justify-content: space-between;
     flex-wrap: wrap;
     gap: 10px;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
   }
   .week-note {
     display: flex;
@@ -63,7 +62,7 @@
   .week-grid {
     display: grid;
     grid-template-columns: 190px repeat(14, minmax(0, 1fr));
-    gap: 4px;
+    gap: 5px;
   }
   .week-grid__row {
     display: contents;
@@ -84,13 +83,13 @@
     border-bottom: 1px solid var(--color-border);
     color: var(--color-text-muted);
     font-size: 0.75rem;
-    line-height: 1.7;
+    line-height: 1.85;
     text-align: center;
   }
   .day-head strong {
     color: var(--color-text);
-    font-size: 0.8125rem;
-    font-weight: 650;
+    font-size: 0.75rem;
+    font-weight: 550;
   }
   .day-head[data-today] .day-head__weekday {
     color: var(--color-brand-ink);
@@ -227,7 +226,7 @@
     flex-wrap: wrap;
     gap: 8px;
     margin-top: 16px;
-    padding-top: 12px;
+    padding-top: 14px;
     border-top: 1px solid var(--color-border);
     color: var(--color-text-muted);
     font-size: 0.75rem;
@@ -249,25 +248,142 @@
       animation: live 2.2s infinite;
     }
   }
+  .explain-list {
+    display: grid;
+    gap: 18px;
+  }
+  .explain-list > li {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+  }
+  .explain-list__icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+  }
+  .explain-list h3 {
+    margin-bottom: 4px;
+    font-size: 0.9375rem;
+    font-weight: 700;
+  }
+  .explain-list p {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    line-height: 1.9;
+  }
+  .explain-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .explain-legend li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-canvas);
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+  }
   .mobile-calendar {
     display: none;
   }
 
   @media (max-width: 1100px) {
     .week-grid {
-      grid-template-columns: 150px repeat(14, minmax(0, 1fr));
+      grid-template-columns: 155px repeat(14, minmax(0, 1fr));
+      gap: 4px;
+    }
+  }
+  @media (max-width: 850px) {
+    .section {
+      padding-top: 60px;
+    }
+    .section-title {
+      font-size: 1.5rem;
+    }
+    .week-card {
+      padding: 14px;
+    }
+    .week-grid {
       gap: 3px;
     }
-    .grid-unit-label .icon {
+    .week-note {
+      display: none;
+    }
+    .status-legend [data-legend-extra] {
       display: none;
     }
   }
-  @media (max-width: 900px) {
+  /* تبلت (۶۲۱–۱۰۰۰): همان جدول کامل با پیمایش افقی؛ نام واحدها چسبیده به راست می‌ماند. */
+  @media (min-width: 621px) and (max-width: 1000px) {
+    .week-card {
+      overflow-x: auto;
+      scrollbar-width: thin;
+      overscroll-behavior-x: contain;
+    }
+    .week-grid {
+      min-width: 916px;
+      grid-template-columns: 160px repeat(14, minmax(44px, 1fr));
+    }
+    .week-grid .cell {
+      min-height: 44px;
+    }
+    .week-grid .grid-unit-label,
+    .week-grid .week-grid__corner {
+      position: sticky;
+      right: 0;
+      z-index: 2;
+      background: var(--color-surface);
+    }
+  }
+  @media (max-width: 620px) {
+    .calendar-footer {
+      display: block;
+      margin-top: 12px;
+      padding-top: 10px;
+    }
+    .calendar-footer p {
+      margin-bottom: 4px;
+    }
     .section {
-      margin-top: 56px;
+      padding-top: 43px;
+    }
+    .section-head {
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .section-eyebrow {
+      margin-bottom: 5px;
     }
     .section-title {
       font-size: 1.375rem;
+      line-height: 1.65;
+    }
+    .section-sub {
+      margin-top: 6px;
+      font-size: 0.75rem;
+    }
+    .availability-section {
+      padding-top: 48px;
+    }
+    .availability-section .section-head {
+      display: block;
+    }
+    .availability-section .section-link {
+      margin-top: 5px;
+    }
+    .week-tools {
+      margin-bottom: 12px;
     }
     .week-card {
       padding: 16px 14px 18px;
@@ -281,103 +397,377 @@
       display: none;
     }
     .mobile-calendar {
-      display: grid;
+      display: flex;
+      flex-direction: column;
       gap: 12px;
     }
-    .mobile-cal-nav {
+    /* ۱. نوار روز فعال */
+    .mobile-cal-nav-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
+      padding: 6px 8px;
+      border: 1px solid var(--color-border);
+      border-radius: 14px;
+      background: var(--color-canvas);
     }
-    .mobile-cal-nav__title {
+    .cal-nav-arrow {
       display: grid;
-      text-align: center;
-      line-height: 1.7;
+      place-items: center;
+      flex: none;
+      width: 44px;
+      height: 44px;
+      border: 1px solid transparent;
+      border-radius: 50%;
+      color: var(--color-text);
+      transition:
+        background var(--fast) var(--ease),
+        border-color var(--fast) var(--ease),
+        transform var(--fast) var(--ease);
     }
-    .mobile-cal-nav__title strong {
-      font-size: 0.875rem;
-    }
-    .mobile-cal-nav__title small {
+    .cal-nav-arrow:hover:not(:disabled) {
+      border-color: var(--color-border);
+      background: var(--color-surface);
       color: var(--color-brand-ink);
-      font-size: 0.75rem;
     }
-    .mobile-date-rail {
+    .cal-nav-arrow:active:not(:disabled) {
+      transform: scale(0.92);
+    }
+    .cal-nav-arrow:disabled {
+      opacity: 0.35;
+      cursor: default;
+    }
+    .cal-active-day-badge {
       display: flex;
-      gap: 6px;
-      overflow-x: auto;
-      padding-bottom: 6px;
-      scroll-snap-type: x mandatory;
-      scrollbar-width: none;
+      flex: 1;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      min-width: 0;
+      text-align: center;
     }
-    .mobile-date-rail button {
-      position: relative;
-      flex: 0 0 72px;
+    .cal-active-title {
+      overflow: hidden;
+      max-width: 100%;
+      font-size: 0.84375rem;
+      font-weight: 650;
+      line-height: 1.3;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .cal-free-count {
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: var(--color-brand-tint);
+      color: var(--color-brand-ink);
+      font-size: 0.6875rem;
+      font-weight: 550;
+      line-height: 1.4;
+    }
+    .cal-free-count[data-full] {
+      background: var(--color-sunken);
+      color: var(--color-text-muted);
+    }
+    /* ۲. نوار هفت‌ستونهٔ روزها */
+    .mobile-date-rail {
       display: grid;
-      justify-items: center;
-      padding: 6px 2px 10px;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 4px;
+    }
+    .date-chip {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      min-height: 56px;
+      padding: 6px 2px 7px;
       border: 1px solid var(--color-border);
       border-radius: 12px;
-      background: var(--color-surface);
-      line-height: 1.6;
-      scroll-snap-align: start;
+      background: var(--color-canvas);
+      color: var(--color-text);
+      transition:
+        background var(--fast) var(--ease),
+        border-color var(--fast) var(--ease),
+        transform var(--fast) var(--ease),
+        box-shadow var(--fast) var(--ease);
     }
-    .mobile-date-rail small {
-      color: var(--color-text-muted);
+    .date-chip:hover {
+      border-color: var(--color-brand);
+    }
+    .date-chip:active {
+      transform: scale(0.95);
+    }
+    .chip-weekday {
       font-size: 0.625rem;
+      font-weight: 600;
+      line-height: 1.1;
     }
-    .mobile-date-rail strong {
-      font-size: 0.75rem;
+    .chip-num {
+      font-size: 0.9375rem;
+      font-weight: 700;
+      line-height: 1.2;
     }
-    .mobile-date-rail button[aria-selected="true"] {
+    .chip-month {
+      color: var(--color-brand-ink);
+      font-size: 0.59375rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+    .chip-dot {
+      width: 5px;
+      height: 5px;
+      margin-top: 1px;
+      border-radius: 50%;
+      background: var(--color-text-subtle);
+      opacity: 0.5;
+    }
+    .chip-dot[data-free] {
+      background: var(--color-brand);
+      box-shadow: 0 0 4px var(--color-brand);
+      opacity: 1;
+    }
+    .date-chip[data-today]:not([aria-selected="true"]) {
+      border-color: var(--color-gold);
+    }
+    .date-chip[aria-selected="true"] {
       border-color: var(--color-brand);
       background: var(--color-brand);
       color: var(--color-on-brand);
+      box-shadow: 0 4px 14px oklch(from var(--color-brand) l c h / 0.35);
+      transform: translateY(-1px);
     }
-    .mobile-date-rail button[aria-selected="true"] small {
-      color: inherit;
+    .date-chip[aria-selected="true"] .chip-num {
+      font-weight: 800;
     }
-    .mobile-day {
+    /* مستقل از تم: «روشناییِ» همان متنِ روی برند (کنتراست تضمین‌شده) + فقط فام طلایی ⇒ axe در روشن و تیره */
+    .date-chip[aria-selected="true"] .chip-month {
+      color: oklch(from var(--color-on-brand) l calc(c + 0.035) 85);
+    }
+    .date-chip[aria-selected="true"] .chip-dot[data-free] {
+      background: oklch(from var(--color-gold) 0.85 0.14 h);
+      box-shadow: 0 0 6px oklch(from var(--color-gold) 0.85 0.14 h);
+    }
+    /* ۳. سرستون سانس‌ها + ۵. کارت هر واحد (ستون‌های یکسان) */
+    .mobile-table-header,
+    .mobile-unit-day {
       display: grid;
-      gap: 6px;
-    }
-    .mobile-day__head,
-    .mobile-day__row {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr);
-      gap: 6px;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) minmax(0, 1fr);
+      gap: 8px;
       align-items: center;
+      border: 1px solid var(--color-border);
+      background: var(--color-canvas);
     }
-    .mobile-day__head {
-      color: var(--color-text-muted);
-      font-size: 0.6875rem;
+    .mobile-table-header {
+      margin-top: 2px;
+      padding: 8px 10px;
+      border-radius: 12px;
     }
-    .mobile-day__head span {
-      display: inline-flex;
+    .mobile-th {
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 3px;
-      justify-content: center;
+      gap: 2px;
+      text-align: center;
     }
-    .mobile-day__head span:first-child {
+    .mobile-th.th-unit {
+      flex-direction: row;
+      align-items: center;
       justify-content: flex-start;
-    }
-    .mobile-day__unit {
-      display: grid;
-      line-height: 1.6;
-    }
-    .mobile-day__unit strong {
-      font-size: 0.8125rem;
-    }
-    .mobile-day__unit small {
+      gap: 5px;
       color: var(--color-text-muted);
       font-size: 0.6875rem;
-    }
-    .cell[data-wide] {
-      min-height: 52px;
       font-weight: 600;
     }
-    .mobile-day .cell-wrap {
-      min-height: 52px;
+    .mobile-th.th-unit .icon {
+      color: var(--color-brand-ink);
+    }
+    .period-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.6875rem;
+      font-weight: 650;
+    }
+    .period-badge .icon {
+      width: 13px;
+      height: 13px;
+      color: var(--color-gold);
+    }
+    .period-hours {
+      color: var(--color-text-subtle);
+      font-size: 0.59375rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .mobile-unit-days {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .mobile-unit-day {
+      padding: 7px 8px;
+      border-radius: 14px;
+      transition:
+        border-color var(--fast) var(--ease),
+        box-shadow var(--fast) var(--ease);
+    }
+    .mobile-unit-day:hover {
+      border-color: var(--color-border-strong);
+      box-shadow: 0 2px 10px var(--color-shadow);
+    }
+    .mobile-unit-day.skeleton {
+      min-height: 66px;
+      border: 0;
+    }
+    /* ۶. ستون واحد */
+    .mobile-unit-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      min-height: 48px;
+      padding: 4px 2px;
+      border-radius: 8px;
+      text-align: start;
+    }
+    .unit-icon-badge {
+      display: grid;
+      flex: none;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--color-brand-tint);
+      color: var(--color-brand-ink);
+    }
+    .unit-icon-badge .icon {
+      width: 17px;
+      height: 17px;
+    }
+    .unit-text-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
+    }
+    .unit-name {
+      overflow: hidden;
+      font-size: 0.75rem;
+      font-weight: 650;
+      line-height: 1.25;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    .unit-meta-sub {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--color-text-subtle);
+      font-size: 0.625rem;
+      line-height: 1.2;
+    }
+    .unit-code-pill {
+      padding: 0 4px;
+      border-radius: 4px;
+      background: var(--color-sunken);
+      color: var(--color-text-muted);
+      font-weight: 600;
+      font-size: 0.59375rem;
+    }
+    /* ۷. خانه‌های روز/شب */
+    .mobile-cal-cell {
+      flex-direction: column;
+      gap: 2px;
+      min-height: 50px;
+      padding: 6px 4px;
+      border-radius: 11px;
+      line-height: 1.2;
+      text-align: center;
+    }
+    .mobile-cal-cell:hover:not(:disabled) {
+      transform: none;
+      box-shadow: 0 2px 8px oklch(from var(--color-brand) l c h / 0.15);
+    }
+    .mobile-cal-cell:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+    .cell-status-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .cell-status-wrap .icon {
+      flex: none;
+      width: 13px;
+      height: 13px;
+    }
+    .cell-status-title {
+      font-size: 0.6875rem;
+      font-weight: 650;
+    }
+    .cell-action-hint {
+      font-size: 0.59375rem;
+      line-height: 1;
+      opacity: 0.8;
+    }
+    /* ۸. راهنمای زیر جدول */
+    .mobile-cal-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 6px 4px 2px;
+      color: var(--color-text-subtle);
+      font-size: 0.6875rem;
+      line-height: 1.5;
+      text-align: center;
+    }
+    .mobile-cal-hint .icon {
+      flex: none;
+      color: var(--color-brand-ink);
+    }
+  }
+  @media (max-width: 370px) {
+    .week-card {
+      padding: 12px 10px 14px;
+    }
+    .mobile-table-header,
+    .mobile-unit-day {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr);
+      gap: 5px;
+      padding: 6px 5px;
+    }
+    .unit-icon-badge {
+      width: 28px;
+      height: 28px;
+    }
+    .mobile-cal-cell {
+      min-height: 46px;
+      padding: 4px 2px;
+    }
+    .date-chip {
+      min-height: 50px;
+      padding: 4px 1px;
+    }
+    .chip-num {
+      font-size: 0.84375rem;
+    }
+    .chip-weekday {
+      font-size: 0.5625rem;
+    }
+    .unit-name {
+      font-size: 0.6875rem;
+    }
+    .unit-meta-sub {
+      font-size: 0.5625rem;
+    }
+    .cell-status-title {
+      font-size: 0.625rem;
+    }
+    .cell-action-hint {
+      font-size: 0.53125rem;
     }
   }
 }

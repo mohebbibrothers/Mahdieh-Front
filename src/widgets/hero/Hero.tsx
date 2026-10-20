@@ -23,11 +23,13 @@ export function Hero() {
             <span className="hero-title__emphasis">اقامتی با آرامش.</span>
           </h1>
           <p className="hero-description">
-            برای زیارت بیایید، برای اقامت آسوده باشید. در مهدیه مهمان ما هستید؛ اقامت رایگان زائران امام رضا (ع)، در
-            خانه‌ای سه‌طبقه با پنج واحد اقامتی.
+            برای زیارت بیایید، برای اقامت آسوده باشید.
+            <br />
+            در مهدیه، مهمان ما هستید؛ اقامت رایگان زائران
+            <br className="desktop-br" /> امام رضا (ع)، در خانه‌ای سه‌طبقه با پنج واحد اقامتی.
           </p>
           <div className="hero-actions">
-            <a className="btn btn-primary btn-lg" href="#quick-search">
+            <a className="btn btn-primary" href="#quick-search">
               اقامتتان را پیدا کنید
               <Icon name="arrow-left" size={18} />
             </a>

@@ -1,0 +1,614 @@
+/* پنجرهٔ حساب: ورود با کد یک‌بارمصرف، تکمیل پروفایل، حساب من — مقادیر فرم از P-05 طراح. */
+@layer components {
+  /* دکمهٔ سربرگ و «پیوندهای» نیازمند حساب اکنون <button> هستند */
+  .account-button {
+    color: var(--color-text);
+    font-family: inherit;
+  }
+  .account-trigger {
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+  }
+  .footer-links .account-trigger {
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+  }
+  .footer-links .account-trigger:hover {
+    color: var(--color-brand-ink);
+  }
+
+  /* ── چیدمان کلی ── */
+  .account-flow,
+  .account-form,
+  .profile-form,
+  .account-panel {
+    display: grid;
+    gap: 18px;
+  }
+  .account-flow[data-step="code"],
+  .account-flow[data-step="phone"] {
+    animation: account-step-in var(--base) var(--ease) both;
+  }
+  .acc-field {
+    display: grid;
+    min-width: 0;
+  }
+  .acc-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .account-flow .field-label {
+    margin-bottom: 8px;
+    color: var(--color-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .account-flow .field-help {
+    margin-top: 6px;
+    color: var(--color-text-muted);
+    line-height: 1.7;
+  }
+  .account-flow .field-error {
+    font-size: 0.8125rem;
+    font-weight: 550;
+  }
+  .account-flow .text-input {
+    min-height: 48px;
+    padding: 10px 16px;
+    border-color: var(--color-border-strong);
+    border-radius: 10px;
+    background: var(--color-canvas);
+    font-size: 0.9375rem;
+    transition:
+      border-color var(--fast) var(--ease),
+      box-shadow var(--fast) var(--ease);
+  }
+  .account-flow .text-input:focus-visible {
+    border-color: var(--color-brand);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-brand-tint);
+  }
+  .account-flow .text-input[aria-invalid="true"] {
+    border-color: var(--color-danger-fg);
+  }
+  .required-star {
+    color: var(--color-danger-fg);
+  }
+  .text-button {
+    display: inline;
+    padding: 0 4px;
+    border: 0;
+    background: none;
+    color: var(--color-brand-ink);
+    font: inherit;
+    font-weight: 650;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .text-button:hover {
+    color: var(--color-brand);
+  }
+
+  /* ── متن راهنما، هشدار و یادداشت ── */
+  .account-lead {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    color: var(--color-text);
+    font-size: 0.875rem;
+    line-height: 1.95;
+  }
+  .account-lead > .icon {
+    flex: none;
+    margin-top: 4px;
+    color: var(--color-brand-ink);
+  }
+  .account-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    background: var(--color-brand-tint);
+    color: var(--color-text);
+    font-size: 0.8125rem;
+    line-height: 1.9;
+  }
+  .account-alert > .icon {
+    flex: none;
+    margin-top: 3px;
+    color: var(--color-brand-ink);
+  }
+  .account-alert[data-tone="warn"] {
+    border-color: color-mix(in oklch, var(--color-warn-fg) 28%, transparent);
+    background: var(--color-warn-bg);
+  }
+  .account-alert[data-tone="warn"] > .icon {
+    color: var(--color-warn-fg);
+  }
+  .account-alert[data-tone="danger"] {
+    border-color: color-mix(in oklch, var(--color-danger-fg) 28%, transparent);
+    background: var(--color-danger-bg);
+  }
+  .account-alert[data-tone="danger"] > .icon {
+    color: var(--color-danger-fg);
+  }
+  .account-alert strong {
+    display: block;
+    font-size: 0.875rem;
+  }
+  .account-alert p {
+    margin-block: 2px 10px;
+    color: var(--color-text-muted);
+  }
+  .account-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: var(--color-text-subtle);
+    font-size: 0.75rem;
+    line-height: 1.8;
+  }
+  .account-note > .icon {
+    flex: none;
+    margin-top: 2px;
+    color: var(--color-brand-ink);
+  }
+
+  /* ── شمارهٔ همراه با پیشوند ‎+98 (طراح: phone-input-wrap) ── */
+  .phone-input {
+    display: flex;
+    align-items: stretch;
+    min-height: 52px;
+    overflow: hidden;
+    direction: ltr;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 10px;
+    background: var(--color-canvas);
+    transition:
+      border-color var(--fast) var(--ease),
+      box-shadow var(--fast) var(--ease);
+  }
+  .phone-input:focus-within {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px var(--color-brand-tint);
+  }
+  .phone-input[data-invalid] {
+    border-color: var(--color-danger-fg);
+  }
+  .phone-input__prefix {
+    display: grid;
+    place-items: center;
+    padding: 0 16px;
+    border-right: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+    font-weight: 700;
+    user-select: none;
+  }
+  .phone-input__control {
+    flex: 1;
+    min-width: 0;
+    padding: 0 14px;
+    border: 0;
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-size: 1.0625rem;
+    letter-spacing: 0.05em;
+    outline: none;
+  }
+  .phone-input__control::placeholder {
+    color: var(--color-text-subtle);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── کد یک‌بارمصرف: یک ورودی واقعی روی خانه‌های نمایشی (طراح: otp-box) ── */
+  .otp-field {
+    position: relative;
+    display: grid;
+    justify-content: center;
+  }
+  .otp-field__input {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: transparent;
+    caret-color: transparent;
+    font-size: 16px; /* جلوگیری از بزرگ‌نمایی خودکار iOS */
+    opacity: 0;
+    cursor: text;
+  }
+  .otp-field__boxes {
+    display: flex;
+    gap: 12px;
+  }
+  .otp-field__box {
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 60px;
+    border: 2px solid var(--color-border-strong);
+    border-radius: 12px;
+    background: var(--color-canvas);
+    color: var(--color-text);
+    font-size: 1.5rem;
+    font-weight: 700;
+    transition:
+      border-color var(--fast) var(--ease),
+      box-shadow var(--fast) var(--ease),
+      transform var(--fast) var(--ease-spring);
+  }
+  .otp-field__box[data-filled] {
+    border-color: var(--color-brand);
+    animation: otp-pop var(--base) var(--ease-spring);
+  }
+  .otp-field:focus-within .otp-field__box[data-caret] {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 4px var(--color-brand-tint);
+    transform: scale(1.05);
+  }
+  .otp-field:focus-within .otp-field__box[data-caret]:not([data-filled])::after {
+    content: "";
+    width: 2px;
+    height: 26px;
+    border-radius: 2px;
+    background: var(--color-brand);
+    animation: otp-caret 1s steps(1) infinite;
+  }
+  .otp-field[data-invalid] .otp-field__box {
+    border-color: var(--color-danger-fg);
+  }
+  .otp-field[data-invalid] .otp-field__boxes {
+    animation: otp-shake 0.36s var(--ease);
+  }
+  .otp-field[data-disabled] .otp-field__boxes {
+    opacity: 0.6;
+  }
+  .otp-error {
+    margin-top: -6px;
+    text-align: center;
+  }
+  .otp-timer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+  }
+  .otp-timer__clock {
+    color: var(--color-text);
+    font-weight: 700;
+  }
+
+  .account-actions {
+    display: grid;
+    gap: 8px;
+  }
+  .account-actions--split {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-top: 16px;
+    border-top: 1px solid var(--color-border);
+  }
+  .account-actions--split .btn {
+    white-space: normal;
+  }
+  .account-danger {
+    color: var(--color-danger-fg);
+  }
+
+  /* ── حساب من ── */
+  .account-id {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background: var(--color-canvas);
+  }
+  .account-id__avatar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+  .account-id__text {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+  }
+  .account-id__text strong {
+    overflow: hidden;
+    font-size: 0.9375rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .account-id__text bdi {
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    text-align: start;
+  }
+  .account-section {
+    display: grid;
+    gap: 10px;
+  }
+  .account-section h3 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.9375rem;
+    font-weight: 700;
+  }
+  .quota-list {
+    display: grid;
+    gap: 10px;
+  }
+  .quota-list li {
+    display: grid;
+    grid-template-columns: minmax(96px, auto) 1fr auto;
+    align-items: center;
+    gap: 12px;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+  }
+  .quota-list meter {
+    width: 100%;
+    height: 8px;
+    border: 0;
+    border-radius: 99px;
+    background: var(--color-sunken);
+    appearance: none;
+  }
+  .quota-list meter::-webkit-meter-bar {
+    height: 8px;
+    border: 0;
+    border-radius: 99px;
+    background: var(--color-sunken);
+  }
+  .quota-list meter::-webkit-meter-optimum-value {
+    border-radius: 99px;
+    background: var(--color-brand);
+  }
+  .quota-list meter::-moz-meter-bar {
+    border-radius: 99px;
+    background: var(--color-brand);
+  }
+  .quota-list__val {
+    color: var(--color-text);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .account-blockers {
+    display: grid;
+    gap: 6px;
+    color: var(--color-warn-fg);
+    font-size: 0.8125rem;
+    line-height: 1.8;
+  }
+  .account-blockers li {
+    display: flex;
+    gap: 6px;
+  }
+  .account-blockers .icon {
+    flex: none;
+    margin-top: 3px;
+  }
+  .account-empty {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+  }
+  .account-reservations {
+    display: grid;
+    gap: 10px;
+  }
+  .account-res {
+    display: grid;
+    gap: 4px;
+    padding: 12px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    background: var(--color-surface);
+    font-size: 0.8125rem;
+  }
+  .account-res__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .account-res__head strong {
+    font-size: 0.875rem;
+  }
+  .account-res__meta {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+
+  /* ── انتخاب‌گر قابل جست‌وجو (جایگزین select بومی؛ منوی شناور ۱۸px، اسکرول‌بار کپسولی ۵px) ── */
+  .combo {
+    display: grid;
+    min-width: 0;
+  }
+  .combo__control {
+    position: relative;
+  }
+  .combo__input.text-input {
+    padding-inline-end: 44px;
+  }
+  .combo__input::placeholder {
+    color: var(--color-text-subtle);
+  }
+  .combo:not(.combo--open) .combo__input::placeholder {
+    color: var(--color-text);
+  }
+  .combo__toggle {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-end: 4px;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    border: 0;
+    background: none;
+    color: var(--color-text-muted);
+  }
+  .combo__toggle .icon {
+    transition: rotate var(--fast) var(--ease);
+  }
+  .combo--open .combo__toggle .icon {
+    rotate: 180deg;
+  }
+  .combo__list {
+    position: absolute;
+    inset-inline: 0;
+    top: calc(100% + 6px);
+    z-index: 5;
+    max-height: 248px;
+    padding: 6px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-pop);
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-strong) transparent;
+    animation: combo-in var(--fast) var(--ease);
+  }
+  .combo__list[hidden] {
+    display: none;
+  }
+  .combo__list::-webkit-scrollbar {
+    width: 5px;
+  }
+  .combo__list::-webkit-scrollbar-thumb {
+    border-radius: 99px;
+    background: var(--color-border-strong);
+  }
+  .combo__option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 12px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+  .combo__option[data-active] {
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+  }
+  .combo__option[aria-selected="true"] {
+    font-weight: 650;
+  }
+  .combo__option .icon {
+    color: var(--color-brand-ink);
+  }
+  .combo__option[data-group-end] {
+    position: relative;
+    margin-bottom: 9px;
+  }
+  .combo__option[data-group-end]::after {
+    content: "";
+    position: absolute;
+    inset-inline: 8px;
+    bottom: -5px;
+    height: 1px;
+    background: var(--color-border);
+  }
+  .combo__empty {
+    padding: 12px;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    text-align: center;
+  }
+
+  @media (max-width: 620px) {
+    .acc-row,
+    .account-actions--split {
+      grid-template-columns: 1fr;
+    }
+    .otp-field__boxes {
+      gap: 10px;
+    }
+    .otp-field__box {
+      width: 48px;
+      height: 54px;
+      font-size: 1.25rem;
+    }
+    .quota-list li {
+      grid-template-columns: 1fr auto;
+    }
+    .quota-list meter {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+  }
+  @media (max-width: 360px) {
+    .otp-field__boxes {
+      gap: 8px;
+    }
+    .otp-field__box {
+      width: 44px;
+      height: 52px;
+    }
+  }
+}
+
+@keyframes account-step-in {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+@keyframes otp-pop {
+  40% {
+    transform: scale(1.08);
+  }
+}
+@keyframes otp-caret {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes otp-shake {
+  20%,
+  60% {
+    translate: -6px 0;
+  }
+  40%,
+  80% {
+    translate: 6px 0;
+  }
+}
+@keyframes combo-in {
+  from {
+    opacity: 0;
+    translate: 0 -4px;
+  }
+}

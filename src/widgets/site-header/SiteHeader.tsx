@@ -1,4 +1,5 @@
 import { AccountButton } from "@/features/session/AccountButton";
+import { AccountDialog } from "@/features/session/AccountDialog";
 import { EasyToggle } from "@/features/easy-mode/EasyToggle";
 import { ThemeMenu } from "@/features/theme/ThemeMenu";
 import { SITE } from "@/shared/config/site";
@@ -20,20 +21,18 @@ export function SiteHeader({ current = "/" }: { current?: string }) {
         <nav className="main-nav" aria-label="ناوبری اصلی">
           {NAV.map((item) => (
             <a key={item.href} href={item.href} aria-current={item.href === current ? "page" : undefined}>
-              <span className="nav-full">{item.label}</span>
-              <span className="nav-short" aria-hidden="true">
-                {item.short}
-              </span>
+              {item.label}
             </a>
           ))}
         </nav>
         <div className="nav-actions">
           <AccountButton />
-          <EasyToggle />
           <ThemeMenu />
+          <EasyToggle />
           <MobileMenu current={current} />
         </div>
       </div>
+      <AccountDialog />
     </header>
   );
 }

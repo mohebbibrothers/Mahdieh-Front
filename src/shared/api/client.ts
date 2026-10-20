@@ -33,6 +33,11 @@ async function csrfToken(): Promise<{ token: string; header: string }> {
   return csrf;
 }
 
+/** جنگو هنگام ورود/خروج توکن CSRF را می‌چرخاند ⇒ پس از هر دو، توکن کش‌شده دور ریخته می‌شود. */
+export function resetCsrf(): void {
+  csrf = null;
+}
+
 const SAFE = new Set(["GET", "HEAD", "OPTIONS"]);
 const csrfMiddleware: Middleware = {
   async onRequest({ request }) {

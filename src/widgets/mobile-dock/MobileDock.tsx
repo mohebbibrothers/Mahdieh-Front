@@ -1,12 +1,10 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
-import { meQuery } from "@/shared/api/queries";
-import { SITE, loginHref } from "@/shared/config/site";
+import { AccountTrigger } from "@/features/session/AccountButton";
+import { SITE } from "@/shared/config/site";
 import { Icon } from "@/shared/ui/Icon";
 
 /** موبایل: نوار فراخوان + چهار زبانهٔ پایینی (با فاصلهٔ امن iOS). */
 export function MobileDock() {
-  const me = useQuery(meQuery);
   return (
     <>
       <aside className="mobile-cta" aria-label="شروع رزرو">
@@ -27,14 +25,14 @@ export function MobileDock() {
           <Icon name="calendar" size={22} />
           <span>زمان‌های آزاد</span>
         </a>
-        <a href={me.data ? SITE.routes.my : loginHref(SITE.routes.my)}>
+        <AccountTrigger guestReason="برای دیدن رزروهایتان با شمارهٔ همراه وارد شوید.">
           <Icon name="ticket" size={22} />
           <span>رزروهای من</span>
-        </a>
-        <a href={SITE.routes.help}>
-          <Icon name="compass" size={22} />
-          <span>راهنما</span>
-        </a>
+        </AccountTrigger>
+        <AccountTrigger>
+          <Icon name="user" size={22} />
+          <span>حساب</span>
+        </AccountTrigger>
       </nav>
     </>
   );

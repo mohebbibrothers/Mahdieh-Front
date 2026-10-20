@@ -2,15 +2,16 @@
 @layer components {
   .rail-controls {
     display: flex;
+    flex: none;
     gap: 8px;
   }
   .unit-rail {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(300px, calc((100% - 2 * 22px) / 3));
+    grid-auto-columns: calc((100% - 2 * 22px) / 3);
     gap: 22px;
     overflow-x: auto;
-    padding: 4px 2px 18px;
+    padding: 2px 2px 16px;
     scroll-snap-type: x mandatory;
     scroll-padding-inline: 2px;
     scrollbar-width: none;
@@ -22,37 +23,53 @@
   .unit-card {
     display: flex;
     flex-direction: column;
+    min-width: 0;
     overflow: hidden;
     border: 1px solid var(--color-border);
     border-radius: 16px;
     background: var(--color-surface);
     scroll-snap-align: start;
     transition:
-      transform var(--base) var(--ease),
-      box-shadow var(--base) var(--ease),
-      border-color var(--base) var(--ease);
+      transform var(--fast) var(--ease),
+      border-color var(--fast) var(--ease);
   }
   .unit-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-3px);
     border-color: var(--color-border-strong);
-    box-shadow: var(--shadow-card);
   }
+  /* زمینهٔ تصویر: سه تهِ رنگ طراح (کارت ۲ و ۳) + معادل شبِ جنگلی */
   .unit-card__visual {
+    --unit-visual: #eeeee3;
     position: relative;
     display: grid;
     place-items: center;
-    aspect-ratio: 385 / 287;
-    padding: 18px;
-    background: radial-gradient(circle at 50% 45%, var(--color-surface), transparent 72%), var(--color-sunken);
-    border-bottom: 1px solid var(--color-border);
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background: var(--unit-visual);
+  }
+  .unit-card:nth-child(2) .unit-card__visual {
+    --unit-visual: #eeebe2;
+  }
+  .unit-card:nth-child(3) .unit-card__visual {
+    --unit-visual: #e8eeea;
+  }
+  :root[data-theme="dark"] .unit-card__visual {
+    --unit-visual: color-mix(in oklab, var(--color-raised) 70%, #d7bb7b 6%);
+  }
+  :root[data-theme="dark"] .unit-card:nth-child(2) .unit-card__visual {
+    --unit-visual: color-mix(in oklab, var(--color-raised) 70%, #b89a6a 10%);
+  }
+  :root[data-theme="dark"] .unit-card:nth-child(3) .unit-card__visual {
+    --unit-visual: color-mix(in oklab, var(--color-raised) 76%, #1bb294 8%);
   }
   .unit-card__visual img {
-    width: 88%;
-    height: auto;
-    transition: scale var(--base) var(--ease);
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.4s var(--ease);
   }
   .unit-card:hover .unit-card__visual img {
-    scale: 1.04;
+    transform: scale(1.04);
   }
   :root[data-theme="dark"] .unit-card__visual img,
   :root[data-theme="dark"] .unit-detail__visual img {
@@ -60,116 +77,207 @@
   }
   .unit-card__code {
     position: absolute;
-    top: 12px;
-    inset-inline-start: 12px;
-    padding: 2px 11px;
-    border-radius: 999px;
-    background: var(--color-surface);
+    top: 14px;
+    right: 16px;
+    padding: 2px 8px;
+    border: 1px solid #ffffffa6;
+    border-radius: 6px;
+    background: #fffdf3df;
+    color: #3c5749;
     font-size: 0.75rem;
-    font-weight: 700;
-    box-shadow: 0 2px 8px var(--color-shadow);
+  }
+  :root[data-theme="dark"] .unit-card__code {
+    border-color: var(--color-border);
+    background: oklch(from var(--color-surface) l c h / 0.88);
+    color: var(--color-text);
   }
   .unit-card__body {
-    display: grid;
-    gap: 9px;
-    padding: 18px 20px 20px;
+    display: flex;
     flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    padding: 20px;
   }
   .unit-card__title {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 9px;
+  }
+  .unit-card__title h3 {
     font-size: 1.125rem;
     font-weight: 650;
   }
-  .unit-card__title h3 {
-    font-size: inherit;
-    font-weight: inherit;
+  .unit-card__title small {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    white-space: nowrap;
   }
   .unit-card__meta {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
+    gap: 14px;
+    margin-top: 7px;
     color: var(--color-text-muted);
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
   }
+  .unit-card__meta span,
+  .unit-feature-row li {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .unit-card__meta .icon {
+    width: 15px;
+    height: 15px;
+  }
+  /* تک‌خطی: امکانی که کامل جا نشود به خط دوم (پنهان) می‌رود ⇒ نه سرریز، نه «…» پشت‌سرهم.
+     فهرست کامل در پنجرهٔ جزئیات واحد. */
   .unit-feature-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    align-items: center;
+    gap: 0 12px;
+    height: 1lh;
+    overflow: hidden;
+    margin-top: 16px;
+    margin-bottom: 17px;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    line-height: 1.85;
   }
   .unit-feature-row li {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 2px 10px;
-    border-radius: 999px;
-    background: var(--color-sunken);
-    font-size: 0.75rem;
+    max-width: 100%;
+  }
+  .unit-feature-row li > span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
   .unit-feature-row .icon {
-    color: var(--color-brand-ink);
+    width: 14px;
+    height: 14px;
   }
   .unit-card__foot {
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: space-between;
     gap: 12px;
     margin-top: auto;
-    padding-top: 12px;
+    padding-top: 15px;
     border-top: 1px solid var(--color-border);
   }
+  .unit-card__foot .btn {
+    flex: none;
+    min-height: 44px;
+    padding: 7px 12px;
+    font-size: 0.75rem;
+  }
   .mini-availability {
-    display: grid;
-    gap: 6px;
     min-width: 0;
   }
   .mini-availability small {
+    display: block;
     color: var(--color-text-muted);
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
+    line-height: 1.85;
   }
   .mini-cells {
-    display: grid;
-    grid-template-columns: repeat(14, 9px);
-    gap: 2px;
+    display: flex;
+    gap: 3px;
+    margin-top: 7px;
   }
   .mini-cells i {
-    height: 16px;
-    border-radius: 3px;
-    background: var(--color-free-border);
-  }
-  .mini-cells i:nth-child(2n) {
-    margin-inline-end: 2px;
+    width: 7px;
+    height: 11px;
+    border: 1px solid var(--color-free-border);
+    border-radius: 2px;
+    background: var(--color-free-bg);
   }
   .mini-cells i[data-status="occupied"] {
-    background: repeating-linear-gradient(-45deg, var(--color-busy-bg) 0 2px, var(--color-busy-border) 2px 3px);
+    border-color: var(--color-busy-border);
+    background: var(--color-busy-border);
+    opacity: 0.7;
   }
   .mini-cells i[data-status="buffer"] {
-    background: var(--color-warn-fg);
-    opacity: 0.5;
+    border-color: var(--color-warn-fg);
+    background: var(--color-warn-bg);
   }
   .mini-cells i[data-status="blocked"] {
-    background: var(--color-danger-fg);
-    opacity: 0.5;
+    border-color: var(--color-danger-fg);
+    background: var(--color-danger-bg);
   }
   .mini-cells i[data-status="past"] {
-    background: var(--color-border);
+    border-style: dashed;
+    border-color: var(--color-border);
+    background: transparent;
   }
   .unit-card--skeleton:hover {
     transform: none;
-    box-shadow: none;
   }
-  @media (max-width: 900px) {
+  /* مثل طراح: سه کارت · ≤۱۱۰۰ بدنهٔ فشرده و دو امکان · ≤۸۵۰ دو کارت · ≤۶۲۰ کارت ۸۶٪ با لبهٔ چپِ بیرون‌زده · ≤۳۷۰ ‎۸۹٪‎ */
+  @media (max-width: 1100px) {
+    .unit-card__body {
+      padding: 16px;
+    }
+    .unit-card__title h3 {
+      font-size: 1rem;
+    }
+    .unit-feature-row {
+      gap: 8px;
+    }
+    .unit-feature-row li:nth-child(n + 3) {
+      display: none;
+    }
+  }
+  /* ۸۵۱–۱۰۰۰: کارت ۲۲۹px جای «نوار + دکمه» را ندارد (فایل طراح اینجا از کارت بیرون می‌زند) ⇒ برچسب کوتاه و خانه‌های باریک‌تر */
+  @media (min-width: 851px) and (max-width: 1000px) {
+    .mini-availability__range {
+      display: none;
+    }
+    .mini-cells {
+      gap: 2px;
+    }
+    .mini-cells i {
+      width: 5px;
+    }
+  }
+  @media (max-width: 850px) {
     .unit-rail {
-      grid-auto-columns: minmax(270px, 82%);
+      grid-auto-columns: calc((100% - 20px) / 2);
+      gap: 20px;
+    }
+  }
+  @media (max-width: 620px) {
+    .unit-rail {
+      grid-auto-columns: 86%;
       gap: 14px;
-      margin-inline: calc(-1 * var(--spacing-gutter));
-      padding-inline: var(--spacing-gutter);
-      scroll-padding-inline: var(--spacing-gutter);
+      margin-inline-end: calc(-1 * var(--page-gutter));
+      padding: 2px 2px 17px; /* طراح: ‎2 + (12 + 5)‎ */
+      padding-inline: 2px calc(var(--page-gutter) + 2px);
+      scroll-padding-inline: 2px;
+    }
+    .unit-card {
+      border-radius: 13px;
+    }
+    .unit-card__body {
+      padding: 17px;
+    }
+    .unit-card__title h3 {
+      font-size: 1.0625rem;
+    }
+    .unit-feature-row {
+      gap: 14px;
     }
     .rail-controls {
-      display: none;
+      gap: 6px;
+    }
+  }
+  @media (max-width: 370px) {
+    .unit-rail {
+      grid-auto-columns: 89%;
+    }
+    .unit-feature-row {
+      gap: 10px;
     }
   }
 

@@ -2,8 +2,9 @@
 @layer components {
   .search-wrap {
     position: relative;
-    z-index: 2;
-    margin-top: 8px;
+    z-index: 5;
+    margin-top: -4px;
+    scroll-margin-top: calc(var(--header-h) + 22px);
   }
   .search-card {
     padding: 24px 28px;
@@ -17,8 +18,8 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 6px 16px;
-    margin-bottom: 18px;
+    gap: 6px 12px;
+    margin-bottom: 17px;
   }
   .search-heading h2 {
     display: flex;
@@ -37,21 +38,29 @@
     color: var(--color-text-muted);
     font-size: 0.75rem;
   }
+  /* مثل طراح: بی‌قاب بیرونی؛ ستون‌ها با خط نازک جدا و دکمهٔ تمام‌قد. */
   .search-form {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr)) 256px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1.07fr);
     gap: 0;
-    border: 1px solid var(--color-border);
-    border-radius: 14px;
-    overflow: hidden;
+    align-items: stretch;
   }
   .form-field {
+    position: relative;
     display: grid;
     align-content: start;
-    gap: 2px;
-    padding: 12px 18px;
-    border-inline-end: 1px solid var(--color-border);
+    gap: 0;
+    padding-inline: 21px;
+    border-left: 1px solid var(--color-border);
     min-width: 0;
+  }
+  /* طراح: راهنما inline در بلوک ⇒ ردیف خطِ والد (۱۶px × ۱٫۸۵ ≈ ۳۰px) و متن ۶px زیر کنترل */
+  .search-form .field-help {
+    min-height: 30px;
+    padding-top: 4px;
+  }
+  .form-field:first-child {
+    padding-right: 0;
   }
   .field-button {
     display: block;
@@ -80,13 +89,12 @@
   }
   .search-submit {
     display: flex;
+    align-items: stretch;
+    padding-right: 24px;
   }
   .btn-search {
     width: 100%;
-    height: 100%;
-    min-height: 64px;
-    border-radius: 0;
-    font-size: 0.9375rem;
+    min-height: 62px;
   }
   .form-note {
     display: flex;
@@ -244,32 +252,117 @@
     gap: 6px;
   }
 
-  @media (max-width: 1023px) {
+  @media (max-width: 1100px) {
+    .search-card {
+      padding: 22px;
+    }
+    .form-field {
+      padding-inline: 14px;
+    }
+    .form-field:first-child {
+      padding-right: 0;
+    }
+    .search-submit {
+      padding-right: 14px;
+    }
+    .btn-search {
+      padding-inline: 12px;
+      font-size: 0.75rem;
+    }
+  }
+  @media (max-width: 850px) {
     .search-form {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr);
     }
     .search-submit {
       grid-column: 1 / -1;
-    }
-    .form-field:nth-child(3) {
-      border-inline-end: 0;
+      padding: 20px 0 0;
     }
     .btn-search {
-      min-height: 56px;
+      min-height: 46px;
+      font-size: 0.875rem;
+    }
+    .form-field:nth-child(3) {
+      border-left: 0;
     }
   }
-  @media (max-width: 720px) {
+  @media (max-width: 620px) {
+    .search-wrap {
+      margin-top: 0;
+    }
     .search-card {
       padding: 19px 16px;
       border-radius: 14px;
-      box-shadow: 0 5px 25px var(--color-shadow);
+      box-shadow: 0 5px 25px #213f3108;
+    }
+    .search-heading {
+      display: block;
+      margin-bottom: 18px;
+    }
+    .search-heading h2 {
+      font-size: 1rem;
+    }
+    .search-heading p {
+      margin-top: 6px;
+      padding-right: 28px;
     }
     .search-form {
-      grid-template-columns: 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 15px 0;
     }
-    .form-field {
-      border-inline-end: 0;
-      border-bottom: 1px solid var(--color-border);
+    .form-field,
+    .form-field:nth-child(2) {
+      padding: 0 12px 0 0;
+      border-left: 0;
+    }
+    .form-field:first-child {
+      padding: 0 0 0 12px;
+      border-left: 1px solid var(--color-border);
+    }
+    .form-field:nth-child(3) {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+      align-items: center;
+      padding: 13px 0 0;
+      border-top: 1px solid var(--color-border);
+    }
+    .form-field:nth-child(3) .field-label {
+      margin: 0;
+    }
+    .form-field:nth-child(3) .field-help {
+      display: none;
+    }
+    .field-value {
+      font-size: 0.75rem;
+    }
+    .field-help {
+      line-height: 1.9;
+    }
+    .search-form .stepper {
+      justify-content: space-between;
+      gap: 3px;
+    }
+    .search-form .stepper__value {
+      min-width: 32px;
+      font-size: 0.75rem;
+    }
+    .search-submit {
+      grid-column: 1 / -1;
+      padding: 0;
+    }
+    .btn-search {
+      min-height: 48px;
+      font-size: 0.8125rem;
+    }
+    .form-note {
+      align-items: flex-start;
+      margin-top: 12px;
+      line-height: 1.9;
+    }
+    .form-note .icon {
+      flex: none;
+      margin-top: 4px; /* طراح: هم‌خط با سطر اول متن ۱۲px با خط ۱٫۹ */
     }
     .results__list {
       grid-template-columns: 1fr;
@@ -280,10 +373,21 @@
     .result-card__actions .btn {
       flex: 1;
     }
+    :root[data-easy="true"] .field-value {
+      font-size: 0.875rem;
+    }
   }
   @media (max-width: 420px) {
     .date-options {
       grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 370px) {
+    .search-card {
+      padding: 17px 14px;
+    }
+    .search-heading h2 {
+      font-size: 0.9375rem;
     }
   }
 
@@ -333,11 +437,6 @@
   .verify-fields dd {
     font-size: 0.8125rem;
     font-weight: 600;
-  }
-  .verify-foot {
-    margin-top: 16px;
-    color: var(--color-text-muted);
-    font-size: 0.75rem;
   }
 }
 @keyframes results-in {
