@@ -65,7 +65,7 @@ export function BuildingModel({ children }: { children: ReactNode }) {
       g.setAttribute(
         "aria-label",
         room
-          ? `${room.title}، ${floorLabel(room.floor)}، ظرفیت ${faDigits(room.capacity)} نفر — ${status === "unknown" ? "در حال دریافت وضعیت" : STATUS_LABEL[status]}. جزئیات و زمان‌ها`
+          ? `${code}، ${room.title}، ${floorLabel(room.floor)}، ظرفیت ${faDigits(room.capacity)} نفر — ${status === "unknown" ? "در حال دریافت وضعیت" : STATUS_LABEL[status]}. جزئیات و زمان‌ها`
           : `واحد ${code}`,
       );
     }

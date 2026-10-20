@@ -10,7 +10,7 @@ export function SiteHeader({ current = "/" }: { current?: string }) {
   return (
     <header className="site-header">
       <div className="page-shell header-inner">
-        <a className="brand-lockup" href={SITE.routes.home} aria-label={`${SITE.name} — صفحهٔ نخست`}>
+        <a className="brand-lockup" href={SITE.routes.home} aria-label={`${SITE.name}، ${SITE.tagline} — صفحهٔ نخست`}>
           <Mark />
           <span className="brand-words">
             <span className="brand-type">{SITE.name}</span>

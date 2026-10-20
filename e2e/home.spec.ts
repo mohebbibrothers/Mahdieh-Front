@@ -117,7 +117,12 @@ test.describe("P-01 صفحهٔ خانه", () => {
     api.allowConsole(/Failed to load resource: the server responded with a status of 503/);
     await page.goto("/");
     const alert = page.getByRole("alert").filter({ hasText: "تقویم دریافت نشد" });
-    await expect(alert).toBeVisible({ timeout: 15_000 });
+    // react-query پیش از اعلام خطا با عقب‌نشینی نمایی دوباره می‌کوشد؛ ساعت را جلو می‌بریم
+    // تا آزمون به زمان واقعی و بار ماشین وابسته نباشد.
+    await expect(async () => {
+      await page.clock.runFor(5_000);
+      await expect(alert).toBeVisible({ timeout: 250 });
+    }).toPass({ timeout: 20_000 });
     fail = false;
     await alert.getByRole("button", { name: /تلاش دوباره/ }).click();
     await expect(alert).toBeHidden();
@@ -128,12 +133,20 @@ test.describe("P-01 صفحهٔ خانه", () => {
 test.describe("کیفیت سراسری", () => {
   for (const theme of ["light", "dark"] as const) {
     test(`دسترس‌پذیری axe بدون خطای جدی (${theme})`, async ({ page, api }) => {
+      test.slow(); // ممیزی کامل DOM روی ماشین ۲ هسته‌ای CI
       await page.addInitScript((t) => localStorage.setItem("mahdieh-theme", t), theme);
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.goto("/");
       await expect(cells(page).first()).toBeVisible();
       const { violations } = await new AxeBuilder({ page })
-        .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+        // runOnly صریح درون options (‎.options()‎ گزینه‌های withTags را بازنویسی می‌کند).
+        // فقط تخلف‌ها: هزاران نتیجهٔ «قبول» جدول دسکتاپ را بی‌دلیل منتقل نکن (علت کندی/ناپایداری).
+        .options({
+          runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa", "best-practice"] },
+          resultTypes: ["violations"],
+          // WCAG 2.5.3 «برچسب در نام» در axe آزمایشی است و با runOnly برچسبی اجرا نمی‌شود؛ صریحاً روشن.
+          rules: { "label-content-name-mismatch": { enabled: true } },
+        })
         .analyze();
       const serious = violations
         .filter((v) => v.impact === "serious" || v.impact === "critical")

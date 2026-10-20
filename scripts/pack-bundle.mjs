@@ -11,6 +11,7 @@ import { createHash } from "node:crypto";
 import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { gzipSync } from "node:zlib";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const DIST = path.join(ROOT, "dist", "mahdieh-front");
@@ -28,7 +29,8 @@ try {
   mkdirSync(OUT, { recursive: true });
   const tarball = path.join(OUT, NAME);
   // ترتیب ثابت و مالک ۰ ⇒ بستهٔ تکرارپذیر و بی‌اطلاعات کاربر ساخت.
-  execFileSync(
+  // gzip نود: سرآیند بی‌نام و بی‌زمان ⇒ بایت‌به‌بایت تکرارپذیر (به‌جای متغیر منسوخ GZIP).
+  const tar = execFileSync(
     "tar",
     [
       "--sort=name",
@@ -36,14 +38,15 @@ try {
       "--group=0",
       "--numeric-owner",
       "--mode=u+rw,go+r,go-w",
-      "-czf",
-      tarball,
+      "-cf",
+      "-",
       "-C",
       stage,
       info.release,
     ],
-    { stdio: "inherit", env: { ...process.env, GZIP: "-9n" } },
+    { maxBuffer: 512 * 1024 * 1024 },
   );
+  writeFileSync(tarball, gzipSync(tar, { level: 9 }));
   const digest = createHash("sha256").update(readFileSync(tarball)).digest("hex");
   writeFileSync(`${tarball}.sha256`, `${digest}  ${NAME}\n`);
   cpSync(path.join(DIST, "BUILD_INFO.json"), path.join(OUT, "BUILD_INFO.json"));
