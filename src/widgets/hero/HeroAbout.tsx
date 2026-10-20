@@ -30,27 +30,29 @@ export function HeroAbout() {
         }
       >
         <div className="about-floors">
-          {(property.data ?? []).toSorted((a, b) => b.number - a.number).map((f) => (
-            <section key={f.number} className="about-floor">
-              <h3>
-                <span className="about-floor__num">{faDigits(f.number)}</span>
-                {f.title || floorLabel(f.number)}
-              </h3>
-              {f.description ? <p>{f.description}</p> : null}
-              <ul>
-                {f.units.map((u) => (
-                  <li key={u.code}>
-                    <bdi className="latin">{u.code}</bdi> {u.title} · تا {faDigits(u.capacity_total)} نفر
-                  </li>
-                ))}
-              </ul>
-              {f.accessibility_notes ? (
-                <p className="about-floor__a11y">
-                  <Icon name="accessibility" size={16} /> {f.accessibility_notes}
-                </p>
-              ) : null}
-            </section>
-          ))}
+          {(property.data ?? [])
+            .toSorted((a, b) => b.number - a.number)
+            .map((f) => (
+              <section key={f.number} className="about-floor">
+                <h3>
+                  <span className="about-floor__num">{faDigits(f.number)}</span>
+                  {f.title || floorLabel(f.number)}
+                </h3>
+                {f.description ? <p>{f.description}</p> : null}
+                <ul>
+                  {f.units.map((u) => (
+                    <li key={u.code}>
+                      <bdi className="latin">{u.code}</bdi> {u.title} · تا {faDigits(u.capacity_total)} نفر
+                    </li>
+                  ))}
+                </ul>
+                {f.accessibility_notes ? (
+                  <p className="about-floor__a11y">
+                    <Icon name="accessibility" size={16} /> {f.accessibility_notes}
+                  </p>
+                ) : null}
+              </section>
+            ))}
           {property.isPending ? <div className="skeleton skeleton--block" /> : null}
         </div>
         {config.data?.site.support_address ? (

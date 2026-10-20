@@ -168,8 +168,7 @@
     border: 1px solid oklch(from var(--color-border-strong) l c h / 0.35);
     border-radius: 160px 160px 0 0;
     pointer-events: none;
-    background:
-      radial-gradient(ellipse at 50% 40%, oklch(from var(--color-brand-tint) l c h / 0.9), transparent 70%);
+    background: radial-gradient(ellipse at 50% 40%, oklch(from var(--color-brand-tint) l c h / 0.9), transparent 70%);
   }
   .arch-backdrop::before {
     content: "";

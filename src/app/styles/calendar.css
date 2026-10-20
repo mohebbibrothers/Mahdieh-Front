@@ -167,7 +167,8 @@
   }
   .cell[data-status="occupied"] {
     border-color: var(--color-busy-border);
-    background: repeating-linear-gradient(-45deg, transparent 0 4px, var(--color-busy-hatch) 4px 5px), var(--color-busy-bg);
+    background:
+      repeating-linear-gradient(-45deg, transparent 0 4px, var(--color-busy-hatch) 4px 5px), var(--color-busy-bg);
     color: var(--color-busy-fg);
   }
   .cell[data-status="buffer"] {

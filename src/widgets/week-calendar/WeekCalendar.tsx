@@ -2,12 +2,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { cellAt, STATUS_ICON, STATUS_LABEL } from "@/entities/slot/timeline";
-import { floorLabel, unitTypeIcon } from "@/entities/unit/unit";
+import { unitTypeIcon } from "@/entities/unit/unit";
 import { draftStore } from "@/features/booking-draft/store";
 import { useAvailability } from "@/features/booking-draft/use-availability";
 import { occasionsQuery } from "@/shared/api/queries";
 import type { CalendarCell } from "@/shared/api/schemas";
-import { addDays, faDigits, formatClock, formatDayLabel, formatDayMonth, formatFullDate, formatWeekday, tehranToday } from "@/shared/lib/fa";
+import {
+  addDays,
+  faDigits,
+  formatClock,
+  formatDayLabel,
+  formatDayMonth,
+  formatFullDate,
+  formatWeekday,
+  tehranToday,
+} from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
 
 const WEEK = 7;
@@ -24,13 +33,17 @@ export function WeekCalendar() {
   const [mobileDay, setMobileDay] = useState(0);
 
   const days = timeline?.days.slice(0, WEEK) ?? [];
-  const startIndex = timeline?.units.map((u) => (draft.day ? cellAt(u, draft.day, draft.period)?.index : undefined)).find((x) => x !== undefined);
-  const inRange = (c: CalendarCell) => draft.searched && startIndex !== undefined && c.index >= startIndex && c.index < startIndex + draft.cells;
+  const startIndex = timeline?.units
+    .map((u) => (draft.day ? cellAt(u, draft.day, draft.period)?.index : undefined))
+    .find((x) => x !== undefined);
+  const inRange = (c: CalendarCell) =>
+    draft.searched && startIndex !== undefined && c.index >= startIndex && c.index < startIndex + draft.cells;
 
-  const pick = (unit: string, c: CalendarCell) => draftStore.set({ day: c.start.slice(0, 10), period: c.kind, openUnit: unit });
+  const pick = (unit: string, c: CalendarCell) =>
+    draftStore.set({ day: c.start.slice(0, 10), period: c.kind, openUnit: unit });
 
   return (
-    <section className="container section availability-section" id="availability" aria-labelledby="availability-title">
+    <section className="page-shell section availability-section" id="availability" aria-labelledby="availability-title">
       <div className="section-head">
         <div>
           <p className="section-eyebrow">زمانی برای زیارت</p>
@@ -72,13 +85,25 @@ export function WeekCalendar() {
         ) : null}
 
         {/* دسکتاپ */}
-        <div className="week-grid" role="table" aria-label="موجودی هفت روز آینده" aria-rowcount={(timeline?.units.length ?? 5) + 1}>
+        <div
+          className="week-grid"
+          role="table"
+          aria-label="موجودی هفت روز آینده"
+          aria-rowcount={(timeline?.units.length ?? 5) + 1}
+        >
           <div className="week-grid__row week-grid__row--head" role="row">
             <div className="week-grid__corner" role="columnheader">
               واحد / روز
             </div>
             {(days.length ? days : Array.from({ length: WEEK }, () => null)).map((d, i) => (
-              <div key={d?.day ?? i} className="day-head" role="columnheader" aria-colspan={2} data-weekend={d?.is_weekend || undefined} data-today={d?.day === today || undefined}>
+              <div
+                key={d?.day ?? i}
+                className="day-head"
+                role="columnheader"
+                aria-colspan={2}
+                data-weekend={d?.is_weekend || undefined}
+                data-today={d?.day === today || undefined}
+              >
                 {d ? (
                   <>
                     <span className="day-head__weekday">{d.day === today ? "امروز" : formatWeekday(d.day)}</span>
@@ -112,7 +137,9 @@ export function WeekCalendar() {
                 (["day", "night"] as const).map((kind) => {
                   const c = cellAt(u, d.day, kind);
                   if (!c) return <div key={`${d.day}-${kind}`} className="cell-wrap" role="cell" />;
-                  return <Cell key={c.index} cell={c} unit={u.title} range={inRange(c)} onPick={() => pick(u.code, c)} />;
+                  return (
+                    <Cell key={c.index} cell={c} unit={u.title} range={inRange(c)} onPick={() => pick(u.code, c)} />
+                  );
                 }),
               )}
             </div>
@@ -123,7 +150,13 @@ export function WeekCalendar() {
         {/* موبایل */}
         <div className="mobile-calendar">
           <div className="mobile-cal-nav">
-            <button type="button" className="icon-button" onClick={() => setMobileDay((x) => Math.max(0, x - 1))} disabled={mobileDay === 0} aria-label="روز قبل">
+            <button
+              type="button"
+              className="icon-button"
+              onClick={() => setMobileDay((x) => Math.max(0, x - 1))}
+              disabled={mobileDay === 0}
+              aria-label="روز قبل"
+            >
               <Icon name="arrow-right" size={18} />
             </button>
             <div className="mobile-cal-nav__title" aria-live="polite">
@@ -134,16 +167,32 @@ export function WeekCalendar() {
                   : ""}
               </small>
             </div>
-            <button type="button" className="icon-button" onClick={() => setMobileDay((x) => Math.min(days.length - 1, x + 1))} disabled={mobileDay >= days.length - 1} aria-label="روز بعد">
+            <button
+              type="button"
+              className="icon-button"
+              onClick={() => setMobileDay((x) => Math.min(days.length - 1, x + 1))}
+              disabled={mobileDay >= days.length - 1}
+              aria-label="روز بعد"
+            >
               <Icon name="arrow-left" size={18} />
             </button>
           </div>
           <div className="mobile-date-rail" role="tablist" aria-label="روزهای هفته">
             {days.map((d, i) => (
-              <button key={d.day} type="button" role="tab" aria-selected={i === mobileDay} onClick={() => setMobileDay(i)} data-today={d.day === today || undefined}>
+              <button
+                key={d.day}
+                type="button"
+                role="tab"
+                aria-selected={i === mobileDay}
+                onClick={() => setMobileDay(i)}
+                data-today={d.day === today || undefined}
+              >
                 <small>{d.day === today ? "امروز" : formatWeekday(d.day)}</small>
                 <strong>{formatDayMonth(d.day)}</strong>
-                <span className="date-option__meter" data-level={d.free_cells === 0 ? "none" : d.free_cells < d.total_cells / 2 ? "low" : "ok"} />
+                <span
+                  className="date-option__meter"
+                  data-level={d.free_cells === 0 ? "none" : d.free_cells < d.total_cells / 2 ? "low" : "ok"}
+                />
               </button>
             ))}
           </div>
@@ -166,7 +215,18 @@ export function WeekCalendar() {
                     </span>
                     {(["day", "night"] as const).map((kind) => {
                       const c = cellAt(u, days[mobileDay]?.day ?? "", kind);
-                      return c ? <Cell key={c.index} cell={c} unit={u.title} range={inRange(c)} onPick={() => pick(u.code, c)} wide /> : <span key={kind} />;
+                      return c ? (
+                        <Cell
+                          key={c.index}
+                          cell={c}
+                          unit={u.title}
+                          range={inRange(c)}
+                          onPick={() => pick(u.code, c)}
+                          wide
+                        />
+                      ) : (
+                        <span key={kind} />
+                      );
                     })}
                   </div>
                 ))
@@ -179,32 +239,46 @@ export function WeekCalendar() {
             <i className="live-dot" aria-hidden="true" />
             زمان‌ها به افق مشهد مقدس و به‌صورت زنده نمایش داده می‌شوند.
           </p>
-          {calendar.dataUpdatedAt ? <span>به‌روزرسانی: {formatClock(new Date(calendar.dataUpdatedAt).toISOString())}</span> : null}
+          {calendar.dataUpdatedAt ? (
+            <span>به‌روزرسانی: {formatClock(new Date(calendar.dataUpdatedAt).toISOString())}</span>
+          ) : null}
         </div>
       </div>
     </section>
   );
 }
 
-function Cell({ cell, unit, range, onPick, wide }: { cell: CalendarCell; unit: string; range: boolean; onPick: () => void; wide?: boolean }) {
+function Cell({
+  cell,
+  unit,
+  range,
+  onPick,
+  wide,
+}: {
+  cell: CalendarCell;
+  unit: string;
+  range: boolean;
+  onPick: () => void;
+  wide?: boolean;
+}) {
   const label = `${unit}، ${formatDayLabel(cell.start.slice(0, 10))}، ${cell.kind === "day" ? "روز" : "شب"} از ساعت ${formatClock(cell.start)} — ${STATUS_LABEL[cell.status]}${cell.detail ? `، ${cell.detail}` : ""}`;
   return (
     <div role={wide ? undefined : "cell"} className="cell-wrap">
-    <button
-      type="button"
-      className="cell"
-      data-status={cell.status}
-      data-kind={cell.kind}
-      data-range={range || undefined}
-      data-wide={wide || undefined}
-      aria-label={label}
-      title={label}
-      disabled={cell.status === "past"}
-      onClick={onPick}
-    >
-      <Icon name={STATUS_ICON[cell.status]} size={16} />
-      {wide ? <span>{STATUS_LABEL[cell.status]}</span> : null}
-    </button>
+      <button
+        type="button"
+        className="cell"
+        data-status={cell.status}
+        data-kind={cell.kind}
+        data-range={range || undefined}
+        data-wide={wide || undefined}
+        aria-label={label}
+        title={label}
+        disabled={cell.status === "past"}
+        onClick={onPick}
+      >
+        <Icon name={STATUS_ICON[cell.status]} size={16} />
+        {wide ? <span>{STATUS_LABEL[cell.status]}</span> : null}
+      </button>
     </div>
   );
 }
@@ -218,11 +292,12 @@ function GridSkeleton() {
             <span className="skeleton skeleton--text" />
           </div>
           {Array.from({ length: WEEK * 2 }, (_, c) => (
-            <span key={c} className="cell-wrap"><span className="cell skeleton" /></span>
+            <span key={c} className="cell-wrap">
+              <span className="cell skeleton" />
+            </span>
           ))}
         </div>
       ))}
     </>
   );
 }
-

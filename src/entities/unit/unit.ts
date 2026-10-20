@@ -20,8 +20,7 @@ export const featureIcon = (code: string): IconName => FEATURE_ICONS[code] ?? "c
 export const unitTypeIcon = (type: string): IconName => (type === "suite" ? "suite" : "room");
 
 /** پلان مفهومی بر اساس نوع واحد (عکس واقعی هنوز نیست؛ UnitDetail.photos در صفحهٔ جزئیات). */
-export const unitPlan = (type: string): string =>
-  ((type === "suite" ? planSuite : planRoom) as { src: string }).src;
+export const unitPlan = (type: string): string => ((type === "suite" ? planSuite : planRoom) as { src: string }).src;
 
 const FLOOR_NAMES = ["همکف", "اول", "دوم", "سوم", "چهارم"];
 export const floorLabel = (n: number) => `طبقهٔ ${FLOOR_NAMES[n] ?? n}`;

@@ -1,8 +1,6 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useId, useRef } from "react";
-import { Button, Dialog, DialogTrigger, Heading, Popover } from "react-aria-components";
 import { cellAt, type Period } from "@/entities/slot/timeline";
 import { floorLabel, unitTypeIcon } from "@/entities/unit/unit";
 import { bookingHref, draftStore } from "@/features/booking-draft/store";
@@ -22,6 +20,7 @@ import {
   guestsLabel,
 } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
+import { Popover } from "@/shared/ui/Popover";
 import { Stepper } from "@/shared/ui/Stepper";
 
 export function QuickSearch() {
@@ -31,7 +30,9 @@ export function QuickSearch() {
   const maxGuests = timeline ? Math.max(...timeline.units.map((u) => u.capacity)) : 8;
   const maxCells = Math.min(policies.maxCells, timeline?.maxCells ?? policies.maxCells);
 
-  const startCell = timeline?.units.map((u) => (draft.day ? cellAt(u, draft.day, draft.period) : undefined)).find(Boolean);
+  const startCell = timeline?.units
+    .map((u) => (draft.day ? cellAt(u, draft.day, draft.period) : undefined))
+    .find(Boolean);
   const arrivalHelp = startCell
     ? `سانس ${draft.period === "day" ? "روز" : "شب"} · ساعت ${formatClock(startCell.start)}`
     : draft.period === "day"
@@ -39,7 +40,7 @@ export function QuickSearch() {
       : "سانس شب · ساعت ۲۰:۰۰";
 
   return (
-    <section className="container search-wrap" id="quick-search" aria-labelledby={`${id}-title`}>
+    <section className="page-shell search-wrap" id="quick-search" aria-labelledby={`${id}-title`}>
       <div className="search-card">
         <div className="search-heading">
           <h2 id={`${id}-title`}>
@@ -81,19 +82,25 @@ export function QuickSearch() {
             <span className="field-label" id={`${id}-arrival`}>
               از چه زمانی؟
             </span>
-            <DialogTrigger>
-              <Button className="field-button" aria-labelledby={`${id}-arrival ${id}-arrival-value`}>
-                <span className="field-value">
-                  <span id={`${id}-arrival-value`}>{draft.day ? formatDayLabel(draft.day) : "در حال دریافت…"}</span>
-                  <Icon name="chevron-down" size={18} />
-                </span>
-              </Button>
-              <Popover placement="bottom" offset={8} className="popover popover--date">
-                <Dialog className="popover__dialog" aria-label="انتخاب زمان ورود">
-                  {({ close }) => <ArrivalPicker onDone={close} />}
-                </Dialog>
-              </Popover>
-            </DialogTrigger>
+            <Popover
+              anchor="arrival"
+              label="انتخاب زمان ورود"
+              trigger={(p) => (
+                <button
+                  type="button"
+                  {...p}
+                  className={`field-button ${p.className}`}
+                  aria-labelledby={`${id}-arrival ${id}-arrival-value`}
+                >
+                  <span className="field-value">
+                    <span id={`${id}-arrival-value`}>{draft.day ? formatDayLabel(draft.day) : "در حال دریافت…"}</span>
+                    <Icon name="chevron-down" size={18} />
+                  </span>
+                </button>
+              )}
+            >
+              {(close) => <ArrivalPicker onDone={close} />}
+            </Popover>
             <span className="field-help">{arrivalHelp}</span>
           </div>
 
@@ -101,48 +108,52 @@ export function QuickSearch() {
             <span className="field-label" id={`${id}-duration`}>
               چه مدت می‌مانید؟
             </span>
-            <DialogTrigger>
-              <Button className="field-button" aria-labelledby={`${id}-duration ${id}-duration-value`}>
-                <span className="field-value">
-                  <span id={`${id}-duration-value`}>{durationLabel(draft.cells)}</span>
-                  <Icon name="chevron-down" size={18} />
-                </span>
-              </Button>
-              <Popover placement="bottom" offset={8} className="popover popover--duration">
-                <Dialog className="popover__dialog" aria-label="انتخاب مدت اقامت">
-                  {({ close }) => (
-                    <>
-                      <Heading slot="title" className="popover__title">
-                        مدت اقامتتان را انتخاب کنید
-                      </Heading>
-                      <div className="duration-options">
-                        {Array.from({ length: maxCells - policies.minCells + 1 }, (_, i) => i + policies.minCells).map(
-                          (n) => (
-                            <button
-                              key={n}
-                              type="button"
-                              className="chip-option"
-                              aria-pressed={draft.cells === n}
-                              onClick={() => {
-                                draftStore.set({ cells: n });
-                                close();
-                              }}
-                            >
-                              <strong>{durationLabel(n)}</strong>
-                              <small>{cellsLabel(n)}</small>
-                            </button>
-                          ),
-                        )}
-                      </div>
-                      <p className="popover__note">
-                        هر نیم‌روز ۱۲ ساعت است؛ کوتاه‌ترین اقامت {durationLabel(policies.minCells)} و بلندترین{" "}
-                        {durationLabel(maxCells)}.
-                      </p>
-                    </>
-                  )}
-                </Dialog>
-              </Popover>
-            </DialogTrigger>
+            <Popover
+              anchor="duration"
+              label="انتخاب مدت اقامت"
+              trigger={(p) => (
+                <button
+                  type="button"
+                  {...p}
+                  className={`field-button ${p.className}`}
+                  aria-labelledby={`${id}-duration ${id}-duration-value`}
+                >
+                  <span className="field-value">
+                    <span id={`${id}-duration-value`}>{durationLabel(draft.cells)}</span>
+                    <Icon name="chevron-down" size={18} />
+                  </span>
+                </button>
+              )}
+            >
+              {(close) => (
+                <>
+                  <p className="popover__title">مدت اقامتتان را انتخاب کنید</p>
+                  <div className="duration-options">
+                    {Array.from({ length: maxCells - policies.minCells + 1 }, (_, i) => i + policies.minCells).map(
+                      (n) => (
+                        <button
+                          key={n}
+                          type="button"
+                          className="chip-option"
+                          aria-pressed={draft.cells === n}
+                          onClick={() => {
+                            draftStore.set({ cells: n });
+                            close();
+                          }}
+                        >
+                          <strong>{durationLabel(n)}</strong>
+                          <small>{cellsLabel(n)}</small>
+                        </button>
+                      ),
+                    )}
+                  </div>
+                  <p className="popover__note">
+                    هر نیم‌روز ۱۲ ساعت است؛ کوتاه‌ترین اقامت {durationLabel(policies.minCells)} و بلندترین{" "}
+                    {durationLabel(maxCells)}.
+                  </p>
+                </>
+              )}
+            </Popover>
             <span className="field-help">
               {cellsLabel(draft.cells)} · تا {durationLabel(maxCells)}
             </span>
@@ -161,10 +172,14 @@ export function QuickSearch() {
           {durationLabel(policies.maxCells)} است. ساعت دقیق ورود و خروج پیش از تأیید نمایش داده می‌شود.
         </p>
 
-        <div ref={resultsRef} tabIndex={-1} className="search-results" aria-live="polite" aria-busy={calendar.isFetching}>
-          <AnimatePresence initial={false}>
-            {draft.searched && results.length ? <SearchResults key="results" results={results} /> : null}
-          </AnimatePresence>
+        <div
+          ref={resultsRef}
+          tabIndex={-1}
+          className="search-results"
+          aria-live="polite"
+          aria-busy={calendar.isFetching}
+        >
+          {draft.searched && results.length ? <SearchResults results={results} /> : null}
         </div>
       </div>
     </section>
@@ -177,9 +192,7 @@ function ArrivalPicker({ onDone }: { onDone: () => void }) {
   const setDay = (day: string, period: Period = draft.period) => draftStore.set({ day, period });
   return (
     <>
-      <Heading slot="title" className="popover__title">
-        چه روزی به مشهد می‌رسید؟
-      </Heading>
+      <p className="popover__title">چه روزی به مشهد می‌رسید؟</p>
       <div className="date-options" role="group" aria-label="روز ورود">
         {days.map((d) => (
           <button
@@ -194,7 +207,10 @@ function ArrivalPicker({ onDone }: { onDone: () => void }) {
             <small>{formatWeekday(d.day)}</small>
             <strong>{formatDayNumber(d.day)}</strong>
             <small>{formatMonth(d.day)}</small>
-            <span className="date-option__meter" data-level={d.free_cells === 0 ? "none" : d.free_cells < d.total_cells / 2 ? "low" : "ok"} />
+            <span
+              className="date-option__meter"
+              data-level={d.free_cells === 0 ? "none" : d.free_cells < d.total_cells / 2 ? "low" : "ok"}
+            />
           </button>
         ))}
       </div>
@@ -202,7 +218,11 @@ function ArrivalPicker({ onDone }: { onDone: () => void }) {
         <button type="button" aria-pressed={draft.period === "day"} onClick={() => draftStore.set({ period: "day" })}>
           <Icon name="sun" size={16} /> روز، از ۰۸:۰۰
         </button>
-        <button type="button" aria-pressed={draft.period === "night"} onClick={() => draftStore.set({ period: "night" })}>
+        <button
+          type="button"
+          aria-pressed={draft.period === "night"}
+          onClick={() => draftStore.set({ period: "night" })}
+        >
           <Icon name="moon" size={16} /> شب، از ۲۰:۰۰
         </button>
       </div>
@@ -221,28 +241,20 @@ function ArrivalPicker({ onDone }: { onDone: () => void }) {
 }
 
 function SearchResults({ results }: { results: UnitResult[] }) {
-  const reduce = useReducedMotion();
   const { draft, timeline } = useAvailability();
   const property = useQuery(propertyQuery);
   const units = new Map(timeline?.units.map((u) => [u.code, u]));
   const ok = results.filter((r) => r.verdict.kind === "ok");
   const rest = results.filter((r) => r.verdict.kind !== "ok");
   const highlight = (code: string) =>
-    property.data?.flatMap((f) => f.units).find((u) => u.code === code)?.features.filter((f) => f.is_highlight).slice(0, 2) ?? [];
-
-  const item = {
-    hidden: { opacity: 0, y: reduce ? 0 : 10 },
-    show: { opacity: 1, y: 0 },
-  };
+    property.data
+      ?.flatMap((f) => f.units)
+      .find((u) => u.code === code)
+      ?.features.filter((f) => f.is_highlight)
+      .slice(0, 2) ?? [];
 
   return (
-    <motion.div
-      className="results"
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0 }}
-      transition={{ duration: reduce ? 0 : 0.32, ease: [0.2, 0.7, 0.2, 1] }}
-    >
+    <div className="results">
       <p className="results__summary">
         {ok.length ? (
           <>
@@ -257,12 +269,12 @@ function SearchResults({ results }: { results: UnitResult[] }) {
           </>
         )}
       </p>
-      <motion.ul className="results__list" initial="hidden" animate="show" transition={{ staggerChildren: reduce ? 0 : 0.05 }}>
+      <ul className="results__list">
         {ok.map((r) => {
           const u = units.get(r.code);
           if (!u) return null;
           return (
-            <motion.li key={r.code} variants={item} className="result-card" data-kind="ok">
+            <li key={r.code} className="result-card" data-kind="ok">
               <span className="result-card__icon">
                 <Icon name={unitTypeIcon(u.unitType)} size={22} />
               </span>
@@ -274,14 +286,18 @@ function SearchResults({ results }: { results: UnitResult[] }) {
                 </small>
               </div>
               <div className="result-card__actions">
-                <button type="button" className="btn btn-ghost btn-sm" onClick={() => draftStore.set({ openUnit: u.code })}>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => draftStore.set({ openUnit: u.code })}
+                >
                   جزئیات
                 </button>
                 <a className="btn btn-primary btn-sm" href={bookingHref(u.code, draft)}>
                   ادامه با این واحد <Icon name="arrow-left" size={16} />
                 </a>
               </div>
-            </motion.li>
+            </li>
           );
         })}
         {rest.map((r) => {
@@ -296,7 +312,7 @@ function SearchResults({ results }: { results: UnitResult[] }) {
                   ? "بازه از تقویم این صفحه بیرون است"
                   : "بخشی از بازه آزاد نیست";
           return (
-            <motion.li key={r.code} variants={item} className="result-card" data-kind="no">
+            <li key={r.code} className="result-card" data-kind="no">
               <span className="result-card__icon">
                 <Icon name={r.verdict.kind === "capacity" ? "users" : "lock"} size={20} />
               </span>
@@ -317,15 +333,19 @@ function SearchResults({ results }: { results: UnitResult[] }) {
                     نزدیک‌ترین: {formatMoment(r.nearest.startIso)}
                   </button>
                 ) : (
-                  <button type="button" className="btn btn-ghost btn-sm" onClick={() => draftStore.set({ openUnit: u.code })}>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm"
+                    onClick={() => draftStore.set({ openUnit: u.code })}
+                  >
                     جزئیات
                   </button>
                 )}
               </div>
-            </motion.li>
+            </li>
           );
         })}
-      </motion.ul>
-    </motion.div>
+      </ul>
+    </div>
   );
 }

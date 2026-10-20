@@ -12,7 +12,7 @@ import { HeroAbout } from "./HeroAbout";
 export function Hero() {
   return (
     <div className="hero-shell">
-      <section className="container hero" aria-labelledby="hero-title">
+      <section className="page-shell hero" aria-labelledby="hero-title">
         <div className="hero-copy">
           <p className="eyebrow">
             <span className="eyebrow__rule" aria-hidden="true" />

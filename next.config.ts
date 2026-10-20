@@ -21,6 +21,14 @@ export default function config(phase: string): NextConfig {
     devIndicators: false,
     ...(dev
       ? {
+          // API جنگو بدون اسلش پایانی است؛ بدون این، trailingSlash پیش از پروکسی ‎308‎ می‌دهد.
+          skipTrailingSlashRedirect: true,
+          // پیش‌نمایش از راه 127.0.0.1 یا پراکسی؛ Next 16 دسترسی میان‌مبدأ به HMR را به‌طور پیش‌فرض می‌بندد.
+          allowedDevOrigins: [
+            "127.0.0.1",
+            "*.e2b.app",
+            ...(process.env.MAHDIEH_DEV_ORIGINS?.split(",").filter(Boolean) ?? []),
+          ],
           async rewrites() {
             return {
               fallback: ["api", "login", "my", "book", "units", "calendar", "help", "feedback", "static", "health"].map(

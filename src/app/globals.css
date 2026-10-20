@@ -1,4 +1,5 @@
-@import "tailwindcss";
+/* فقط پایه (preflight) و توکن‌های @theme؛ اسکن خودکار خاموش ⇒ هیچ کلاس ابزاریِ ناخواسته از متن ساخته نمی‌شود. */
+@import "tailwindcss" source(none);
 @import "../shared/styles/tokens.css";
 @import "./styles/base.css";
 @import "./styles/components.css";

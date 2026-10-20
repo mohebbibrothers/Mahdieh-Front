@@ -10,7 +10,15 @@ import { faDigits, formatDayLabel } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
 import { SHRINE_SVG } from "@/shared/ui/shrine.generated";
 
-type RoomState = { code: string; title: string; floor: number; type: string; capacity: number; status: CellStatus | "unknown"; fit: "ok" | "no" | null };
+type RoomState = {
+  code: string;
+  title: string;
+  floor: number;
+  type: string;
+  capacity: number;
+  status: CellStatus | "unknown";
+  fit: "ok" | "no" | null;
+};
 
 const FLOORS = [0, 3, 2, 1] as const;
 
@@ -189,7 +197,11 @@ export function BuildingModel({ children }: { children: ReactNode }) {
         </ul>
         {easy ? null : (
           <div className="segment" role="group" aria-label="نوع نمایش">
-            <button type="button" aria-pressed={draft.view === "building"} onClick={() => draftStore.set({ view: "building" })}>
+            <button
+              type="button"
+              aria-pressed={draft.view === "building"}
+              onClick={() => draftStore.set({ view: "building" })}
+            >
               <Icon name="building" size={16} /> ساختمان
             </button>
             <button type="button" aria-pressed={draft.view === "list"} onClick={() => draftStore.set({ view: "list" })}>

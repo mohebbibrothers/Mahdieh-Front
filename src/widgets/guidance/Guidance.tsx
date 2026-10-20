@@ -18,7 +18,11 @@ export function Guidance() {
 
   const tiles: Array<{ icon: IconName; title: string; text: string }> = [
     { icon: "heart-hand", title: "کاملاً رایگان", text: "بدون پرداخت و درگاه بانکی" },
-    { icon: "clock", title: `${durationLabel(p.minCells)} تا ${durationLabel(p.maxCells)}`, text: "متناسب با زمان سفر شما" },
+    {
+      icon: "clock",
+      title: `${durationLabel(p.minCells)} تا ${durationLabel(p.maxCells)}`,
+      text: "متناسب با زمان سفر شما",
+    },
     {
       icon: "ticket",
       title: p.maxActive === 1 ? "یک رزرو فعال" : `${faDigits(p.maxActive)} رزرو فعال`,
@@ -32,7 +36,7 @@ export function Guidance() {
   ];
 
   return (
-    <section className="container guidance-section" id="rules" aria-labelledby="rules-title">
+    <section className="page-shell guidance-section" id="rules" aria-labelledby="rules-title">
       <div className="rules-intro">
         <p className="section-eyebrow">مهمان هم که باشیم</p>
         <h2 className="section-title" id="rules-title">

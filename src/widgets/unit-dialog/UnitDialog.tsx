@@ -6,7 +6,15 @@ import { bookingHref, draftStore } from "@/features/booking-draft/store";
 import { useAvailability } from "@/features/booking-draft/use-availability";
 import { fetchQuote, meQuery, propertyQuery } from "@/shared/api/queries";
 import { loginHref } from "@/shared/config/site";
-import { durationLabel, faDigits, formatDayLabel, formatDayMonth, formatMoment, formatWeekday, guestsLabel } from "@/shared/lib/fa";
+import {
+  durationLabel,
+  faDigits,
+  formatDayLabel,
+  formatDayMonth,
+  formatMoment,
+  formatWeekday,
+  guestsLabel,
+} from "@/shared/lib/fa";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon } from "@/shared/ui/Icon";
 import { Stepper } from "@/shared/ui/Stepper";
@@ -30,12 +38,21 @@ export function UnitDialog() {
   const first = range?.[0];
   const last = range?.at(-1);
   const startCell = row && q ? cellAt(row, q.day, q.period) : undefined;
-  const nearest = row && startCell && verdict?.kind !== "ok" ? nearestFit(row, startCell.index, draft.cells, draft.guests, now, policies.minLeadHours)?.[0] : undefined;
+  const nearest =
+    row && startCell && verdict?.kind !== "ok"
+      ? nearestFit(row, startCell.index, draft.cells, draft.guests, now, policies.minLeadHours)?.[0]
+      : undefined;
 
   const signedIn = Boolean(me.data);
   const quote = useQuery({
     queryKey: ["quote", code, first?.start, last?.end, draft.guests],
-    queryFn: () => fetchQuote({ unit_code: code ?? "", start: first?.start ?? "", end: last?.end ?? "", guests_count: draft.guests }),
+    queryFn: () =>
+      fetchQuote({
+        unit_code: code ?? "",
+        start: first?.start ?? "",
+        end: last?.end ?? "",
+        guests_count: draft.guests,
+      }),
     enabled: Boolean(signedIn && code && first && last && verdict?.kind === "ok"),
     staleTime: 15_000,
     retry: false,
@@ -66,7 +83,8 @@ export function UnitDialog() {
       subtitle={
         row ? (
           <>
-            {floorLabel(row.floor)} · {unit?.type_label ?? ""} · تا {faDigits(row.capacity)} نفر · <bdi className="latin">{row.code}</bdi>
+            {floorLabel(row.floor)} · {unit?.type_label ?? ""} · تا {faDigits(row.capacity)} نفر ·{" "}
+            <bdi className="latin">{row.code}</bdi>
           </>
         ) : null
       }
@@ -80,11 +98,18 @@ export function UnitDialog() {
       actions={
         <>
           {canContinue && code ? (
-            <a className="btn btn-primary" href={signedIn ? bookingHref(code, draft) : loginHref(bookingHref(code, draft))}>
+            <a
+              className="btn btn-primary"
+              href={signedIn ? bookingHref(code, draft) : loginHref(bookingHref(code, draft))}
+            >
               {signedIn ? "انتخاب این واحد و ادامه" : "ورود و ادامهٔ رزرو"} <Icon name="arrow-left" size={18} />
             </a>
           ) : nearest ? (
-            <button type="button" className="btn btn-primary" onClick={() => draftStore.set({ day: nearest.start.slice(0, 10), period: nearest.kind })}>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => draftStore.set({ day: nearest.start.slice(0, 10), period: nearest.kind })}
+            >
               انتخاب نزدیک‌ترین زمان: {formatMoment(nearest.start)}
             </button>
           ) : null}
@@ -102,7 +127,11 @@ export function UnitDialog() {
     >
       <div className="unit-detail">
         <div className="unit-detail__visual">
-          {unit ? <img src={unitPlan(unit.unit_type)} alt={`طرح مفهومی ${unit.type_label}`} width={400} height={300} /> : <div className="skeleton skeleton--block" />}
+          {unit ? (
+            <img src={unitPlan(unit.unit_type)} alt={`طرح مفهومی ${unit.type_label}`} width={400} height={300} />
+          ) : (
+            <div className="skeleton skeleton--block" />
+          )}
         </div>
 
         <section className="unit-detail__section" aria-labelledby="ud-when">
@@ -144,13 +173,31 @@ export function UnitDialog() {
               <span className="field-label" id="ud-guests">
                 نفرات
               </span>
-              <Stepper value={draft.guests} min={1} max={Math.max(row?.capacity ?? 8, draft.guests)} onChange={(guests) => draftStore.set({ guests })} format={guestsLabel} labelId="ud-guests" incLabel="افزایش نفرات" decLabel="کاهش نفرات" />
+              <Stepper
+                value={draft.guests}
+                min={1}
+                max={Math.max(row?.capacity ?? 8, draft.guests)}
+                onChange={(guests) => draftStore.set({ guests })}
+                format={guestsLabel}
+                labelId="ud-guests"
+                incLabel="افزایش نفرات"
+                decLabel="کاهش نفرات"
+              />
             </div>
             <div>
               <span className="field-label" id="ud-cells">
                 مدت
               </span>
-              <Stepper value={draft.cells} min={policies.minCells} max={policies.maxCells} onChange={(cells) => draftStore.set({ cells })} format={durationLabel} labelId="ud-cells" incLabel="افزایش مدت" decLabel="کاهش مدت" />
+              <Stepper
+                value={draft.cells}
+                min={policies.minCells}
+                max={policies.maxCells}
+                onChange={(cells) => draftStore.set({ cells })}
+                format={durationLabel}
+                labelId="ud-cells"
+                incLabel="افزایش مدت"
+                decLabel="کاهش مدت"
+              />
             </div>
           </div>
           {first && last ? (
@@ -174,14 +221,18 @@ export function UnitDialog() {
               <Icon name="lock" size={16} />
               {verdict.blocking
                 .slice(0, 3)
-                .map((c) => `${formatDayLabel(c.start.slice(0, 10))} ${c.kind === "day" ? "روز" : "شب"} (${STATUS_LABEL[c.status]})`)
+                .map(
+                  (c) =>
+                    `${formatDayLabel(c.start.slice(0, 10))} ${c.kind === "day" ? "روز" : "شب"} (${STATUS_LABEL[c.status]})`,
+                )
                 .join("، ")}
               {verdict.blocking.length > 3 ? " و …" : ""} آزاد نیست.
             </p>
           ) : null}
           {verdict?.kind === "capacity" ? (
             <p className="inline-note" data-tone="warn">
-              <Icon name="users" size={16} /> این واحد حداکثر {faDigits(verdict.capacity)} نفر را می‌پذیرد؛ برای {guestsLabel(draft.guests)} واحد بزرگ‌تری انتخاب کنید.
+              <Icon name="users" size={16} /> این واحد حداکثر {faDigits(verdict.capacity)} نفر را می‌پذیرد؛ برای{" "}
+              {guestsLabel(draft.guests)} واحد بزرگ‌تری انتخاب کنید.
             </p>
           ) : null}
         </section>
@@ -209,7 +260,16 @@ export function UnitDialog() {
               <ul className="alt-list" aria-label="بازه‌های جایگزین">
                 {quote.data.alternatives.slice(0, 4).map((a) => (
                   <li key={`${a.unit_code}${a.start}`}>
-                    <button type="button" onClick={() => draftStore.set({ day: a.start.slice(0, 10), period: a.start.slice(11, 13) === "20" ? "night" : "day", openUnit: a.unit_code })}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        draftStore.set({
+                          day: a.start.slice(0, 10),
+                          period: a.start.slice(11, 13) === "20" ? "night" : "day",
+                          openUnit: a.unit_code,
+                        })
+                      }
+                    >
                       <strong>{a.unit_title}</strong>
                       <small>{formatMoment(a.start)}</small>
                     </button>
@@ -217,7 +277,9 @@ export function UnitDialog() {
                 ))}
               </ul>
             ) : null}
-            {quote.isError ? <p className="inline-note">بررسی شخصی ممکن نشد؛ در مرحلهٔ ثبت دوباره سنجیده می‌شود.</p> : null}
+            {quote.isError ? (
+              <p className="inline-note">بررسی شخصی ممکن نشد؛ در مرحلهٔ ثبت دوباره سنجیده می‌شود.</p>
+            ) : null}
           </section>
         ) : null}
 

@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { addDays, durationLabel, faDigits, formatClock, formatDayLabel, latinDigits, tehranToday } from "./fa";
+import {
+  addDays,
+  durationLabel,
+  faDigits,
+  formatClock,
+  formatDayLabel,
+  formatFullDate,
+  formatMoment,
+  latinDigits,
+  tehranToday,
+} from "./fa";
 
 describe("قالب‌بندی فارسی", () => {
   it("ارقام فارسی و برگشت", () => {
@@ -20,5 +30,9 @@ describe("قالب‌بندی فارسی", () => {
     expect(durationLabel(2)).toBe("یک شبانه‌روز");
     expect(durationLabel(5)).toBe("۲ شبانه‌روز و نیم");
     expect(durationLabel(14)).toBe("۷ شبانه‌روز");
+  });
+  it("تاریخ کامل و لحظه با ترتیب فارسی (نه ترتیب نادرست ICU)", () => {
+    expect(formatFullDate("2026-10-20")).toBe("سه‌شنبه، ۲۸ مهر ۱۴۰۵");
+    expect(formatMoment("2026-10-20T20:00:00+03:30")).toBe("سه‌شنبه، ۲۸ مهر، ساعت ۲۰:۰۰");
   });
 });

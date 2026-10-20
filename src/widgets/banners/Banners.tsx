@@ -40,7 +40,7 @@ export function AccountBanners() {
   if (!signedIn) return null;
   if (next) {
     return (
-      <aside className="container trip-banner" aria-label="سفر پیش رو">
+      <aside className="page-shell trip-banner" aria-label="سفر پیش رو">
         <div className="trip-banner__copy">
           <span className="trip-banner__icon">
             <Icon name="calendar-check" size={22} />
@@ -63,7 +63,7 @@ export function AccountBanners() {
   const blocker = standing.data && !standing.data.can_book ? standing.data.blockers[0] : undefined;
   if (blocker) {
     return (
-      <aside className="container trip-banner" data-tone="warn" aria-label="وضعیت رزرو شما">
+      <aside className="page-shell trip-banner" data-tone="warn" aria-label="وضعیت رزرو شما">
         <div className="trip-banner__copy">
           <span className="trip-banner__icon">
             <Icon name="info" size={22} />
@@ -93,7 +93,7 @@ export function OccasionBanner() {
   if (!next) return null;
   const busy = next.is_peak || next.demand_level === "high" || next.demand_level === "peak";
   return (
-    <aside className="container occasion-banner" aria-label="مناسبت پیش رو">
+    <aside className="page-shell occasion-banner" aria-label="مناسبت پیش رو">
       <span className="occasion-banner__icon">
         <Icon name="calendar" size={22} />
       </span>
@@ -114,4 +114,3 @@ export function OccasionBanner() {
     </aside>
   );
 }
-

@@ -8,7 +8,7 @@ import { FooterContact, FooterYear } from "./FooterLive";
 export function SiteFooter() {
   return (
     <footer className="site-footer">
-      <div className="container">
+      <div className="page-shell">
         <div className="footer-main">
           <div className="footer-about">
             <a href={SITE.routes.home} className="footer-brand" aria-label={SITE.name}>

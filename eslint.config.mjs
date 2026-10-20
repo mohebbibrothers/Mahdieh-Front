@@ -20,7 +20,18 @@ const layerRules = layers.slice(1).map((layer, index) => ({
 }));
 
 export default tseslint.config(
-  { ignores: [".next/**", "out/**", "dist/**", "node_modules/**", "src/shared/api/schema.d.ts", "next-env.d.ts", "playwright-report/**", "test-results/**"] },
+  {
+    ignores: [
+      ".next/**",
+      "out/**",
+      "dist/**",
+      "node_modules/**",
+      "src/shared/api/schema.d.ts",
+      "next-env.d.ts",
+      "playwright-report/**",
+      "test-results/**",
+    ],
+  },
   ...nextVitals,
   ...nextTs,
   {
@@ -34,8 +45,13 @@ export default tseslint.config(
       "@typescript-eslint/no-explicit-any": "error",
       "no-console": ["error", { allow: ["warn", "error"] }],
       // CSP بدون unsafe-inline: هیچ style= در JSX (ویژگی‌های پویا با data-* و متغیر CSS از راه کلاس).
-      "react/forbid-dom-props": ["error", { forbid: [{ propName: "style", message: "CSP: به‌جای style از کلاس/data-* استفاده کنید." }] }],
+      "react/forbid-dom-props": [
+        "error",
+        { forbid: [{ propName: "style", message: "CSP: به‌جای style از کلاس/data-* استفاده کنید." }] },
+      ],
       "react/forbid-component-props": ["error", { forbid: [{ propName: "style", message: "CSP: style ممنوع است." }] }],
+      // next/image روی <img> خروجی style="color:transparent" می‌گذارد (نقض CSP) و در خروجی ایستا بهینه‌سازی هم ندارد ⇒ <img> با width/height صریح.
+      "@next/next/no-img-element": "off",
     },
   },
   ...layerRules,

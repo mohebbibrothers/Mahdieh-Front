@@ -11,7 +11,9 @@ export function faDigits(value: string | number): string {
   return String(value).replace(/\d/g, (d) => FA_DIGITS[Number(d)] ?? d);
 }
 export function latinDigits(value: string): string {
-  return value.replace(/[۰-۹]/g, (d) => String(FA_DIGITS.indexOf(d))).replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x660));
+  return value
+    .replace(/[۰-۹]/g, (d) => String(FA_DIGITS.indexOf(d)))
+    .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x660));
 }
 
 const cache = new Map<string, Intl.DateTimeFormat>();
@@ -34,8 +36,8 @@ export const formatWeekday = (isoDay: string) => fmt({ weekday: "long" }).format
 export const formatDayMonth = (isoDay: string) => fmt({ day: "numeric", month: "long" }).format(noonOf(isoDay));
 export const formatDayNumber = (isoDay: string) => fmt({ day: "numeric" }).format(noonOf(isoDay));
 export const formatMonth = (isoDay: string) => fmt({ month: "long" }).format(noonOf(isoDay));
-export const formatFullDate = (isoDay: string) =>
-  fmt({ weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(noonOf(isoDay));
+// ICU برای fa-IR با «سال + روز هفته» ترتیبِ «۱۴۰۵ مهر ۲۸, سه‌شنبه» (با ویرگول لاتین) می‌دهد ⇒ ترکیب دستی.
+export const formatFullDate = (isoDay: string) => `${formatDayLabel(isoDay)} ${formatYear(isoDay)}`;
 /** «سه‌شنبه، ۲۸ مهر» */
 export const formatDayLabel = (isoDay: string) => `${formatWeekday(isoDay)}، ${formatDayMonth(isoDay)}`;
 export const formatYear = (isoDay: string) => fmt({ year: "numeric" }).format(noonOf(isoDay));
@@ -47,13 +49,15 @@ export function formatClock(isoInstant: string): string {
 /** «سه‌شنبه ۲۸ مهر، ساعت ۲۰:۰۰» */
 export function formatMoment(isoInstant: string): string {
   const d = new Date(isoInstant);
-  const day = fmt({ weekday: "long", day: "numeric", month: "long" }).format(d);
+  const day = `${fmt({ weekday: "long" }).format(d)}، ${fmt({ day: "numeric", month: "long" }).format(d)}`;
   return `${day}، ساعت ${formatClock(isoInstant)}`;
 }
 
 /** تاریخ ISO امروز به افق تهران (YYYY-MM-DD). */
 export function tehranToday(now: Date = new Date()): string {
-  return new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(now);
+  return new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(
+    now,
+  );
 }
 export function addDays(isoDay: string, days: number): string {
   const d = new Date(`${isoDay}T00:00:00Z`);

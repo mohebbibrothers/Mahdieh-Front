@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useSyncExternalStore } from "react";
-import { Button, Menu, MenuItem, MenuTrigger, Popover, type Selection } from "react-aria-components";
 import { Icon } from "@/shared/ui/Icon";
+import { Popover } from "@/shared/ui/Popover";
 import { readStorage, writeStorage } from "@/shared/lib/storage";
 import { THEME_KEY } from "@/shared/config/keys";
 
@@ -53,35 +53,45 @@ export function ThemeMenu() {
   }, []);
 
   return (
-    <MenuTrigger>
-      <Button className="icon-button theme-toggle" aria-label="ظاهر سایت: روشن، شب یا هماهنگ با دستگاه">
-        <Icon name="sun" size={20} className="theme-icon theme-icon--sun" />
-        <Icon name="moon" size={20} className="theme-icon theme-icon--moon" />
-      </Button>
-      <Popover placement="bottom end" offset={10} className="menu-popover">
-        <Menu
-          aria-label="ظاهر سایت"
-          className="menu"
-          selectionMode="single"
-          selectedKeys={new Set([pref])}
-          disallowEmptySelection
-          onSelectionChange={(keys: Selection) => {
-            const [k] = keys === "all" ? [] : [...keys];
-            if (k === "light" || k === "dark" || k === "system") setPref(k);
-          }}
+    <Popover
+      anchor="theme"
+      label="ظاهر سایت"
+      className="menu-popover"
+      trigger={(p) => (
+        <button
+          type="button"
+          {...p}
+          className={`icon-button theme-toggle ${p.className}`}
+          aria-label="ظاهر سایت: روشن، شب یا هماهنگ با دستگاه"
         >
+          <Icon name="sun" size={20} className="theme-icon theme-icon--sun" />
+          <Icon name="moon" size={20} className="theme-icon theme-icon--moon" />
+        </button>
+      )}
+    >
+      {(close) => (
+        <div className="menu" role="group" aria-label="ظاهر سایت">
           {OPTIONS.map((o) => (
-            <MenuItem key={o.id} id={o.id} className="menu__item" textValue={o.label}>
+            <button
+              key={o.id}
+              type="button"
+              className="menu__item"
+              aria-pressed={pref === o.id}
+              onClick={() => {
+                setPref(o.id);
+                close();
+              }}
+            >
               <Icon name={o.icon} size={18} />
               <span className="menu__text">
                 <strong>{o.label}</strong>
                 <small>{o.hint}</small>
               </span>
               <Icon name="check" size={16} className="menu__check" />
-            </MenuItem>
+            </button>
           ))}
-        </Menu>
-      </Popover>
-    </MenuTrigger>
+        </div>
+      )}
+    </Popover>
   );
 }

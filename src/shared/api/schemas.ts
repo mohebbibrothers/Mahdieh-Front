@@ -1,4 +1,4 @@
-import { z } from "zod";
+import * as z from "zod/mini";
 import type { components } from "./schema";
 
 /**
@@ -12,23 +12,23 @@ export const cellStatus = z.enum(["free", "occupied", "buffer", "blocked", "past
 export type CellStatus = z.infer<typeof cellStatus>;
 
 const calendarCell = z.object({
-  index: z.number().int(),
+  index: z.int(),
   kind: z.enum(["day", "night"]),
   label: z.string(),
   start: z.string(),
   end: z.string(),
   status: cellStatus,
   detail: z.string(),
-}) satisfies z.ZodType<S["CalendarCell"]>;
+}) satisfies z.ZodMiniType<S["CalendarCell"]>;
 
 const calendarUnit = z.object({
   code: z.string(),
   title: z.string(),
-  floor_number: z.number().int(),
+  floor_number: z.int(),
   unit_type: z.string(),
-  capacity_total: z.number().int(),
+  capacity_total: z.int(),
   cells: z.array(calendarCell),
-}) satisfies z.ZodType<S["CalendarUnit"]>;
+}) satisfies z.ZodMiniType<S["CalendarUnit"]>;
 
 const calendarDay = z.object({
   day: z.string(),
@@ -37,27 +37,27 @@ const calendarDay = z.object({
   is_weekend: z.boolean(),
   demand_level: z.string(),
   occupancy_rate: z.number(),
-  free_cells: z.number().int(),
-  total_cells: z.number().int(),
+  free_cells: z.int(),
+  total_cells: z.int(),
   units: z.array(calendarUnit),
-}) satisfies z.ZodType<S["CalendarDay"]>;
+}) satisfies z.ZodMiniType<S["CalendarDay"]>;
 
 export const calendarSchema = z.object({
   days: z.array(calendarDay),
-  max_cells: z.number().int(),
-  min_cells: z.number().int(),
-  horizon_days: z.number().int(),
+  max_cells: z.int(),
+  min_cells: z.int(),
+  horizon_days: z.int(),
   lattice: z.record(z.string(), z.number()),
-}) satisfies z.ZodType<S["Calendar"]>;
+}) satisfies z.ZodMiniType<S["Calendar"]>;
 export type Calendar = z.infer<typeof calendarSchema>;
 export type CalendarCell = z.infer<typeof calendarCell>;
 
 const unitFeature = z.object({
   code: z.string(),
   title: z.string(),
-  icon: z.string().optional(),
-  is_highlight: z.boolean().optional(),
-}) satisfies z.ZodType<S["UnitFeature"]>;
+  icon: z.exactOptional(z.string()),
+  is_highlight: z.exactOptional(z.boolean()),
+}) satisfies z.ZodMiniType<S["UnitFeature"]>;
 
 const unit = z.object({
   id: z.string(),
@@ -65,23 +65,23 @@ const unit = z.object({
   title: z.string(),
   unit_type: z.enum(["suite", "large_room"]),
   type_label: z.string(),
-  floor_number: z.number().int(),
-  capacity_adults: z.number().int().optional(),
-  capacity_children: z.number().int().optional(),
-  capacity_total: z.number().int(),
-  cleaning_buffer_minutes: z.number().int().nullable().optional(),
+  floor_number: z.int(),
+  capacity_adults: z.exactOptional(z.int()),
+  capacity_children: z.exactOptional(z.int()),
+  capacity_total: z.int(),
+  cleaning_buffer_minutes: z.exactOptional(z.nullable(z.int())),
   features: z.array(unitFeature),
-}) satisfies z.ZodType<S["Unit"]>;
+}) satisfies z.ZodMiniType<S["Unit"]>;
 export type Unit = z.infer<typeof unit>;
 
 export const propertySchema = z.array(
   z.object({
-    number: z.number().int(),
+    number: z.int(),
     title: z.string(),
-    description: z.string().optional(),
-    accessibility_notes: z.string().optional(),
+    description: z.exactOptional(z.string()),
+    accessibility_notes: z.exactOptional(z.string()),
     units: z.array(unit),
-  }) satisfies z.ZodType<S["Floor"]>,
+  }) satisfies z.ZodMiniType<S["Floor"]>,
 );
 export type Floor = z.infer<typeof propertySchema>[number];
 
@@ -103,7 +103,7 @@ export const configSchema = z.object({
   countries: z.array(z.record(z.string(), z.unknown())),
   labels: z.record(z.string(), z.unknown()),
   status_groups: z.record(z.string(), z.unknown()),
-}) satisfies z.ZodType<S["Config"]>;
+}) satisfies z.ZodMiniType<S["Config"]>;
 export type SiteConfig = z.infer<typeof configSchema>;
 
 export const occasionsSchema = z.array(
@@ -112,11 +112,11 @@ export const occasionsSchema = z.array(
     title: z.string(),
     kind: z.enum(["holiday", "religious", "seasonal", "custom"]),
     date_gregorian: z.string(),
-    date_jalali: z.string().optional(),
-    demand_level: z.enum(["normal", "high", "peak"]).optional(),
-    description: z.string().optional(),
+    date_jalali: z.exactOptional(z.string()),
+    demand_level: z.exactOptional(z.enum(["normal", "high", "peak"])),
+    description: z.exactOptional(z.string()),
     is_peak: z.boolean(),
-  }) satisfies z.ZodType<S["Occasion"]>,
+  }) satisfies z.ZodMiniType<S["Occasion"]>,
 );
 export type Occasion = z.infer<typeof occasionsSchema>[number];
 
@@ -137,16 +137,16 @@ export const profileSchema = z.object({
   nationality_title: z.string(),
   province: z.string(),
   province_title: z.string(),
-}) satisfies z.ZodType<S["Profile"]>;
+}) satisfies z.ZodMiniType<S["Profile"]>;
 export type Profile = z.infer<typeof profileSchema>;
 
 const quota = z.object({
   limit: z.number(),
   remaining: z.number(),
   used: z.number(),
-  window_days: z.number().nullable(),
-}) satisfies z.ZodType<S["Quota"]>;
-const violation = z.object({ code: z.string(), message: z.string() }) satisfies z.ZodType<S["Violation"]>;
+  window_days: z.nullable(z.number()),
+}) satisfies z.ZodMiniType<S["Quota"]>;
+const violation = z.object({ code: z.string(), message: z.string() }) satisfies z.ZodMiniType<S["Violation"]>;
 export const standingSchema = z.object({
   can_book: z.boolean(),
   profile_complete: z.boolean(),
@@ -154,35 +154,45 @@ export const standingSchema = z.object({
   active: quota,
   window: quota,
   year: quota,
-  cooldown_until: z.string().nullable(),
-  next_eligible_at: z.string().nullable(),
-  suspended_until: z.string().nullable(),
-}) satisfies z.ZodType<S["Standing"]>;
+  cooldown_until: z.nullable(z.string()),
+  next_eligible_at: z.nullable(z.string()),
+  suspended_until: z.nullable(z.string()),
+}) satisfies z.ZodMiniType<S["Standing"]>;
 export type Standing = z.infer<typeof standingSchema>;
 
 const reservation = z.object({
   id: z.string(),
   code: z.string(),
-  status: z
-    .enum(["hold", "confirmed", "checked_in", "completed", "cancelled_by_guest", "cancelled_by_staff", "no_show", "expired", "superseded"])
-    .optional(),
+  status: z.exactOptional(
+    z.enum([
+      "hold",
+      "confirmed",
+      "checked_in",
+      "completed",
+      "cancelled_by_guest",
+      "cancelled_by_staff",
+      "no_show",
+      "expired",
+      "superseded",
+    ]),
+  ),
   status_label: z.string(),
   is_active: z.boolean(),
   unit_code: z.string(),
   unit_title: z.string(),
-  floor_number: z.number().int(),
+  floor_number: z.int(),
   start: z.string(),
   end: z.string(),
   date_jalali: z.string(),
   weekday: z.string(),
-  cells_count: z.number().int(),
+  cells_count: z.int(),
   duration_label: z.string(),
-  guests_count: z.number().int(),
+  guests_count: z.int(),
   can_cancel: z.boolean(),
   free_cancel_until: z.string(),
   created_at: z.string(),
-  guest_note: z.string().optional(),
-}) satisfies z.ZodType<S["Reservation"]>;
+  guest_note: z.exactOptional(z.string()),
+}) satisfies z.ZodMiniType<S["Reservation"]>;
 export const reservationListSchema = z.object({
   results: z.array(reservation),
   meta: z.record(z.string(), z.unknown()),
@@ -195,33 +205,33 @@ const alternative = z.object({
   end: z.string(),
   unit_code: z.string(),
   unit_title: z.string(),
-  floor_number: z.number().int(),
+  floor_number: z.int(),
   is_same_unit: z.boolean(),
-}) satisfies z.ZodType<S["Alternative"]>;
+}) satisfies z.ZodMiniType<S["Alternative"]>;
 export const quoteSchema = z.object({
   allowed: z.boolean(),
   is_available: z.boolean(),
   alternatives: z.array(alternative),
   violations: z.array(violation),
   notes: z.array(z.string()),
-  cells: z.number().int(),
-  capacity_total: z.number().int(),
-  guests_count: z.number().int(),
+  cells: z.int(),
+  capacity_total: z.int(),
+  guests_count: z.int(),
   duration_label: z.string(),
-  start: z.string().nullable(),
-  end: z.string().nullable(),
+  start: z.nullable(z.string()),
+  end: z.nullable(z.string()),
   unit: z.object({ code: z.string(), title: z.string() }),
-}) satisfies z.ZodType<S["Quote"]>;
+}) satisfies z.ZodMiniType<S["Quote"]>;
 export type Quote = z.infer<typeof quoteSchema>;
 
 const helpItem = z.object({
   slug: z.string(),
   question: z.string(),
   answer: z.string(),
-  steps: z.array(z.string()).default([]),
-  tags: z.array(z.string()).default([]),
-  action: z.object({ label: z.string(), target: z.string() }).nullable().optional(),
-  related: z.array(z.string()).default([]),
+  steps: z._default(z.array(z.string()), []),
+  tags: z._default(z.array(z.string()), []),
+  action: z.exactOptional(z.nullable(z.object({ label: z.string(), target: z.string() }))),
+  related: z._default(z.array(z.string()), []),
 });
 export const helpSchema = z.object({
   categories: z.array(
@@ -240,8 +250,8 @@ export const metaSchema = z.object({
   schema_version: z.string(),
   today_jalali: z.string(),
   timezone: z.string(),
-  contact: z.object({ phone: z.string(), address: z.string() }).nullable().optional(),
-}) satisfies z.ZodType<S["Meta"]>;
+  contact: z.exactOptional(z.nullable(z.object({ phone: z.string(), address: z.string() }))),
+}) satisfies z.ZodMiniType<S["Meta"]>;
 
 export const verificationSchema = z.object({
   valid: z.boolean(),
@@ -249,7 +259,7 @@ export const verificationSchema = z.object({
   mismatch: z.boolean(),
   error: z.string(),
   checked_at: z.string(),
-  reservation_status: z.string().nullable(),
+  reservation_status: z.nullable(z.string()),
   payload: z.record(z.string(), z.unknown()),
-}) satisfies z.ZodType<S["CertificateVerification"]>;
+}) satisfies z.ZodMiniType<S["CertificateVerification"]>;
 export type Verification = z.infer<typeof verificationSchema>;

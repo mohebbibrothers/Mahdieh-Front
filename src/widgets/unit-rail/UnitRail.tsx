@@ -13,7 +13,9 @@ export function UnitRail() {
   const property = useQuery(propertyQuery);
   const { timeline } = useAvailability();
   const rail = useRef<HTMLUListElement>(null);
-  const units = (property.data ?? []).flatMap((f) => f.units).toSorted((a, b) => a.floor_number - b.floor_number || a.code.localeCompare(b.code));
+  const units = (property.data ?? [])
+    .flatMap((f) => f.units)
+    .toSorted((a, b) => a.floor_number - b.floor_number || a.code.localeCompare(b.code));
   const suites = units.filter((u) => u.unit_type === "suite").length;
   const rooms = units.length - suites;
   const days = timeline?.days.slice(0, 7) ?? [];
@@ -27,7 +29,7 @@ export function UnitRail() {
   };
 
   return (
-    <section className="container section" id="units" aria-labelledby="units-title">
+    <section className="page-shell section" id="units" aria-labelledby="units-title">
       <div className="section-head">
         <div>
           <p className="section-eyebrow">فضایی برای آسودن</p>
@@ -35,7 +37,9 @@ export function UnitRail() {
             {units.length ? `${faDigits(units.length)} واحد، یک حس آشنای خانه` : "پنج واحد، یک حس آشنای خانه"}
           </h2>
           <p className="section-sub">
-            {units.length ? `${faDigits(suites)} سوئیت و ${faDigits(rooms)} اتاق بزرگ؛ در سه طبقهٔ مهدیه.` : "دو سوئیت و سه اتاق بزرگ؛ در سه طبقهٔ مهدیه."}
+            {units.length
+              ? `${faDigits(suites)} سوئیت و ${faDigits(rooms)} اتاق بزرگ؛ در سه طبقهٔ مهدیه.`
+              : "دو سوئیت و سه اتاق بزرگ؛ در سه طبقهٔ مهدیه."}
           </p>
         </div>
         <div className="rail-controls">
@@ -51,11 +55,24 @@ export function UnitRail() {
         {units.length
           ? units.map((u) => {
               const row = timeline?.units.find((x) => x.code === u.code);
-              const free = row ? days.reduce((n, d) => n + (["day", "night"] as const).filter((k) => cellAt(row, d.day, k)?.status === "free").length, 0) : null;
+              const free = row
+                ? days.reduce(
+                    (n, d) =>
+                      n + (["day", "night"] as const).filter((k) => cellAt(row, d.day, k)?.status === "free").length,
+                    0,
+                  )
+                : null;
               return (
                 <li key={u.code} className="unit-card">
                   <div className="unit-card__visual">
-                    <img src={unitPlan(u.unit_type)} alt={`طرح مفهومی ${u.type_label}`} loading="lazy" decoding="async" width={400} height={300} />
+                    <img
+                      src={unitPlan(u.unit_type)}
+                      alt={`طرح مفهومی ${u.type_label}`}
+                      loading="lazy"
+                      decoding="async"
+                      width={400}
+                      height={300}
+                    />
                     <span className="unit-card__code">
                       <bdi className="latin">{u.code}</bdi>
                     </span>
@@ -88,19 +105,31 @@ export function UnitRail() {
                     </ul>
                     <div className="unit-card__foot">
                       <div className="mini-availability">
-                        <small>{free === null ? "در حال دریافت زمان‌ها…" : `${faDigits(free)} نیم‌روز آزاد در ۷ روز آینده`}</small>
+                        <small>
+                          {free === null ? "در حال دریافت زمان‌ها…" : `${faDigits(free)} نیم‌روز آزاد در ۷ روز آینده`}
+                        </small>
                         <span className="mini-cells" aria-hidden="true">
                           {row
                             ? days.flatMap((d) =>
                                 (["day", "night"] as const).map((k) => {
                                   const c = cellAt(row, d.day, k);
-                                  return <i key={`${d.day}${k}`} data-status={c?.status ?? "past"} title={c ? `${formatDayLabel(d.day)} · ${STATUS_LABEL[c.status]}` : undefined} />;
+                                  return (
+                                    <i
+                                      key={`${d.day}${k}`}
+                                      data-status={c?.status ?? "past"}
+                                      title={c ? `${formatDayLabel(d.day)} · ${STATUS_LABEL[c.status]}` : undefined}
+                                    />
+                                  );
                                 }),
                               )
                             : Array.from({ length: 14 }, (_, i) => <i key={i} className="skeleton" />)}
                         </span>
                       </div>
-                      <button type="button" className="btn btn-secondary btn-sm" onClick={() => draftStore.set({ openUnit: u.code })}>
+                      <button
+                        type="button"
+                        className="btn btn-secondary btn-sm"
+                        onClick={() => draftStore.set({ openUnit: u.code })}
+                      >
                         دیدن واحد <Icon name="arrow-left" size={16} />
                       </button>
                     </div>

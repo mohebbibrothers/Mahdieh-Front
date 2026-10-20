@@ -14,7 +14,7 @@ export function Icon({
   label,
 }: {
   name: IconName;
-  size?: 14 | 16 | 18 | 20 | 22 | 24 | 28;
+  size?: 12 | 14 | 16 | 18 | 20 | 22 | 24 | 26 | 28;
   className?: string;
   /** اگر آیکون معنا دارد و متن کنارش نیست. */
   label?: string;
