@@ -630,11 +630,8 @@
       color: var(--color-text-muted);
       font-size: 0.75rem;
     }
-    .mobile-bottom a[aria-current="page"] {
-      color: var(--color-brand-ink);
-      font-weight: 650;
-    }
-    .mobile-bottom a[aria-current="page"]::before {
+    /* نشانگر زبانهٔ فعال: همیشه حاضر، با گذار نرم بین زبانه‌ها (scroll-spy) */
+    .mobile-bottom a::before {
       content: "";
       position: absolute;
       top: 0;
@@ -644,6 +641,22 @@
       height: 27px;
       border-radius: 8px;
       background: var(--color-brand-tint);
+      opacity: 0;
+      scale: 0.6;
+      transition:
+        opacity var(--fast) var(--ease),
+        scale var(--fast) var(--ease);
+    }
+    .mobile-bottom a {
+      transition: color var(--fast) var(--ease);
+    }
+    .mobile-bottom a[data-active] {
+      color: var(--color-brand-ink);
+      font-weight: 650;
+    }
+    .mobile-bottom a[data-active]::before {
+      opacity: 1;
+      scale: 1;
     }
     :root[data-easy="true"] .mobile-cta .btn {
       min-height: 48px;

@@ -222,6 +222,123 @@ test.describe("ورود درون‌برنامه‌ای (بدون صفحهٔ قد
       await expect(page.getByRole("button", { name: /^حساب من/ })).toBeVisible();
     }
   });
+  /**
+   * نگهبان دائمی: هیچ پیوند یا فرمی به صفحه‌های قدیمی جنگو (‎apps/web/urls.py‎) یا پیشخوان
+   * مدیریت نمی‌رسد — نه برای مهمان، نه برای کاربر واردشده، نه داخل منوی کشویی موبایل.
+   */
+  test("هیچ پیوند یا فرمی به صفحه‌های قدیمی جنگو و پیشخوان نمی‌رود", async ({ page, api }, info) => {
+    const LEGACY =
+      /^(?:https?:\/\/[^/]+)?\/(?:board|book|calendar|demo|feedback|help|login|logout|my|profile|units|verify|django-admin)(?:[/?#]|$)/;
+    const collect = () =>
+      page.evaluate(() => [
+        ...[...document.querySelectorAll("a[href]")].map((a) => a.getAttribute("href") ?? ""),
+        ...[...document.querySelectorAll("form[action]")].map((f) => f.getAttribute("action") ?? ""),
+      ]);
+    const audit = async () => {
+      const seen = await collect();
+      if (info.project.name === "mobile") {
+        await page.getByRole("button", { name: "فهرست صفحه‌ها" }).click();
+        await expect(page.getByRole("dialog", { name: "در مهدیه" })).toBeVisible();
+        seen.push(...(await collect()));
+        await page.getByRole("button", { name: "بستن فهرست" }).click();
+      }
+      expect(seen.filter((h) => LEGACY.test(h))).toEqual([]);
+      expect(seen.length).toBeGreaterThan(8);
+    };
+
+    await page.goto("/");
+    await expect(page.locator("#availability")).toBeVisible();
+    await audit();
+
+    api.set("/api/v1/auth/session", { body: fixture("session-user") });
+    api.set("/api/v1/reservations", { body: fixture("reservations-upcoming") });
+    api.set("/api/v1/me/standing", { body: fixture("standing-active") });
+    await page.reload();
+    await expect(page.getByRole("complementary", { name: "سفر پیش رو" })).toBeVisible();
+    await audit();
+  });
+  test("خروج از حساب در همان پنجره؛ «همهٔ دستگاه‌ها» فقط پس از تأیید", async ({ page, api }, info) => {
+    const mobile = info.project.name === "mobile";
+    api.set("/api/v1/auth/session", { body: fixture("session-user") });
+    api.set("/api/v1/reservations", { body: fixture("reservations-upcoming") });
+    api.set("/api/v1/me/standing", { body: fixture("standing-active") });
+    api.set("/api/v1/auth/csrf", { body: { csrf_token: "e2e-token", header_name: "HTTP_X_CSRFTOKEN" } });
+    const endpoint = mobile ? "/api/v1/auth/logout" : "/api/v1/auth/logout-all";
+    api.set(endpoint, async (route) => {
+      expect(await route.request().headerValue("x-csrftoken")).toBe("e2e-token");
+      api.set("/api/v1/auth/session", { body: fixture("session") });
+      await route.fulfill({ status: 204, body: "" });
+    });
+    await page.goto("/");
+    await expect(page.getByRole("complementary", { name: "سفر پیش رو" })).toBeVisible();
+
+    if (mobile)
+      await page.getByRole("navigation", { name: "میان‌بُرها" }).getByRole("button", { name: "حساب" }).click();
+    else await page.locator("header .account-button").click();
+    const dialog = page.getByRole("dialog", { name: "حساب من" });
+    await expect(dialog).toBeVisible();
+
+    if (mobile) {
+      await dialog.getByRole("button", { name: "خروج از حساب" }).click();
+    } else {
+      await dialog.getByRole("button", { name: "خروج از همهٔ دستگاه‌ها" }).click();
+      // گام تأیید: هنوز هیچ درخواستی نرفته است.
+      expect(api.calls.some((c) => c.includes("/auth/logout"))).toBe(false);
+      await dialog.getByRole("button", { name: /مطمئنم/ }).click();
+    }
+    await expect(dialog).toBeHidden();
+    await expect(page.getByRole("status").filter({ hasText: /خارج شدید/ })).toBeVisible();
+    expect(api.calls).toContain(`POST ${endpoint}`);
+    if (!mobile) await expect(page.locator("header .account-button")).toHaveAttribute("data-state", "out");
+    await expect(page.getByRole("complementary", { name: "سفر پیش رو" })).toBeHidden();
+  });
+
+  test("مهمان در پنجرهٔ واحد: «ورود و ادامهٔ رزرو» ورود را همین‌جا باز می‌کند", async ({ page }) => {
+    await page.goto("/");
+    await page.locator('.cell:visible[data-status="free"]:not([disabled])').first().click();
+    const unit = page.getByRole("dialog");
+    await expect(unit).toContainText(/طبقهٔ/);
+    // پیش‌نویس پیش‌فرض (۲ شبانه‌روز از امروز) در fixture با رزرو تداخل دارد ⇒ پنجره صادقانه
+    // «بخشی از بازه آزاد نیست» می‌گوید. کاربر آغازی را برمی‌گزیند که ۴ نیم‌روزِ پیاپی‌اش آزاد است.
+    await expect(unit.getByRole("status").filter({ hasText: "بخشی از بازه آزاد نیست" })).toBeVisible();
+    await unit.getByRole("button", { name: "جمعه، ۱ آبان، روز — آزاد" }).click();
+    await unit.getByRole("button", { name: /ورود و ادامهٔ رزرو/ }).click();
+    const login = page.getByRole("dialog", { name: "ورود یا ثبت‌نام" });
+    await expect(login).toBeVisible();
+    await expect(login).toContainText("انتخاب شما حفظ می‌شود");
+    // همان صفحه (بی‌رفتن به صفحهٔ قدیمی) و انتخاب کاربر در نشانی حفظ شده است.
+    // (نوشتن در نشانی ۲۵۰ms تأخیر دارد تا تاریخچه با هر تغییر کوچک پر نشود ⇒ poll)
+    await expect
+      .poll(() => {
+        const url = new URL(page.url());
+        return { path: url.pathname, ...Object.fromEntries(url.searchParams) };
+      })
+      .toMatchObject({ path: "/", day: "2026-10-23", period: "day", cells: "4" });
+  });
+
+  test("نوار پایینی موبایل زبانهٔ بخشِ زیر چشم را فعال می‌کند", async ({ page }, info) => {
+    test.skip(info.project.name !== "mobile", "نوار پایینی فقط در موبایل است");
+    await page.goto("/");
+    const dock = page.getByRole("navigation", { name: "میان‌بُرها" });
+    const home = dock.getByRole("link", { name: "خانه" });
+    const free = dock.getByRole("link", { name: "زمان‌های آزاد" });
+    await expect(home).toHaveAttribute("aria-current", "page");
+    await expect(home).toHaveAttribute("data-active", "true");
+    await expect(free).not.toHaveAttribute("aria-current", /.+/);
+
+    await page.evaluate(() => {
+      const el = document.getElementById("availability")!;
+      window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY + 120, behavior: "instant" });
+    });
+    await expect(free).toHaveAttribute("aria-current", "location");
+    await expect(free).toHaveAttribute("data-active", "true");
+    await expect(home).not.toHaveAttribute("data-active", /.+/);
+    await expect(home).toHaveAttribute("aria-current", "page");
+
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await expect(home).toHaveAttribute("data-active", "true");
+    await expect(free).not.toHaveAttribute("aria-current", /.+/);
+  });
 });
 
 test.describe("کیفیت سراسری", () => {

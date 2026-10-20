@@ -79,15 +79,20 @@ export const test = base.extend<Fixtures>({
     });
     await use(problems);
   },
-  api: async ({ page, problems }, use) => {
-    await page.clock.install({ time: NOW });
-    const api = new MockApi(page);
-    await api.install();
-    await use(api);
-    expect(api.unexpected, "درخواست API بی‌fixture").toEqual([]);
-    const real = problems.filter((p) => !api.allowedConsole.some((re) => re.test(p)));
-    expect(real, "خطای کنسول/CSP/صفحه").toEqual([]);
-  },
+  // ‎auto‎: حتی آزمونی که ‎api‎ را نمی‌گیرد، همین تضمین‌ها را دارد (بی‌آن، API واقعی صدا زده
+  // می‌شد و نگهبان خطای کنسول خاموش می‌ماند).
+  api: [
+    async ({ page, problems }, use) => {
+      await page.clock.install({ time: NOW });
+      const api = new MockApi(page);
+      await api.install();
+      await use(api);
+      expect(api.unexpected, "درخواست API بی‌fixture").toEqual([]);
+      const real = problems.filter((p) => !api.allowedConsole.some((re) => re.test(p)));
+      expect(real, "خطای کنسول/CSP/صفحه").toEqual([]);
+    },
+    { auto: true },
+  ],
 });
 
 export { expect };
