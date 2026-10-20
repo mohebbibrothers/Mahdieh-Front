@@ -26,7 +26,7 @@
     "bundle:verify": "node scripts/verify-bundle.mjs release/mahdieh-front.tar.gz"
   },
   "dependencies": {
-    "@tanstack/react-query": "5.104.5",
+    "@tanstack/react-query": "5.104.4",
     "next": "16.4.2",
     "openapi-fetch": "0.17.0",
     "react": "19.3.1",
@@ -52,7 +52,7 @@
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
     "typescript-7": "npm:typescript@7.0.2",
-    "typescript-eslint": "8.72.0",
+    "typescript-eslint": "8.71.2",
     "vitest": "5.0.5"
   }
 }

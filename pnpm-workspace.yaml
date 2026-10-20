@@ -2,3 +2,13 @@
 allowBuilds:
   sharp: false
   unrs-resolver: false
+
+# زنجیرهٔ تأمین: بستهٔ تازه‌منتشرشده (کمتر از ۲۴ ساعت) نصب نمی‌شود — صریح، تا نصب محلی و CI
+# یک سیاست داشته باشند (پیش‌فرض pnpm 12 در CI همین را اعمال کرد و محلی نه).
+minimumReleaseAge: 1440
+
+# typescript-eslint 8.72.0 (۲۰۲۶-۱۰-۱۹) هنوز در پنجرهٔ ۲۴ ساعته است؛ eslint-config-next با «^8» آن را
+# می‌کشید. هم‌خانواده روی آخرین نسخهٔ پایدار پیشین (۸.۷۱.۲، با همان peerها) قفل می‌شود.
+overrides:
+  "@typescript-eslint/parser": 8.71.2
+  "@typescript-eslint/eslint-plugin": 8.71.2
