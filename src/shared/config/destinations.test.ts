@@ -37,6 +37,8 @@ describe("نقشهٔ مقصدها", () => {
       "portal",
       "verifyOffline",
       "booking",
+      "bookingNav",
+      "reservation",
     ] as const) {
       expect(destHref(key), key).toBeNull();
     }
@@ -44,14 +46,22 @@ describe("نقشهٔ مقصدها", () => {
 
   it("با انتشار صفحه، همهٔ قصدهای آن یک‌جا به همان صفحه وصل می‌شوند (با پارامتر و لنگر)", () => {
     for (const id of IDS) PAGES[id] = { ...PAGES[id], ready: true };
-    expect(destHref("calendar")).toBe("/calendar");
-    expect(destHref("calendarFull")).toBe("/calendar");
-    expect(destHref("contact")).toBe("/guide#contact-desk");
+    expect(destHref("calendar")).toBe("/calendar/");
+    expect(destHref("calendarFull")).toBe("/calendar/");
+    expect(destHref("contact")).toBe("/guide/#contact-desk");
     expect(destHref("booking", { unit: "A1", day: "2026-10-23", period: "day", cells: "4", guests: "4" })).toBe(
-      "/booking?unit=A1&day=2026-10-23&period=day&cells=4&guests=4",
+      "/booking/?unit=A1&day=2026-10-23&period=day&cells=4&guests=4",
     );
-    expect(unitPageHref("B 2")).toBe("/units/B%202");
-    for (const key of KEYS) expect(destHref(key), key).toMatch(/^\/[a-z]/);
+    expect(destHref("reservation", { code: "M-1405-0142" })).toBe("/booking/?code=M-1405-0142");
+    expect(unitPageHref("B 2")).toBe("/units/B%202/");
+    // جنگو فقط مسیر دقیق ‎routes.json‎ (با اسلش پایانی) را به فرانت می‌دهد.
+    for (const key of KEYS) expect(destHref(key), key).toMatch(/^\/[a-z][a-z/-]*\/(?:[?#]|$)/);
+  });
+
+  it("صفحه‌های منتشرشده واقعاً آماده‌اند: «تکمیل و صدور رزرو» (P-05) فعال است", () => {
+    expect(PAGES["P-05"].ready).toBe(true);
+    expect(destHref("bookingNav")).toBe("/booking/");
+    expect(destHref("booking", { unit: "A1" })).not.toMatch(LEGACY);
   });
 
   it("فهرست صفحه‌های منتظر کامل است و هر قصد دقیقاً به یک صفحه تعلق دارد", () => {

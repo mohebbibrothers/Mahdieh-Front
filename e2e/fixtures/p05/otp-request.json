@@ -1,0 +1,5 @@
+{
+  "expires_in": 120,
+  "resend_after": 60,
+  "delivery_status": "suppressed"
+}

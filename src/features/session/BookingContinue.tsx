@@ -1,5 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
+import type { Route } from "next";
+import Link from "next/link";
 import { meQuery } from "@/shared/api/queries";
 import { cx } from "@/shared/lib/cx";
 import { Icon } from "@/shared/ui/Icon";
@@ -8,12 +10,15 @@ import { openAccount } from "./account-store";
 
 /**
  * «ادامهٔ رزرو» با یک واحد — هرگز به قالب قدیمی جنگو نمی‌رود.
- *  · مهمان ⇒ ورود درون‌برنامه‌ای همین‌جا (پیش‌نیاز رزرو)؛ اگر صفحهٔ رزرو آماده باشد، پس از ورود به آن می‌رود.
- *  · واردشده + صفحهٔ «تکمیل و صدور رزرو» (P-05) آماده ⇒ پیوند مستقیم با پارامترهای انتخاب.
- *  · واردشده + P-05 هنوز ساخته نشده ⇒ دکمهٔ «به‌زودی» (aria-disabled، قابل فوکوس) که صادقانه
- *    توضیح می‌دهد؛ انتخاب در نشانی صفحه و حافظهٔ مرورگر ذخیره است و با انتشار P-05 خودکار وصل می‌شود.
+ *  · صفحهٔ «تکمیل و صدور رزرو» (P-05) آماده ⇒ پیوند مستقیم با پارامترهای انتخاب برای همه؛ مهمان در
+ *    گام ۱ همان صفحه با شمارهٔ همراه وارد می‌شود (برچسب ‎guestLabel‎ همین را می‌گوید).
+ *  · P-05 نیست + مهمان ⇒ ورود درون‌برنامه‌ای همین‌جا (پیش‌نیاز رزرو).
+ *  · P-05 نیست + واردشده ⇒ دکمهٔ «به‌زودی» (aria-disabled، قابل فوکوس) که صادقانه توضیح می‌دهد.
  * `href` را لایهٔ بالاتر از نقشهٔ مقصدها می‌دهد (این ویژگی به پیش‌نویس رزرو وابسته نیست).
  */
+/** ‎href‎ از نقشهٔ مقصدها می‌آید (همان‌جا به ‎Route‎ تبدیل و با آزمون واحد تضمین شده است). */
+const asRoute = (href: string) => href as Route;
+
 export function BookingContinue({
   href,
   label,
@@ -32,23 +37,18 @@ export function BookingContinue({
   const me = useQuery(meQuery);
   const arrow = <Icon name="arrow-left" size={iconSize} />;
 
-  if (!me.data) {
-    return (
-      <button
-        type="button"
-        className={className}
-        aria-haspopup="dialog"
-        onClick={() => openAccount({ ...(href ? { then: href } : {}), reason })}
-      >
-        {guestLabel} {arrow}
-      </button>
-    );
-  }
   if (href) {
     return (
-      <a className={className} href={href}>
-        {label} {arrow}
-      </a>
+      <Link className={className} href={asRoute(href)}>
+        {me.data ? label : guestLabel} {arrow}
+      </Link>
+    );
+  }
+  if (!me.data) {
+    return (
+      <button type="button" className={className} aria-haspopup="dialog" onClick={() => openAccount({ reason })}>
+        {guestLabel} {arrow}
+      </button>
     );
   }
   return (

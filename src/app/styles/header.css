@@ -69,6 +69,12 @@
     white-space: nowrap;
     transition: color var(--fast) var(--ease);
   }
+  .main-nav a {
+    white-space: nowrap;
+  }
+  .nav-label-short {
+    display: none;
+  }
   .main-nav a:hover {
     color: var(--color-text);
   }
@@ -186,6 +192,12 @@
     .main-nav a {
       padding: 6px 3px;
       font-size: 0.8125rem;
+    }
+    .nav-label {
+      display: none;
+    }
+    .nav-label-short {
+      display: inline;
     }
     .nav-actions {
       --nav-gap: 8px;

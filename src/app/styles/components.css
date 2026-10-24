@@ -209,6 +209,12 @@
   .text-input[aria-invalid="true"] {
     border-color: var(--color-danger-fg);
   }
+  /* ‎font: inherit‎ همین لایه ‎ss01‎ (رقم فارسی) بدنه را دوباره به ارث می‌برد و ‎.latin‎ لایهٔ base را می‌پوشاند ⇒
+     فیلدهای لاتین (توکن استعلام، شمارهٔ گذرنامه) صریحاً با رقم لاتین هم‌عرض. */
+  .text-input.latin {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
 
   .stepper {
     display: flex;

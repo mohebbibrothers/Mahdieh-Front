@@ -1,7 +1,7 @@
 "use client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { configQuery, verifyCertificate } from "@/shared/api/queries";
 import type { Verification } from "@/shared/api/schemas";
 import { destHref } from "@/shared/config/destinations";
@@ -24,26 +24,70 @@ const FIELD_LABELS: Array<[string, string]> = [
   ["ends", "خروج"],
 ];
 
+/**
+ * پیوند QR گواهی (‎/verify/<token>/‎) را بک‌اند به ‎/?verify=<token>‎ هدایت می‌کند؛ همین‌جا پنجره خودکار باز،
+ * استعلام اجرا و پارامتر از نشانی پاک می‌شود (تا رفرش/اشتراک، استعلام را تکرار نکند).
+ */
+function takeVerifyParam(): string | null {
+  const url = new URL(window.location.href);
+  const raw = url.searchParams.get("verify");
+  if (raw === null) return null;
+  url.searchParams.delete("verify");
+  window.history.replaceState(window.history.state, "", url);
+  return raw;
+}
+
 export function VerifyCertificateButton({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);
+  const [initial, setInitial] = useState<string | null>(null);
+  useEffect(() => {
+    const raw = takeVerifyParam();
+    if (raw === null) return;
+    // همگام‌سازی با سامانهٔ بیرونی (نشانی مرورگر) — فقط یک بار پس از سوار شدن.
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setInitial(raw);
+    setOpen(true);
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, []);
   return (
     <>
       <button type="button" className={className} onClick={() => setOpen(true)}>
         <Icon name="certificate" size={18} />
         استعلام گواهی اقامت
       </button>
-      <VerifyCertificateDialog isOpen={open} onOpenChange={setOpen} />
+      <VerifyCertificateDialog isOpen={open} onOpenChange={setOpen} initial={initial} />
     </>
   );
 }
 
-function VerifyCertificateDialog({ isOpen, onOpenChange }: { isOpen: boolean; onOpenChange: (o: boolean) => void }) {
+function VerifyCertificateDialog({
+  isOpen,
+  onOpenChange,
+  initial,
+}: {
+  isOpen: boolean;
+  onOpenChange: (o: boolean) => void;
+  initial: string | null;
+}) {
   const verifyOffline = destHref("verifyOffline");
   const id = useId();
   const [raw, setRaw] = useState("");
   const [inputError, setInputError] = useState<string | null>(null);
   const config = useQuery({ ...configQuery, enabled: isOpen });
   const mutation = useMutation({ mutationFn: (token: string) => verifyCertificate(token) });
+  const autoRan = useRef<string | null>(null);
+  const { mutate } = mutation;
+  useEffect(() => {
+    if (!isOpen || initial === null || autoRan.current === initial) return;
+    autoRan.current = initial;
+    const token = parseCertificateToken(initial);
+    // پر کردن فرم از پیوند QR (منبع بیرونی) — یک بار برای هر پیوند.
+    /* eslint-disable react-hooks/set-state-in-effect */
+    setRaw(initial);
+    if (token) mutate(token);
+    else setInputError("پیوند گواهی کامل نیست. نشانی کامل زیر QR را وارد کنید.");
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [isOpen, initial, mutate]);
 
   const statusLabel = (value: string | null) => {
     const list = (config.data?.labels.reservation_status ?? []) as Array<{ value: string; label: string }>;
@@ -83,7 +127,7 @@ function VerifyCertificateDialog({ isOpen, onOpenChange }: { isOpen: boolean; on
         </label>
         <textarea
           id={`${id}-token`}
-          className="text-input verify-form__input"
+          className="text-input verify-form__input latin"
           dir="ltr"
           rows={3}
           value={raw}
@@ -148,7 +192,13 @@ function VerifyResult({ result, statusLabel }: { result: Verification; statusLab
               <div key={k}>
                 <dt>{label}</dt>
                 <dd>
-                  <bdi>{faDigits(String(result.payload[k]))}</bdi>
+                  {k === "code" ? (
+                    <bdi className="latin" dir="ltr">
+                      {String(result.payload[k])}
+                    </bdi>
+                  ) : (
+                    <bdi>{faDigits(String(result.payload[k]))}</bdi>
+                  )}
                 </dd>
               </div>
             ))}

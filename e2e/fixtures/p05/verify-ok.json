@@ -1,0 +1,20 @@
+{
+  "token": ".eJy9jjsOgzAQRK9ibQ3S-oNNXNLnBmkImCQSwhKGKsrdY68LWzlAmtHs7-28YfKzAwvXlivsWkRU0MDTr7PbY_t2olZdUsmTipG8TjpNrAxyS_V5EBHn9joiYODRL6v3kcYbeJwuHAGsaiAc454s_VgIsnREFIKUWMIQV7NqS5FiucC7yVFkOZGXnJdVy72tCozB3Db_JDB_TfD5AvTfbB4:1xKjWI:jGY-usE7iyhLH4tu0ch0pKjK-6djPGIg9qO3taqqP4I",
+  "response": {
+    "valid": true,
+    "crypto_valid": true,
+    "mismatch": false,
+    "error": "",
+    "payload": {
+      "code": "M-1405-0004",
+      "holder": "مرتضی رضوی",
+      "unit": "B1",
+      "floor": 1,
+      "guests": 4,
+      "starts": "۱۵ آبان ۱۴۰۵ · ساعت ۰۸:۰۰",
+      "ends": "۱۷ آبان ۱۴۰۵ · ساعت ۰۸:۰۰"
+    },
+    "reservation_status": "confirmed",
+    "checked_at": "2026-10-25T01:13:18.843138+03:30"
+  }
+}

@@ -1,5 +1,7 @@
 "use client";
+import Link from "next/link";
 import { AccountTrigger } from "@/features/session/AccountButton";
+import { destHref } from "@/shared/config/destinations";
 import { SITE } from "@/shared/config/site";
 import { useActiveSection } from "@/shared/lib/use-active-section";
 import { Icon } from "@/shared/ui/Icon";
@@ -11,36 +13,45 @@ const SPY = ["availability"] as const;
  * زبانهٔ فعال با اسکرول جابه‌جا می‌شود: «خانه» همیشه صفحهٔ جاری است (‎aria-current=page‎)،
  * و «زمان‌های آزاد» وقتی بخشش زیر چشم است ‎aria-current=location‎ می‌گیرد.
  */
-export function MobileDock() {
-  const section = useActiveSection(SPY, "home");
+export function MobileDock({ page = "home" }: { page?: "home" | "booking" }) {
+  const spied = useActiveSection(SPY, "home");
+  const onHome = page === "home";
+  const section = onHome ? spied : null;
   return (
     <>
-      <aside className="mobile-cta" aria-label="شروع رزرو">
-        <p>
-          <strong>مهمان ما باشید</strong>
-          <span>اقامت کاملاً رایگان</span>
-        </p>
-        <a className="btn btn-primary" href="#quick-search">
-          انتخاب زمان اقامت <Icon name="arrow-left" size={18} />
-        </a>
-      </aside>
+      {/* فراخوان «انتخاب زمان» فقط در خانه؛ در صفحهٔ صدور رزرو، خود کارت گام‌ها فراخوان است. */}
+      {onHome ? (
+        <aside className="mobile-cta" aria-label="شروع رزرو">
+          <p>
+            <strong>مهمان ما باشید</strong>
+            <span>اقامت کاملاً رایگان</span>
+          </p>
+          <a className="btn btn-primary" href="#quick-search">
+            انتخاب زمان اقامت <Icon name="arrow-left" size={18} />
+          </a>
+        </aside>
+      ) : null}
       <nav className="mobile-bottom" aria-label="میان‌بُرها">
-        <a href={SITE.routes.home} aria-current="page" data-active={section === "home" || undefined}>
+        <a
+          href={SITE.routes.home}
+          aria-current={onHome ? "page" : undefined}
+          data-active={section === "home" || undefined}
+        >
           <Icon name="home" size={22} />
           <span>خانه</span>
         </a>
         <a
-          href="#availability"
+          href={onHome ? "#availability" : destHref("calendar")}
           aria-current={section === "availability" ? "location" : undefined}
           data-active={section === "availability" || undefined}
         >
           <Icon name="calendar" size={22} />
           <span>زمان‌های آزاد</span>
         </a>
-        <AccountTrigger guestReason="برای دیدن رزروهایتان با شمارهٔ همراه وارد شوید." portal>
+        <Link href={destHref("bookingNav") ?? "/"} aria-current={page === "booking" ? "page" : undefined}>
           <Icon name="ticket" size={22} />
           <span>رزروهای من</span>
-        </AccountTrigger>
+        </Link>
         <AccountTrigger>
           <Icon name="user" size={22} />
           <span>حساب</span>

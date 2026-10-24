@@ -21,7 +21,9 @@ export function SiteHeader({ current = "/" }: { current?: string }) {
         <nav className="main-nav" aria-label="ناوبری اصلی">
           {NAV.map((item) => (
             <a key={item.href} href={item.href} aria-current={item.href === current ? "page" : undefined}>
-              {item.label}
+              {/* طراح: ۹۰۱–۱۲۰۰ برچسب کوتاه در یک خط؛ دیگری با display:none از درخت دسترسی هم بیرون است. */}
+              <span className="nav-label">{item.label}</span>
+              <span className="nav-label-short">{item.short}</span>
             </a>
           ))}
         </nav>

@@ -153,7 +153,8 @@ const quota = z.object({
   used: z.number(),
   window_days: z.nullable(z.number()),
 }) satisfies z.ZodMiniType<S["Quota"]>;
-const violation = z.object({ code: z.string(), message: z.string() }) satisfies z.ZodMiniType<S["Violation"]>;
+export const violation = z.object({ code: z.string(), message: z.string() }) satisfies z.ZodMiniType<S["Violation"]>;
+export type Violation = z.infer<typeof violation>;
 export const standingSchema = z.object({
   can_book: z.boolean(),
   profile_complete: z.boolean(),
@@ -167,22 +168,23 @@ export const standingSchema = z.object({
 }) satisfies z.ZodMiniType<S["Standing"]>;
 export type Standing = z.infer<typeof standingSchema>;
 
-const reservation = z.object({
+export const reservationStatus = z.enum([
+  "hold",
+  "confirmed",
+  "checked_in",
+  "completed",
+  "cancelled_by_guest",
+  "cancelled_by_staff",
+  "no_show",
+  "expired",
+  "superseded",
+]);
+export type ReservationStatus = z.infer<typeof reservationStatus>;
+
+export const reservationSchema = z.object({
   id: z.string(),
   code: z.string(),
-  status: z.exactOptional(
-    z.enum([
-      "hold",
-      "confirmed",
-      "checked_in",
-      "completed",
-      "cancelled_by_guest",
-      "cancelled_by_staff",
-      "no_show",
-      "expired",
-      "superseded",
-    ]),
-  ),
+  status: z.exactOptional(reservationStatus),
   status_label: z.string(),
   is_active: z.boolean(),
   unit_code: z.string(),
@@ -199,14 +201,19 @@ const reservation = z.object({
   free_cancel_until: z.string(),
   created_at: z.string(),
   guest_note: z.exactOptional(z.string()),
+  expected_arrival: z.nullable(z.string()),
+  vehicle_plate: z.string(),
+  hold_expires_at: z.nullable(z.string()),
+  /** پیوند نظرسنجی همین اقامت (فقط پایان‌یافته و هنوز بی‌پاسخ)؛ پیش‌فرض برای بک‌اند پیش از ۱۴۰۵/۰۸/۰۳ */
+  feedback_url: z._default(z.nullable(z.string()), null),
 }) satisfies z.ZodMiniType<S["Reservation"]>;
 export const reservationListSchema = z.object({
-  results: z.array(reservation),
+  results: z.array(reservationSchema),
   meta: z.record(z.string(), z.unknown()),
 });
-export type Reservation = z.infer<typeof reservation>;
+export type Reservation = z.infer<typeof reservationSchema>;
 
-const alternative = z.object({
+export const alternativeSchema = z.object({
   date_jalali: z.string(),
   start: z.string(),
   end: z.string(),
@@ -218,7 +225,7 @@ const alternative = z.object({
 export const quoteSchema = z.object({
   allowed: z.boolean(),
   is_available: z.boolean(),
-  alternatives: z.array(alternative),
+  alternatives: z.array(alternativeSchema),
   violations: z.array(violation),
   notes: z.array(z.string()),
   cells: z.int(),
@@ -230,6 +237,69 @@ export const quoteSchema = z.object({
   unit: z.object({ code: z.string(), title: z.string() }),
 }) satisfies z.ZodMiniType<S["Quote"]>;
 export type Quote = z.infer<typeof quoteSchema>;
+export type Alternative = z.infer<typeof alternativeSchema>;
+
+export const certificateSchema = z.object({
+  code: z.string(),
+  holder: z.string(),
+  issued_on: z.string(),
+  short_code: z.string(),
+  verify_url: z.string(),
+  offline_check_url: z.string(),
+  qr_svg: z.string(),
+  fields: z.array(z.object({ label: z.string(), value: z.string() })),
+}) satisfies z.ZodMiniType<S["Certificate"]>;
+export type Certificate = z.infer<typeof certificateSchema>;
+
+export const cancelPreviewSchema = z.object({
+  cancellable: z.boolean(),
+  late: z.boolean(),
+  free_until: z.string(),
+  cooldown_hours: z.number(),
+  cooldown_until: z.nullable(z.string()),
+  message: z.string(),
+}) satisfies z.ZodMiniType<S["CancelPreview"]>;
+export type CancelPreview = z.infer<typeof cancelPreviewSchema>;
+
+export const reservationEventsSchema = z.object({
+  results: z.array(
+    z.object({
+      id: z.string(),
+      kind: z.enum([
+        "created",
+        "confirmed",
+        "cancelled",
+        "moved",
+        "checked_in",
+        "checked_out",
+        "no_show",
+        "expired",
+        "note",
+      ]),
+      kind_label: z.string(),
+      from_status: z.exactOptional(z.string()),
+      to_status: z.exactOptional(z.string()),
+      at: z.string(),
+    }),
+  ),
+}) satisfies z.ZodMiniType<S["ReservationEventList"]>;
+export type ReservationEvent = z.infer<typeof reservationEventsSchema>["results"][number];
+
+export const waitlistEntrySchema = z.object({
+  id: z.string(),
+  unit_code: z.string(),
+  unit_title: z.string(),
+  starts_at: z.string(),
+  ends_at: z.string(),
+  cells_count: z.number(),
+  guests_count: z.number(),
+  status: z.string(),
+  status_label: z.string(),
+  position: z.number(),
+  offers_sent: z.number(),
+  created_at: z.string(),
+}) satisfies z.ZodMiniType<S["Waitlist"]>;
+export type WaitlistEntry = z.infer<typeof waitlistEntrySchema>;
 
 const helpItem = z.object({
   slug: z.string(),

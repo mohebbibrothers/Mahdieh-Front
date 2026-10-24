@@ -1,11 +1,12 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { useId, useMemo, useState, type FormEvent } from "react";
+import { useId, useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { z } from "zod/mini";
 import { fieldErrors, updateProfile, type ProfileInput } from "@/shared/api/auth";
 import { ApiError } from "@/shared/api/client";
 import { configQuery } from "@/shared/api/queries";
 import type { Profile } from "@/shared/api/schemas";
+import { cx } from "@/shared/lib/cx";
 import { latinDigits } from "@/shared/lib/fa";
 import { Combobox, type ComboOption } from "@/shared/ui/Combobox";
 import { Icon } from "@/shared/ui/Icon";
@@ -14,6 +15,8 @@ import { isValidNationalId } from "./identity";
 const provinceRow = z.object({ value: z.string(), label: z.string() });
 const countryRow = z.object({ code: z.string(), title: z.string(), title_en: z.string(), priority: z.boolean() });
 const IRAN = "IR";
+/** استان‌های پرتکرار زائران (طراح P-05)؛ کشورها پرچم ‎priority‎ را از خود ‎/config‎ دارند. */
+const FREQUENT_PROVINCES = new Set(["khorasan_razavi", "tehran", "isfahan", "fars", "khorasan_south"]);
 
 type Field = keyof ProfileInput;
 
@@ -26,11 +29,23 @@ export function ProfileForm({
   profile,
   onDone,
   onSkip,
+  variant = "dialog",
+  submitLabel = "ذخیره و ادامه",
+  skipLabel = "بعداً کامل می‌کنم",
+  lead,
 }: {
   profile: Profile | null;
   onDone: (p: Profile) => void;
   onSkip?: (() => void) | undefined;
+  variant?: "dialog" | "page";
+  submitLabel?: string;
+  skipLabel?: string;
+  /** متن راهنمای بالای فرم؛ ‎null‎ = بی‌راهنما (صفحه خودش توضیح داده است) */
+  lead?: ReactNode;
 }) {
+  const page = variant === "page";
+  /** ویرایش مشخصات کامل: سرور کل پروفایل را دوباره می‌سنجد ⇒ مدرک هویتی (که هرگز برنمی‌گردد) دوباره لازم است. */
+  const editing = Boolean(profile?.is_profile_complete);
   const config = useQuery(configQuery);
   const formId = useId();
   const [v, setV] = useState<ProfileInput>(() => ({
@@ -51,7 +66,9 @@ export function ProfileForm({
     () =>
       (config.data?.provinces ?? []).flatMap((r) => {
         const p = provinceRow.safeParse(r);
-        return p.success ? [{ value: p.data.value, label: p.data.label }] : [];
+        return p.success
+          ? [{ value: p.data.value, label: p.data.label, priority: FREQUENT_PROVINCES.has(p.data.value) }]
+          : [];
       }),
     [config.data],
   );
@@ -77,6 +94,7 @@ export function ProfileForm({
     if (v.first_name.trim().length < 2) e.first_name = "نام را کامل بنویسید.";
     if (v.last_name.trim().length < 2) e.last_name = "نام خانوادگی را کامل بنویسید.";
     if (foreign) {
+      if (!v.nationality) e.nationality = "کشور محل تابعیت را انتخاب کنید.";
       if (v.passport_number.trim().length < 5) e.passport_number = "شمارهٔ گذرنامه را مطابق گذرنامه وارد کنید.";
     } else {
       if (!isValidNationalId(v.national_id)) e.national_id = "کد ملی ۱۰ رقمی معتبر نیست؛ دوباره بررسی کنید.";
@@ -118,7 +136,12 @@ export function ProfileForm({
     }
   };
 
-  const text = (k: Field, label: string, extra: Partial<React.InputHTMLAttributes<HTMLInputElement>> = {}) => (
+  const text = (
+    k: Field,
+    label: string,
+    extra: Partial<React.InputHTMLAttributes<HTMLInputElement>> = {},
+    after: ReactNode = null,
+  ) => (
     <div className="acc-field" data-field={k}>
       <label className="field-label" htmlFor={`${formId}-${k}`}>
         {label}
@@ -141,31 +164,69 @@ export function ProfileForm({
         <p className="field-error" id={`${formId}-${k}-err`}>
           {errors[k]}
         </p>
-      ) : null}
+      ) : (
+        after
+      )}
     </div>
   );
 
-  return (
-    <form id={formId} className="profile-form" onSubmit={submit} noValidate>
-      <p className="account-lead">
-        <Icon name="id-card" size={20} />
-        <span>
-          برای رزرو، مشخصات سرپرست زائران یک بار ثبت می‌شود. کد ملی و گذرنامه رمزنگاری‌شده نگه‌داری می‌شوند و جایی نمایش
-          داده نمی‌شوند.
-        </span>
-      </p>
+  const nid = latinDigits(v.national_id).replace(/\D/g, "");
+  const nidState = foreign || nid.length < 10 ? null : isValidNationalId(nid) ? "ok" : "bad";
+  const pickNationality = (kind: "ir" | "intl") => {
+    if ((kind === "ir") === !foreign) return;
+    setV((s) => ({ ...s, nationality: kind === "ir" ? IRAN : "" }));
+    setErrors({});
+  };
 
-      <div className="acc-field" data-field="nationality">
-        <Combobox
-          label="ملیت"
-          required
-          options={countries}
-          value={v.nationality}
-          onChange={set("nationality")}
-          error={errors.nationality}
-          placeholder="نام کشور را بنویسید"
-        />
+  const defaultLead = editing
+    ? "برای ویرایش، همهٔ مشخصات یک‌جا بازبینی می‌شود؛ مدرک هویتی را دوباره وارد کنید (رمزنگاری‌شده نگه‌داری می‌شود و هرگز نمایش داده نمی‌شود)."
+    : "برای رزرو، مشخصات سرپرست زائران یک بار ثبت می‌شود. کد ملی و گذرنامه رمزنگاری‌شده نگه‌داری می‌شوند و جایی نمایش داده نمی‌شوند.";
+  const leadNode = lead === undefined ? defaultLead : lead;
+
+  return (
+    <form id={formId} className={cx("profile-form", page && "profile-form--page")} onSubmit={submit} noValidate>
+      {leadNode ? (
+        <p className="account-lead">
+          <Icon name="id-card" size={20} />
+          <span>{leadNode}</span>
+        </p>
+      ) : null}
+
+      <div className="acc-field profile-kind" data-field="kind">
+        <span className="field-label" id={`${formId}-kind`}>
+          نوع تابعیت زائر
+        </span>
+        {/* طراح: «کپسول تفکیک» دو گزینه‌ای به‌جای فهرست بلند کشورها برای اکثریت ایرانی. */}
+        <div className="segment segment--wide profile-kind__seg" role="group" aria-labelledby={`${formId}-kind`}>
+          <button type="button" aria-pressed={!foreign} onClick={() => pickNationality("ir")}>
+            <Icon name="id-card" size={18} />
+            <span>
+              زائر ایرانی <small>(کد ملی ۱۰ رقمی)</small>
+            </span>
+          </button>
+          <button type="button" aria-pressed={foreign} onClick={() => pickNationality("intl")}>
+            <Icon name="globe" size={18} />
+            <span>
+              زائر بین‌المللی <small>(گذرنامهٔ معتبر)</small>
+            </span>
+          </button>
+        </div>
       </div>
+
+      {foreign ? (
+        <div className="acc-field" data-field="nationality">
+          <Combobox
+            label="کشور تابعیت (ملیت)"
+            required
+            options={countries.filter((c) => c.value !== IRAN)}
+            value={v.nationality}
+            onChange={set("nationality")}
+            error={errors.nationality}
+            placeholder="نام کشور را بنویسید (فارسی یا لاتین)"
+            quickPicks={page ? 6 : 0}
+          />
+        </div>
+      ) : null}
 
       <div className="acc-row">
         {text("first_name", foreign ? "نام (مطابق گذرنامه)" : "نام", { autoComplete: "given-name", maxLength: 50 })}
@@ -176,22 +237,39 @@ export function ProfileForm({
       </div>
 
       {foreign ? (
-        text("passport_number", "شمارهٔ گذرنامه", {
-          dir: "ltr",
-          autoComplete: "off",
-          maxLength: 24,
-          spellCheck: false,
-          autoCapitalize: "characters",
-        })
-      ) : (
-        <>
-          {text("national_id", "کد ملی", {
+        text(
+          "passport_number",
+          "شمارهٔ گذرنامه (Passport No.)",
+          {
             dir: "ltr",
-            inputMode: "numeric",
             autoComplete: "off",
-            maxLength: 12,
-            className: "text-input latin",
-          })}
+            maxLength: 24,
+            spellCheck: false,
+            autoCapitalize: "characters",
+          },
+          <p className="field-help">حروف لاتین و ارقام مطابق صفحهٔ اول گذرنامهٔ معتبر</p>,
+        )
+      ) : (
+        <div className="acc-row">
+          {text(
+            "national_id",
+            "کد ملی ۱۰ رقمی",
+            {
+              dir: "ltr",
+              inputMode: "numeric",
+              autoComplete: "off",
+              maxLength: 12,
+              className: "text-input latin",
+            },
+            nidState ? (
+              <p className="nid-check" data-state={nidState} id={`${formId}-national_id-check`} aria-live="polite">
+                <Icon name={nidState === "ok" ? "check" : "info"} size={14} />
+                {nidState === "ok" ? "رقم کنترل کد ملی درست است." : "رقم کنترل نمی‌خواند؛ ارقام را دوباره بررسی کنید."}
+              </p>
+            ) : (
+              <p className="field-help">صحت کد ملی بر پایهٔ الگوریتم رسمی رقم کنترلی ثبت احوال سنجیده می‌شود.</p>
+            ),
+          )}
           <div className="acc-field" data-field="province">
             <Combobox
               label="استان محل سکونت"
@@ -201,11 +279,15 @@ export function ProfileForm({
               onChange={set("province")}
               error={errors.province}
               placeholder="نام استان را بنویسید"
+              quickPicks={page ? 5 : 0}
             />
           </div>
-        </>
+        </div>
       )}
-      {text("city", foreign ? "شهر محل سکونت" : "شهر", { autoComplete: "address-level2", maxLength: 60 })}
+      {text("city", foreign ? "شهر محل سکونت در کشور مبدأ" : "شهر محل سکونت", {
+        autoComplete: "address-level2",
+        maxLength: 60,
+      })}
 
       {formError ? (
         <p className="account-alert" data-tone="danger" role="alert">
@@ -213,14 +295,23 @@ export function ProfileForm({
         </p>
       ) : null}
 
-      <div className="account-actions">
-        <button type="submit" className="btn btn-primary btn-block" disabled={busy} aria-busy={busy || undefined}>
-          {busy ? "در حال ذخیره…" : "ذخیره و ادامه"}
+      <div className={cx("account-actions", page && "account-actions--page")}>
+        <button
+          type="submit"
+          className={cx("btn btn-primary", page ? "btn-lg" : "btn-block")}
+          disabled={busy}
+          aria-busy={busy || undefined}
+        >
+          {busy ? "در حال ذخیره…" : submitLabel}
           <Icon name="arrow-left" size={18} />
         </button>
         {onSkip ? (
-          <button type="button" className="btn btn-ghost btn-block" onClick={onSkip}>
-            بعداً کامل می‌کنم
+          <button
+            type="button"
+            className={cx("btn", page ? "btn-secondary btn-lg" : "btn-ghost btn-block")}
+            onClick={onSkip}
+          >
+            {skipLabel}
           </button>
         ) : null}
       </div>

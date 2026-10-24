@@ -41,6 +41,7 @@ export function Combobox({
   required,
   name,
   emptyText = "موردی پیدا نشد.",
+  quickPicks = 0,
 }: {
   label: string;
   options: ComboOption[];
@@ -52,6 +53,8 @@ export function Combobox({
   required?: boolean;
   name?: string;
   emptyText?: string;
+  /** چند گزینهٔ پرتکرار (‎priority‎) به‌صورت «قرص» زیر کنترل — انتخاب با یک لمس (طراح P-05) */
+  quickPicks?: number;
 }) {
   const id = useId();
   const listId = `${id}-list`;
@@ -235,6 +238,19 @@ export function Combobox({
           ))}
         </ul>
       </div>
+      {quickPicks > 0 && options.some((o) => o.priority) ? (
+        <div className="combo__quick" role="group" aria-label={`${label} — گزینه‌های پرتکرار`}>
+          <span aria-hidden="true">پرتکرار:</span>
+          {options
+            .filter((o) => o.priority)
+            .slice(0, quickPicks)
+            .map((o) => (
+              <button key={o.value} type="button" aria-pressed={o.value === value} onClick={() => onChange(o.value)}>
+                {o.label}
+              </button>
+            ))}
+        </div>
+      ) : null}
       {help ? (
         <p className="field-help" id={helpId}>
           {help}

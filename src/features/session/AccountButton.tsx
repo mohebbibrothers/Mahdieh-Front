@@ -23,13 +23,14 @@ export function AccountButton() {
         className="account-button"
         data-state="in"
         aria-haspopup="dialog"
-        aria-label={`حساب من — ${name}`}
         onClick={() => openAccount()}
       >
         <span className="account-button__avatar" aria-hidden="true">
           {name.slice(0, 1)}
         </span>
+        {/* نام دسترس‌پذیر از خود متن (WCAG 2.5.3 «برچسب در نام»)؛ نام زائر فقط برای صفحه‌خوان */}
         <span className="account-button__label">حساب من</span>
+        <span className="sr-only"> — {name}</span>
       </button>
     );
   }

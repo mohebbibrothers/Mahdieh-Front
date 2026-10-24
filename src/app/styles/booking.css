@@ -1,0 +1,1997 @@
+/* P-05 «تکمیل و صدور رزرو» — اندازه‌ها از طراح (P-05-booking.html)، رنگ‌ها فقط از توکن‌ها (روشن/تیره/آسان).
+ * باگ‌های موبایل طراح رفع شده: گام‌ها در ۳۹۰px سرریز نمی‌کنند و کادر کد کوتاه هرگز دو تکه نمی‌شود. */
+@layer components {
+  /* ── توکن‌های محلی برگهٔ گواهی (طلایی/کاغذی؛ تیره: شب‌رنگ) ── */
+  .booking-main {
+    --cert-gold: color-mix(in oklab, var(--color-gold) 70%, var(--color-text));
+    --cert-border: color-mix(in oklab, var(--color-gold) 55%, var(--color-border));
+    --cert-bg: color-mix(in oklab, var(--color-gold) 4%, var(--color-surface));
+    --ok: var(--color-brand);
+    --ok-tint: var(--color-free-bg);
+    --ok-line: var(--color-free-border);
+  }
+
+  /* ── سربرگ ── */
+  .booking-hero {
+    position: relative;
+    overflow: clip;
+    padding: 16px 0 44px;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-canvas);
+  }
+  .booking-hero__art {
+    position: absolute;
+    inset-inline-end: -20px;
+    bottom: -15px;
+    width: 440px;
+    color: var(--color-brand);
+    opacity: 0.12;
+    pointer-events: none;
+  }
+  .booking-hero__art svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  :root[data-theme="dark"] .booking-hero__art {
+    opacity: 0.08;
+  }
+  .booking-hero__inner {
+    position: relative;
+    z-index: 1;
+  }
+  .booking-hero__inner > * {
+    max-width: 880px;
+  }
+  .crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 4px;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+  }
+  .crumbs li {
+    display: inline-flex;
+    align-items: center;
+  }
+  .crumbs li + li::before {
+    content: "←";
+    margin-inline: 8px;
+    color: var(--color-text-subtle);
+  }
+  .crumbs a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    transition: color var(--fast) var(--ease);
+  }
+  .crumbs a:hover {
+    color: var(--color-text);
+  }
+  .crumbs [aria-current="page"] {
+    color: var(--color-brand-ink);
+    font-weight: 600;
+  }
+  .booking-hero .eyebrow {
+    margin-bottom: 10px;
+    color: var(--color-brand-ink);
+  }
+  .booking-hero__title {
+    margin-bottom: 12px;
+    font-size: clamp(26px, 3.4vw, 40px);
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+  .booking-hero__lead {
+    max-width: 720px;
+    margin-bottom: 24px;
+    color: var(--color-text-muted);
+    font-size: 0.9375rem;
+    line-height: 1.8;
+  }
+  .trust-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .trust-pills li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--color-surface) 60%, transparent);
+    font-size: 0.8125rem;
+  }
+  .trust-pills .icon {
+    color: var(--color-brand-ink);
+  }
+
+  /* ── صحنهٔ گام‌ها ── */
+  .booking-stage {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    gap: 24px;
+    margin-top: -24px;
+    padding-bottom: 80px;
+    scroll-margin-top: calc(var(--header-h) + 12px);
+  }
+
+  /* نوار خلاصه */
+  .stay-ribbon {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 24px;
+    padding: 20px 24px;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background: var(--color-surface);
+    box-shadow: 0 8px 30px var(--color-shadow);
+    animation: booking-rise var(--base) var(--ease) both;
+  }
+  .stay-ribbon.is-pending strong,
+  .stay-ribbon.is-pending small,
+  .stay-ribbon.is-pending .stay-ribbon__sub {
+    color: transparent;
+    background: linear-gradient(90deg, var(--color-sunken), var(--color-border), var(--color-sunken)) 0 0 / 200% 100%;
+    border-radius: 6px;
+    animation: booking-shimmer 1.4s linear infinite;
+  }
+  .stay-ribbon__unit {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 0;
+  }
+  .stay-ribbon__icon {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+  }
+  .stay-ribbon__kicker,
+  .stay-ribbon__trip dt {
+    display: block;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .stay-ribbon__title {
+    display: block;
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+  .stay-ribbon__sub {
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+  }
+  .stay-ribbon__trip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+  }
+  .stay-ribbon__trip dd {
+    display: grid;
+    gap: 2px;
+  }
+  .stay-ribbon__trip strong {
+    font-size: 0.875rem;
+  }
+  .stay-ribbon__trip small {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .stay-ribbon__free.stay-ribbon__free {
+    color: var(--color-free-fg);
+    font-size: 1rem;
+  }
+  .stay-ribbon__edit {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -6px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--color-border);
+  }
+  .ribbon-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    padding: 0 12px;
+    border-radius: 10px;
+    color: var(--color-brand-ink);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    transition: background var(--fast) var(--ease);
+  }
+  .ribbon-edit:hover {
+    background: var(--color-brand-tint);
+  }
+
+  /* گام‌شمار */
+  .booking-steps ol {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .booking-step {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 12px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-surface);
+    transition:
+      border-color var(--base) var(--ease),
+      background var(--base) var(--ease);
+  }
+  .booking-step__dot {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 32px;
+    height: 32px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 50%;
+    background: var(--color-canvas);
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    font-weight: 700;
+    transition: all var(--base) var(--ease);
+  }
+  .booking-step__label {
+    min-width: 0;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 550;
+    line-height: 1.4;
+  }
+  .booking-step[data-state="current"] {
+    border-color: var(--color-brand);
+    background: var(--color-brand-tint);
+  }
+  .booking-step[data-state="current"] .booking-step__dot {
+    border-color: var(--color-brand);
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-brand) 18%, transparent);
+  }
+  .booking-step[data-state="current"] .booking-step__label {
+    color: var(--color-brand-ink);
+    font-weight: 700;
+  }
+  .booking-step[data-state="done"] {
+    border-color: var(--color-border-strong);
+  }
+  .booking-step[data-state="done"] .booking-step__dot {
+    border-color: var(--color-brand);
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+  }
+
+  /* کارت گام */
+  .booking-card {
+    display: grid;
+    gap: 24px;
+    width: min(960px, 100%);
+    margin-inline: auto;
+    padding: 36px 40px;
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    background: var(--color-surface);
+    box-shadow: 0 10px 40px var(--color-shadow);
+    animation: booking-rise var(--base) var(--ease) both;
+  }
+  .booking-card__head h2 {
+    margin-bottom: 8px;
+    font-size: clamp(20px, 2.5vw, 24px);
+    font-weight: 700;
+    outline: none;
+  }
+  .booking-card__head p {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    line-height: 1.8;
+  }
+  .step-badge {
+    display: inline-block;
+    margin-bottom: 8px;
+    padding: 4px 12px;
+    border-radius: 6px;
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  /* فرم‌های حساب در قالب صفحه */
+  .account-flow--page {
+    gap: 20px;
+  }
+  .account-flow--page .account-form,
+  .account-flow--page .profile-form {
+    gap: 20px;
+  }
+  .account-flow--page .phone-input {
+    max-width: 440px;
+  }
+  .account-actions--page {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .account-submit {
+    justify-self: start;
+  }
+  .profile-kind__seg button {
+    min-height: 48px;
+  }
+  .profile-kind__seg small {
+    opacity: 0.8;
+    font-size: 0.75rem;
+    font-weight: 450;
+  }
+  .nid-check {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 0.8125rem;
+    font-weight: 550;
+  }
+  .nid-check[data-state="ok"] {
+    color: var(--color-free-fg);
+  }
+  .nid-check[data-state="bad"] {
+    color: var(--color-danger-fg);
+  }
+  .combo__quick {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .combo__quick button {
+    min-height: 32px;
+    padding: 0 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-canvas);
+    color: var(--color-text);
+    font: inherit;
+    transition:
+      background var(--fast) var(--ease),
+      border-color var(--fast) var(--ease);
+  }
+  .combo__quick button:hover {
+    border-color: var(--color-brand);
+  }
+  .combo__quick button[aria-pressed="true"] {
+    border-color: var(--color-brand);
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+    font-weight: 650;
+  }
+
+  /* ── گام ۳: اهلیت و سهمیه ── */
+  .details {
+    display: grid;
+    gap: 24px;
+  }
+  .standing {
+    padding: 24px;
+    border: 1px solid var(--ok-line);
+    border-radius: 16px;
+    background: var(--ok-tint);
+  }
+  .standing[data-ok="false"] {
+    border-color: color-mix(in oklab, var(--color-danger-fg) 35%, var(--color-border));
+    background: color-mix(in oklab, var(--color-danger-bg) 60%, var(--color-surface));
+  }
+  .standing__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--ok-line);
+  }
+  .standing__badge {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--ok);
+    color: var(--color-on-brand);
+  }
+  .standing[data-ok="false"] .standing__badge {
+    background: var(--color-danger-fg);
+    color: var(--color-surface);
+  }
+  .standing__titles {
+    flex: 1;
+    min-width: 200px;
+  }
+  .standing__titles h3 {
+    margin-bottom: 2px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .standing__titles p {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .standing__who {
+    display: grid;
+    justify-items: end;
+    padding: 6px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    background: var(--color-surface);
+    font-size: 0.8125rem;
+  }
+  .standing__who bdi {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .standing__quotas {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    padding-top: 16px;
+  }
+  .standing__quotas li {
+    display: grid;
+    gap: 6px;
+    justify-items: center;
+    padding: 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-surface);
+    text-align: center;
+  }
+  .standing__quotas li[data-over] {
+    border-color: var(--color-danger-fg);
+  }
+  .standing__q-title,
+  .standing__quotas small {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .standing__q-value {
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+  .standing__q-value b {
+    color: var(--color-brand-ink);
+    font-size: 1.375rem;
+    font-weight: 750;
+  }
+  .standing__quotas .standing__q-after {
+    color: var(--color-brand-ink);
+    font-weight: 600;
+  }
+  .standing__quotas li[data-over] .standing__q-after {
+    color: var(--color-danger-fg);
+  }
+  .skeleton-tile {
+    min-height: 118px;
+    background: linear-gradient(90deg, var(--color-sunken), var(--color-surface), var(--color-sunken)) 0 0 / 200% 100% !important;
+    animation: booking-shimmer 1.4s linear infinite;
+  }
+  .quota-bar {
+    width: 100%;
+    height: 6px;
+    overflow: visible;
+  }
+  .quota-bar__track {
+    fill: var(--color-sunken);
+  }
+  .quota-bar__used {
+    fill: var(--color-brand);
+  }
+  .quota-bar__add {
+    fill: color-mix(in oklab, var(--color-gold) 75%, transparent);
+    animation: quota-pulse 1.6s var(--ease) infinite alternate;
+  }
+  li[data-over] .quota-bar__add {
+    fill: var(--color-danger-fg);
+  }
+  .standing__blockers {
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+    margin-top: 20px;
+    padding: 16px;
+    border: 1px solid color-mix(in oklab, var(--color-danger-fg) 30%, transparent);
+    border-radius: 12px;
+    background: var(--color-danger-bg);
+    color: var(--color-danger-fg);
+    font-size: 0.8125rem;
+    line-height: 1.8;
+  }
+  .standing__blockers strong {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+  }
+  .standing__blockers ul {
+    padding-inline-start: 20px;
+    list-style: disc;
+  }
+
+  /* نتیجهٔ استعلام و هشدارها */
+  .verdict {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-canvas);
+    font-size: 0.8125rem;
+    line-height: 1.8;
+    animation: booking-rise var(--base) var(--ease) both;
+  }
+  .verdict > .icon {
+    flex: none;
+    margin-top: 3px;
+  }
+  .verdict p,
+  .verdict__body {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+    flex: 1;
+  }
+  .verdict strong {
+    font-size: 0.875rem;
+  }
+  .verdict span {
+    color: var(--color-text-muted);
+  }
+  .verdict--pending {
+    align-items: center;
+    color: var(--color-text-muted);
+  }
+  .verdict--ok {
+    border-color: var(--ok-line);
+    background: var(--ok-tint);
+  }
+  .verdict--ok > .icon {
+    color: var(--color-free-fg);
+  }
+  .verdict--warn {
+    border-color: color-mix(in oklab, var(--color-warn-fg) 30%, transparent);
+    background: var(--color-warn-bg);
+  }
+  .verdict--warn > .icon,
+  .verdict--warn strong {
+    color: var(--color-warn-fg);
+  }
+  .verdict--bad {
+    border-color: color-mix(in oklab, var(--color-danger-fg) 30%, transparent);
+    background: color-mix(in oklab, var(--color-danger-bg) 70%, var(--color-surface));
+  }
+  .verdict--bad > .icon,
+  .verdict--bad > .verdict__body > strong {
+    color: var(--color-danger-fg);
+  }
+  .violations {
+    display: grid;
+    gap: 4px;
+  }
+  .violations li {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .violations .icon {
+    flex: none;
+    margin-top: 4px;
+  }
+  .alts {
+    display: grid;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .alts__title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .alts__title .icon {
+    color: var(--color-gold);
+  }
+  .alts__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .alt-chip {
+    display: grid;
+    gap: 2px;
+    justify-items: start;
+    min-height: 48px;
+    padding: 8px 14px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 12px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    text-align: start;
+    transition:
+      transform var(--fast) var(--ease),
+      border-color var(--fast) var(--ease),
+      box-shadow var(--fast) var(--ease);
+  }
+  .alt-chip:hover {
+    transform: translateY(-1px);
+    border-color: var(--color-brand);
+    box-shadow: 0 6px 16px var(--color-shadow);
+  }
+  .alt-chip__unit {
+    font-weight: 650;
+  }
+  .alt-chip__when {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .alt-chip__tag {
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+    font-size: 0.6875rem;
+    font-weight: 650;
+  }
+  .waitlist {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 16px;
+    margin-top: 8px;
+    padding: 12px 14px;
+    border: 1px dashed var(--color-border-strong);
+    border-radius: 12px;
+    background: var(--color-surface);
+  }
+  .waitlist p {
+    flex: 1 1 260px;
+  }
+  .waitlist--joined {
+    border-style: solid;
+    border-color: var(--ok-line);
+    background: var(--ok-tint);
+  }
+  .waitlist--joined > .icon {
+    color: var(--color-free-fg);
+  }
+
+  /* فرم جزئیات سفر */
+  .details__form {
+    gap: 20px;
+  }
+  .details__section {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .details__section .icon {
+    color: var(--color-brand-ink);
+  }
+  .picker {
+    position: relative;
+  }
+  .picker__button.text-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding-inline-end: 44px;
+    color: var(--color-text);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+  }
+  .picker__button > .icon {
+    flex: none;
+    color: var(--color-brand-ink);
+  }
+  .picker__button .combo__toggle {
+    pointer-events: none;
+  }
+  .picker .combo__list {
+    max-height: 300px;
+  }
+  .picker__option > span {
+    display: grid;
+    padding-block: 6px;
+  }
+  .picker__option small {
+    color: var(--color-text-muted);
+    font-size: 0.6875rem;
+    font-weight: 450;
+  }
+  .plate-field__top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px 12px;
+    margin-bottom: 8px;
+  }
+  .plate-field__top .field-label {
+    margin-bottom: 0;
+  }
+  .mini-seg {
+    display: inline-flex;
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-canvas);
+  }
+  .mini-seg button {
+    min-height: 32px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: background var(--fast) var(--ease);
+  }
+  .mini-seg button[aria-pressed="true"] {
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+  }
+  /* پلاک ایرانی — چیدمان چپ‌به‌راست مثل خود پلاک */
+  .plate {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    max-width: 380px;
+    min-width: 0;
+    min-height: 52px;
+    overflow: visible;
+    border: 2px solid var(--color-text);
+    border-radius: 8px;
+    background: #fdfdf8;
+    color: #111;
+    font-weight: 700;
+    transition: box-shadow var(--fast) var(--ease);
+  }
+  :root[data-theme="dark"] .plate {
+    border-color: var(--color-border-strong);
+  }
+  .plate:focus-within {
+    box-shadow: 0 0 0 3px var(--color-brand-tint);
+  }
+  .plate--invalid {
+    border-color: var(--color-danger-fg);
+  }
+  .plate__flag {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    flex: none;
+    width: 32px;
+    border-radius: 5px 0 0 5px;
+    background: #1d4fb8;
+    color: #fff;
+    font-size: 0.5rem;
+    line-height: 1.3;
+  }
+  .plate__flag i {
+    width: 16px;
+    height: 10px;
+    margin-bottom: 3px;
+    background: linear-gradient(#239f40 33%, #fff 33% 66%, #da0000 66%);
+  }
+  .plate__cell {
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 1.25rem;
+    text-align: center;
+    outline: none;
+  }
+  .plate__cell::placeholder {
+    color: #b5b5ab;
+  }
+  .plate__cell:focus-visible {
+    background: #eef3ff;
+  }
+  .plate__cell--2 {
+    flex: 2 1 0;
+    width: 0;
+  }
+  .plate__cell--3 {
+    flex: 3 1 0;
+    width: 0;
+  }
+  .plate__letter-wrap {
+    position: relative;
+    display: flex;
+    flex: 2 1 0;
+    min-width: 0;
+  }
+  .plate__letter {
+    width: 100%;
+    cursor: pointer;
+  }
+  .plate__letter > span {
+    color: #b5b5ab;
+  }
+  .plate__region {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    flex: 0 0 3.4em;
+    border-inline-start: 2px solid currentColor;
+  }
+  .plate__region small {
+    font-size: 0.625rem;
+    line-height: 1;
+  }
+  .plate__cell--r {
+    width: 100%;
+    font-size: 1.0625rem;
+  }
+  .plate__letters {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    z-index: 6;
+    display: grid;
+    grid-template-columns: repeat(6, 40px);
+    gap: 4px;
+    padding: 8px;
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    background: var(--color-surface);
+    box-shadow: var(--shadow-pop);
+    translate: -50% 0;
+    animation: combo-in var(--fast) var(--ease);
+  }
+  .plate__letters button {
+    min-height: 40px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: var(--color-canvas);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 650;
+  }
+  .plate__letters button:hover,
+  .plate__letters button:focus-visible {
+    border-color: var(--color-brand);
+  }
+  .plate__letters button[aria-pressed="true"] {
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+  }
+  .note-field__input {
+    min-height: 96px;
+    resize: vertical;
+    line-height: 1.8;
+  }
+  .note-field__count {
+    margin-top: 6px;
+    color: var(--color-text-subtle);
+    font-size: 0.75rem;
+    text-align: end;
+  }
+  .need-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .need-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-canvas);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 0.8125rem;
+    transition:
+      background var(--fast) var(--ease),
+      border-color var(--fast) var(--ease);
+  }
+  .need-chip:hover {
+    border-color: var(--color-brand);
+  }
+  .need-chip[aria-pressed="true"] {
+    border-color: var(--color-brand);
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+    font-weight: 650;
+  }
+  .idem-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-brand-tint);
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    line-height: 1.8;
+  }
+  .idem-note > .icon {
+    flex: none;
+    color: var(--color-brand-ink);
+  }
+  .idem-note bdi {
+    color: var(--color-brand-ink);
+    font-family: ui-monospace, monospace;
+    font-weight: 700;
+  }
+  .details__actions .btn-primary {
+    min-width: 260px;
+  }
+
+  /* ── دکمه‌ها و چرخنده ── */
+  .btn-danger {
+    border-color: var(--color-danger-fg);
+    background: var(--color-danger-fg);
+    color: var(--color-surface);
+  }
+  .btn-danger:hover:not(:disabled) {
+    background: color-mix(in oklab, var(--color-danger-fg) 85%, black);
+  }
+  .btn-danger-outline {
+    border: 1px solid color-mix(in oklab, var(--color-danger-fg) 70%, transparent);
+    background: var(--color-surface);
+    color: var(--color-danger-fg);
+  }
+  .btn-danger-outline:hover {
+    background: var(--color-danger-bg);
+  }
+  .spinner {
+    display: inline-block;
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: 50%;
+    animation: booking-spin 0.8s linear infinite;
+  }
+
+  /* ── گام ۴: بنر، نگه‌داشت، گواهی ── */
+  .success-banner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 24px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 16px;
+    background: var(--color-brand-tint);
+  }
+  .success-banner strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+  .success-banner p {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    line-height: 1.8;
+  }
+  .success-banner__icon {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+    box-shadow: 0 4px 16px color-mix(in oklab, var(--color-brand) 30%, transparent);
+  }
+  .success-banner[data-fresh] .success-banner__icon {
+    animation: seal-pop 640ms var(--ease-spring) both;
+  }
+  .success-banner[data-fresh] .success-banner__icon::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border: 2px solid var(--color-gold);
+    border-radius: 50%;
+    animation: seal-ring 1.2s var(--ease) 200ms both;
+  }
+  .success-banner[data-tone="hold"] {
+    border-color: color-mix(in oklab, var(--color-warn-fg) 35%, transparent);
+    background: var(--color-warn-bg);
+  }
+  .success-banner[data-tone="hold"] .success-banner__icon {
+    background: var(--color-warn-fg);
+    color: var(--color-warn-bg);
+  }
+  .success-banner[data-tone="stopped"] {
+    border-color: var(--color-border);
+    background: var(--color-sunken);
+  }
+  .success-banner[data-tone="stopped"] .success-banner__icon {
+    background: var(--color-text-muted);
+    color: var(--color-surface);
+  }
+  .hold {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 20px;
+    padding: 20px 24px;
+    border: 1px dashed color-mix(in oklab, var(--color-warn-fg) 45%, transparent);
+    border-radius: 16px;
+  }
+  .hold > div {
+    flex: 1 1 280px;
+  }
+  .hold strong {
+    font-size: 1rem;
+  }
+  .hold p {
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    line-height: 1.8;
+  }
+  .hold__ring {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border: 2px solid var(--color-warn-fg);
+    border-radius: 50%;
+    color: var(--color-warn-fg);
+    animation: hold-turn 2.4s var(--ease) infinite;
+  }
+  .hold__timer.hold__timer {
+    display: grid;
+    justify-items: center;
+    padding: 10px 18px;
+    border-radius: 12px;
+    background: var(--color-warn-bg);
+    color: var(--color-warn-fg);
+  }
+  .hold__timer span {
+    font-size: 0.75rem;
+  }
+  .hold__timer bdi {
+    font-size: 1.5rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .cert-skeleton {
+    min-height: 420px;
+    border-radius: 18px;
+  }
+
+  .cert {
+    position: relative;
+    padding: 36px 40px;
+    overflow: hidden;
+    border: 2px solid var(--cert-border);
+    border-radius: 18px;
+    background: var(--cert-bg);
+    box-shadow: 0 8px 32px var(--color-shadow);
+    animation: booking-rise var(--slow, 420ms) var(--ease) both;
+  }
+  .cert::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px solid var(--cert-border);
+    border-radius: 12px;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .cert__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid transparent;
+    border-image: linear-gradient(90deg, transparent, var(--cert-border), transparent) 1;
+  }
+  .cert__emblem {
+    width: 52px;
+    height: 52px;
+    color: var(--cert-gold);
+  }
+  .cert__emblem .brand-mark,
+  .cert__emblem svg {
+    width: 100%;
+    height: 100%;
+  }
+  .cert__titles {
+    flex: 1;
+    min-width: 200px;
+    text-align: center;
+  }
+  .cert__basmala {
+    margin-bottom: 4px;
+    color: var(--cert-gold);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+  }
+  .cert__titles h3 {
+    font-size: 1.375rem;
+    font-weight: 700;
+  }
+  .cert__titles p:last-child {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .cert__code {
+    display: grid;
+    padding: 10px 16px;
+    border: 1px solid var(--cert-border);
+    border-radius: 10px;
+    background: var(--color-surface);
+    text-align: start;
+  }
+  .cert__code span,
+  .cert__code small {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .cert__code strong {
+    color: var(--color-brand-ink);
+    font-family: ui-monospace, monospace;
+    font-size: 1.125rem;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+  }
+  .cert__fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 24px;
+    margin-top: 24px;
+  }
+  .cert__fields > div {
+    display: grid;
+    gap: 4px;
+    padding: 12px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 10px;
+    background: var(--color-surface);
+  }
+  .cert__fields dt {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .cert__fields dd {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+  .cert__wide {
+    grid-column: 1 / -1;
+  }
+  .cert__trip dd {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+  }
+  .cert__trip dd span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .cert__verify {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 180px;
+    align-items: center;
+    gap: 24px;
+    margin-top: 24px;
+    padding: 20px;
+    border: 1px solid var(--cert-border);
+    border-radius: 14px;
+    background: var(--color-surface);
+  }
+  .cert__qr {
+    display: grid;
+    justify-items: center;
+    gap: 8px;
+    grid-column: 2;
+    grid-row: 1;
+    text-align: center;
+  }
+  .cert__qr-tile {
+    display: block;
+    padding: 8px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 0 0 1px var(--color-border);
+  }
+  .cert__qr img {
+    display: block;
+    width: 148px;
+    height: 148px;
+  }
+  .cert__qr figcaption {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .cert__offline {
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .cert__offline h4 {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--cert-gold);
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+  .cert__offline p {
+    font-size: 0.8125rem;
+    line-height: 1.7;
+  }
+  .cert__offline > small {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .cert__short {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px 12px;
+    max-width: 100%;
+    padding: 10px 18px;
+    border: 2px dashed var(--color-brand);
+    border-radius: 10px;
+    background: var(--color-canvas);
+  }
+  .cert__short span {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  .cert__short strong {
+    color: var(--color-brand-ink);
+    font-family: ui-monospace, monospace;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+  }
+  .cert__alg {
+    white-space: nowrap;
+  }
+  .cert__copy.btn {
+    min-height: 32px;
+    padding: 0 10px;
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-surface);
+    font-size: 0.75rem;
+  }
+  .cert__rules {
+    display: grid;
+    gap: 2px;
+    margin-top: 24px;
+    padding-top: 16px;
+    padding-inline-start: 20px;
+    border-top: 1px dashed var(--cert-border);
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    line-height: 1.9;
+    list-style: disc;
+  }
+  .cert__rules strong {
+    color: var(--color-text);
+  }
+
+  .result-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* گاه‌شمار */
+  .stay-timeline {
+    padding: 24px 28px;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background: var(--color-surface);
+  }
+  .stay-timeline h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .stay-timeline h3 .icon {
+    color: var(--color-brand-ink);
+  }
+  .stay-timeline ol {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    gap: 16px;
+  }
+  .stay-timeline li {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 4px;
+    font-size: 0.75rem;
+  }
+  .stay-timeline li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 15px;
+    inset-inline: 44px -8px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--color-border);
+  }
+  .stay-timeline li[data-state="done"]:not(:last-child)::after {
+    background: var(--color-brand);
+  }
+  .stay-timeline__dot {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    margin-bottom: 4px;
+    border: 2px solid var(--color-border);
+    border-radius: 50%;
+    background: var(--color-canvas);
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+  .stay-timeline li[data-state="done"] .stay-timeline__dot {
+    border-color: var(--color-brand);
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+  }
+  .stay-timeline li[data-state="current"] .stay-timeline__dot {
+    border-color: var(--color-brand);
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+    animation: current-pulse 2s var(--ease) infinite;
+  }
+  .stay-timeline li[data-state="stopped"] .stay-timeline__dot {
+    border-color: var(--color-danger-fg);
+    background: var(--color-danger-bg);
+    color: var(--color-danger-fg);
+  }
+  .stay-timeline strong {
+    font-size: 0.8125rem;
+  }
+  .stay-timeline li > span:not(.stay-timeline__dot):not(.sr-only),
+  .stay-timeline small {
+    color: var(--color-text-muted);
+  }
+
+  /* پنجره‌های لغو و نظرسنجی */
+  .cancel-flow,
+  .feedback-form {
+    display: grid;
+    gap: 16px;
+  }
+  .reason-set {
+    display: grid;
+    gap: 10px;
+    min-width: 0;
+  }
+  .reason-set .need-chips {
+    margin-bottom: 0;
+  }
+  .stars {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+  }
+  .stars legend {
+    margin-bottom: 6px;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+  .stars--sm legend {
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 550;
+  }
+  .stars__row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .stars__item {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-width: 40px;
+    min-height: 40px;
+    color: var(--color-border-strong);
+    cursor: pointer;
+    transition:
+      color var(--fast) var(--ease),
+      transform var(--fast) var(--ease);
+  }
+  .stars--sm .stars__item {
+    min-width: 32px;
+    min-height: 32px;
+  }
+  .stars__item input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .stars__item[data-on] {
+    color: var(--color-gold);
+  }
+  .stars__item .stars__on,
+  .stars__item[data-on] .stars__off {
+    display: none;
+  }
+  .stars__item[data-on] .stars__on {
+    display: inline-block;
+  }
+  .stars__item:hover {
+    transform: scale(1.12);
+  }
+  /* پیش‌نمایش امتیاز با نشانگر — دقیقاً مثل امتیاز واقعی: ستارهٔ زیر نشانگر و پیش از آن پُر و طلایی،
+     پس از آن توخالی. انتخابگر پیش‌نمایش ‎(:has + :is)‎ عمداً از بازنشانی ردیف ویژه‌تر است. */
+  @media (hover: hover) {
+    .stars__row:has(.stars__item:hover) .stars__item {
+      color: var(--color-border-strong);
+    }
+    .stars__row:has(.stars__item:hover) .stars__item .stars__on {
+      display: none;
+    }
+    .stars__row:has(.stars__item:hover) .stars__item .stars__off {
+      display: inline-block;
+    }
+    .stars__row:has(.stars__item:hover) :is(.stars__item:hover, .stars__item:has(~ .stars__item:hover)) {
+      color: var(--color-gold);
+    }
+    .stars__row:has(.stars__item:hover) :is(.stars__item:hover, .stars__item:has(~ .stars__item:hover)) .stars__on {
+      display: inline-block;
+    }
+    .stars__row:has(.stars__item:hover) :is(.stars__item:hover, .stars__item:has(~ .stars__item:hover)) .stars__off {
+      display: none;
+    }
+  }
+  .stars__item:has(input:focus-visible) {
+    border-radius: 8px;
+    outline: 2px solid var(--color-focus);
+  }
+  .stars output {
+    margin-inline-start: 8px;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+  }
+  .feedback-form__subs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 20px;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--color-canvas);
+  }
+  .feedback-form__rec {
+    display: grid;
+    gap: 8px;
+    justify-items: start;
+  }
+
+  /* بی‌انتخاب: رزروها و میان‌بُرها */
+  .res-list {
+    display: grid;
+    gap: 10px;
+  }
+  .res-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    background: var(--color-canvas);
+    transition:
+      border-color var(--fast) var(--ease),
+      transform var(--fast) var(--ease);
+  }
+  .res-card:hover {
+    transform: translateY(-1px);
+    border-color: var(--color-brand);
+  }
+  .res-card__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+  }
+  .res-card__body {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+  .res-card__body span {
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+  }
+  .res-card__status {
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: var(--color-free-bg);
+    color: var(--color-free-fg);
+    font-size: 0.75rem;
+    font-weight: 650;
+  }
+  .res-card:not([data-active]) {
+    opacity: 0.78;
+  }
+  .res-card:not([data-active]) .res-card__icon {
+    background: var(--color-sunken);
+    color: var(--color-text-muted);
+  }
+  .res-card__status[data-status^="cancelled"],
+  .res-card__status[data-status="expired"],
+  .res-card__status[data-status="no_show"] {
+    background: var(--color-danger-bg);
+    color: var(--color-danger-fg);
+  }
+  .res-card__status[data-status="completed"],
+  .res-card__status[data-status="superseded"] {
+    background: var(--color-sunken);
+    color: var(--color-text-muted);
+  }
+  .res-card__status[data-status="hold"] {
+    background: var(--color-warn-bg);
+    color: var(--color-warn-fg);
+  }
+  .res-card__code {
+    color: var(--color-text-muted);
+    font-family: ui-monospace, monospace;
+    font-size: 0.8125rem;
+  }
+  .res-card__go {
+    color: var(--color-text-subtle);
+  }
+  .empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .empty-signin {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 12px;
+    padding: 12px 16px;
+    border: 1px dashed var(--color-border-strong);
+    border-radius: 12px;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+  }
+  .empty-signin span {
+    flex: 1 1 240px;
+  }
+  .account-res__open {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 40px;
+    margin-top: 4px;
+    color: var(--color-brand-ink);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+
+  /* ── پاسخ‌گرا ── */
+  @media (max-width: 850px) {
+    .booking-steps ol {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .stay-ribbon__trip {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .cert__fields {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .cert__verify {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+      text-align: center;
+    }
+    .cert__qr,
+    .cert__offline {
+      grid-column: 1;
+      grid-row: auto;
+    }
+    .cert__offline {
+      justify-items: center;
+    }
+    .stay-timeline ol {
+      grid-auto-flow: row;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+    .stay-timeline li {
+      grid-template-columns: 32px minmax(0, 1fr);
+      column-gap: 14px;
+      padding-bottom: 18px;
+    }
+    .stay-timeline li > :not(.stay-timeline__dot) {
+      grid-column: 2;
+    }
+    .stay-timeline__dot {
+      grid-row: 1 / span 4;
+    }
+    .stay-timeline li:not(:last-child)::after {
+      top: 38px;
+      bottom: 4px;
+      inset-inline: 15px auto;
+      width: 2px;
+      height: auto;
+    }
+  }
+  @media (max-width: 620px) {
+    .booking-hero {
+      padding-bottom: 40px;
+    }
+    .booking-hero__art {
+      width: 240px;
+      opacity: 0.08;
+    }
+    .booking-hero__lead {
+      font-size: 0.8125rem;
+    }
+    .trust-pills {
+      gap: 8px;
+    }
+    .trust-pills li {
+      padding: 5px 12px;
+      font-size: 0.75rem;
+    }
+    .booking-stage {
+      gap: 16px;
+      padding-bottom: 40px;
+    }
+    .stay-ribbon {
+      padding: 16px;
+    }
+    .stay-ribbon__trip {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+    .stay-ribbon__trip > div:first-child {
+      grid-column: 1 / -1;
+    }
+    .booking-step {
+      gap: 8px;
+      padding: 10px;
+    }
+    .booking-step__dot {
+      width: 28px;
+      height: 28px;
+      font-size: 0.8125rem;
+    }
+    .booking-step__label {
+      font-size: 0.75rem;
+    }
+    .standing {
+      padding: 16px;
+    }
+    .standing__who {
+      justify-items: start;
+      width: 100%;
+    }
+    .standing__quotas {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+    }
+    /* کاشی فشردهٔ افقی: عنوان و عدد در یک ردیف، نوار و توضیح زیرشان */
+    .standing__quotas li {
+      grid-template-columns: minmax(0, 1fr) auto;
+      justify-items: stretch;
+      gap: 6px 12px;
+      padding: 12px 14px;
+      text-align: start;
+    }
+    .standing__quotas li > :not(.standing__q-value):not(.standing__q-title) {
+      grid-column: 1 / -1;
+    }
+    .standing__q-title {
+      align-self: center;
+      color: var(--color-text);
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+    .standing__q-value {
+      font-size: 0.9375rem;
+    }
+    .standing__q-value b {
+      font-size: 1.125rem;
+    }
+    .standing__quotas .skeleton-tile {
+      min-height: 84px;
+    }
+    .success-banner {
+      align-items: flex-start;
+      gap: 14px;
+      padding: 18px;
+    }
+    .success-banner strong {
+      font-size: 1.0625rem;
+    }
+    .success-banner__icon {
+      width: 46px;
+      height: 46px;
+    }
+    .cert {
+      padding: 24px 18px;
+    }
+    .cert__fields {
+      gap: 10px;
+    }
+    .cert__fields > div {
+      padding: 10px 14px;
+    }
+    .cert__verify {
+      padding: 16px 12px;
+    }
+    .cert__head {
+      justify-content: center;
+      text-align: center;
+    }
+    .cert__code {
+      width: 100%;
+      justify-items: center;
+    }
+    .result-actions .btn,
+    .empty-actions .btn,
+    .account-actions--page .btn,
+    .details__actions .btn-primary {
+      width: 100%;
+      min-width: 0;
+      justify-content: center;
+    }
+    .res-card {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+    .res-card__code {
+      grid-column: 2;
+    }
+    .res-card__go {
+      display: none;
+    }
+    .feedback-form__subs {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .stay-timeline {
+      padding: 18px;
+    }
+  }
+  @media (max-width: 480px) {
+    .booking-card {
+      padding: 24px 18px;
+    }
+    .plate__cell {
+      font-size: 1.0625rem;
+    }
+    .plate__letters {
+      grid-template-columns: repeat(5, 40px);
+    }
+  }
+}
+
+/* حالت آسان: درشت‌تر و بی‌حرکت (همان قاعدهٔ سراسری) */
+:root[data-easy="true"] .booking-step__label {
+  font-size: 0.875rem;
+}
+
+@keyframes booking-rise {
+  from {
+    opacity: 0;
+    translate: 0 10px;
+  }
+}
+@keyframes booking-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@keyframes booking-spin {
+  to {
+    rotate: 360deg;
+  }
+}
+@keyframes quota-pulse {
+  to {
+    opacity: 0.55;
+  }
+}
+@keyframes seal-pop {
+  from {
+    scale: 0.4;
+    opacity: 0;
+  }
+}
+@keyframes seal-ring {
+  from {
+    scale: 0.8;
+    opacity: 1;
+  }
+  to {
+    scale: 1.5;
+    opacity: 0;
+  }
+}
+@keyframes hold-turn {
+  50% {
+    rotate: 180deg;
+  }
+  to {
+    rotate: 180deg;
+  }
+}
+@keyframes current-pulse {
+  50% {
+    box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-brand) 15%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .booking-main *,
+  .booking-main *::before,
+  .booking-main *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ── چاپ: فقط برگهٔ گواهی ── */
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  /* هر چه گواهی را در بر ندارد حذف (نه نامرئی ⇒ بی برگ سفید اضافه)؛ پوسته‌های دربرگیرنده بی‌حاشیه */
+  body *:not(.cert, .cert *, :has(.cert)) {
+    display: none !important;
+  }
+  body :has(.cert) {
+    position: static !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    animation: none !important;
+  }
+  .cert {
+    break-inside: avoid;
+    box-shadow: none;
+    animation: none;
+    --cert-bg: #fff;
+    --color-surface: #fff;
+    --color-canvas: #fff;
+    --color-text: #111;
+    --color-text-muted: #444;
+    --color-brand-ink: #0d4d40;
+    --color-border: #bbb;
+    --cert-border: #b08a3e;
+    --cert-gold: #7a5200;
+    print-color-adjust: exact;
+    color: #111;
+  }
+  .cert__copy {
+    display: none !important;
+  }
+  /* چیدمان چاپی ثابت و فشرده (مستقل از نقطه‌شکست‌های صفحه) ⇒ همیشه یک برگ A4 */
+  .cert {
+    padding: 18px 22px !important;
+  }
+  .cert__head {
+    padding-bottom: 14px;
+    text-align: start;
+  }
+  .cert__code {
+    width: auto !important;
+  }
+  .cert__fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 8px 12px !important;
+    margin-top: 14px;
+  }
+  .cert__fields > div {
+    padding: 8px 12px !important;
+  }
+  .cert__verify {
+    grid-template-columns: minmax(0, 1fr) 150px !important;
+    justify-items: stretch !important;
+    gap: 16px;
+    margin-top: 14px;
+    padding: 12px 16px !important;
+    text-align: start !important;
+  }
+  .cert__qr {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+  .cert__offline {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    justify-items: start !important;
+  }
+  .cert__qr img {
+    width: 120px;
+    height: 120px;
+  }
+  .cert__rules {
+    margin-top: 14px;
+    padding-top: 10px;
+    line-height: 1.75;
+  }
+}

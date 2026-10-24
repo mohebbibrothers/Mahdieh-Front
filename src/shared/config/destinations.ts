@@ -9,8 +9,10 @@
  * با ساخت هر صفحه فقط `ready: true` (و در صورت نیاز مسیر) عوض می‌شود و همهٔ پیوندها و دکمه‌های
  * آن در کل سایت یک‌جا وصل می‌شوند. آزمون واحد همین پرونده و آزمون نگهبان e2e مراقب‌اند.
  *
- * یادداشت مسیرها: قالب‌های قدیمی جنگو ‎/units/‎، ‎/calendar/‎، ‎/help/‎ و ‎/book/‎ را دارند؛ هنگام
- * فعال‌سازی هر صفحه، مسیر قدیمی متناظر در بک‌اند بازنشسته و آزمون نگهبان به‌روز می‌شود.
+ * یادداشت مسیرها: همه با اسلش پایانی (خروجی ایستا با ‎trailingSlash‎ و جنگو فقط همین مسیر دقیق
+ * را از ‎routes.json‎ سرو می‌کند؛ بی‌اسلش ⇒ ۳۰۱ بک‌اند). قالب‌های قدیمی جنگو ‎/units/‎، ‎/calendar/‎،
+ * ‎/help/‎ و ‎/book/‎ را دارند؛ هنگام فعال‌سازی هر صفحه، مسیر قدیمی متناظر بازنشسته و آزمون نگهبان
+ * به‌روز می‌شود.
  * پذیرش (P-06) فقط کارکنان است و عمداً اینجا نیست.
  */
 import type { Route } from "next";
@@ -27,12 +29,12 @@ export type PageInfo = {
 };
 
 export const PAGES: Record<PageId, PageInfo> = {
-  "P-02": { title: "واحدهای اقامتی", path: "/units", ready: false },
-  "P-03": { title: "جزئیات واحد", path: "/units/{code}", ready: false },
-  "P-04": { title: "تقویم موجودی", path: "/calendar", ready: false },
-  "P-05": { title: "تکمیل و صدور رزرو", path: "/booking", ready: false },
-  "P-07": { title: "پرتال زائر و پیگیری", path: "/portal", ready: false },
-  "P-08": { title: "راهنمای زائر و احکام", path: "/guide", ready: false },
+  "P-02": { title: "واحدهای اقامتی", path: "/units/", ready: false },
+  "P-03": { title: "جزئیات واحد", path: "/units/{code}/", ready: false },
+  "P-04": { title: "تقویم موجودی", path: "/calendar/", ready: false },
+  "P-05": { title: "تکمیل و صدور رزرو", path: "/booking/", ready: true },
+  "P-07": { title: "پرتال زائر و پیگیری", path: "/portal/", ready: false },
+  "P-08": { title: "راهنمای زائر و احکام", path: "/guide/", ready: false },
 };
 
 type Intent = {
@@ -64,6 +66,10 @@ export const DEST = {
   verifyOffline: { page: "P-07", hash: "verify", fallback: null },
   /** «انتخاب این واحد و ادامه» (طراح ← P-05 با پارامترهای انتخاب) */
   booking: { page: "P-05", fallback: null },
+  /** منوی اصلی: «تکمیل و صدور رزرو» (بی‌پارامتر ⇒ نمای «از کجا شروع کنم» و رزروهای پیش‌رو) */
+  bookingNav: { page: "P-05", fallback: null },
+  /** «جزئیات رزرو / گواهی» با کد پیگیری (‎?code=‎) — تا ساخت پرتال (P-07) همین صفحهٔ صدور */
+  reservation: { page: "P-05", fallback: null },
 } as const satisfies Record<string, Intent>;
 
 export type DestKey = keyof typeof DEST;
@@ -92,6 +98,11 @@ export function destHref(key: DestKey, query?: Record<string, string>): Route | 
   const page = PAGES[intent.page];
   if (page.ready) return build(page, intent.hash, query);
   return intent.fallback === null ? null : asRoute(intent.fallback);
+}
+
+/** جزئیات و گواهی یک رزرو با کد پیگیری — همیشه مقصد دارد (P-05 تا ساخت پرتال P-07). */
+export function reservationHref(code: string): Route {
+  return destHref("reservation", { code }) ?? build(PAGES["P-05"], undefined, { code });
 }
 
 /** صفحهٔ اختصاصی یک واحد (P-03)؛ تا آن زمان ‎null‎ (جزئیات در پنجرهٔ همین صفحه باز می‌شود). */

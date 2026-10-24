@@ -1,8 +1,10 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import { AccountTrigger } from "@/features/session/AccountButton";
+import Link from "next/link";
 import { useSyncExternalStore } from "react";
+import { AccountTrigger } from "@/features/session/AccountButton";
 import { meQuery, occasionsQuery, reservationsQuery, standingQuery } from "@/shared/api/queries";
+import { destHref, reservationHref } from "@/shared/config/destinations";
 import { addDays, formatDayLabel, formatMoment, tehranToday } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
 
@@ -53,10 +55,10 @@ export function AccountBanners() {
             </p>
           </div>
         </div>
-        <AccountTrigger className="btn btn-secondary" portal>
+        <Link className="btn btn-secondary" href={reservationHref(next.code)}>
           جزئیات رزرو
           <Icon name="arrow-left" size={18} />
-        </AccountTrigger>
+        </Link>
       </aside>
     );
   }
@@ -108,9 +110,9 @@ export function OccasionBanner() {
               : "پیش از برنامه‌ریزی سفر، زمان‌های آزاد این روزها را ببینید.")}
         </p>
       </div>
-      <a href="#availability" className="text-link">
+      <Link href={destHref("calendar")} className="text-link">
         بررسی زمان‌ها <Icon name="arrow-left" size={16} />
-      </a>
+      </Link>
     </aside>
   );
 }

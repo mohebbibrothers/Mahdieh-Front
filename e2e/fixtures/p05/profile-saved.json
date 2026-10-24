@@ -1,0 +1,18 @@
+{
+  "id": "01a16fdd-734e-7fc2-a81f-1049ae9a2813",
+  "phone_masked": "+989***6438",
+  "first_name": "مرتضی",
+  "last_name": "رضوی",
+  "display_name": "مرتضی رضوی",
+  "province": "tehran",
+  "province_title": "تهران",
+  "city": "مشهد",
+  "nationality": "IR",
+  "nationality_title": "ایران",
+  "id_document_type": "national_id",
+  "national_id_masked": "***5227",
+  "role": "guest",
+  "is_profile_complete": true,
+  "is_staff_member": false,
+  "date_joined": "2026-10-25T01:12:26.382434+03:30"
+}

@@ -27,21 +27,23 @@ export function SiteFooter() {
               همراه شما
             </h2>
             <ul className="footer-links">
-              {/* ترتیب طراح: خانه، واحدها، تقویم، شروع رزرو، پرتال زائر، راهنما */}
-              {NAV.slice(0, 3).map((n) => (
+              {/* ترتیب طراح: خانه، واحدها، تقویم، تکمیل و صدور رزرو، پرتال زائر، راهنما */}
+              {NAV.filter((n) => n.icon !== "compass").map((n) => (
                 <li key={n.href}>
                   <a href={n.href}>{n.label}</a>
                 </li>
               ))}
-              <li>
-                <Link href="/#quick-search">انتخاب زمان اقامت</Link>
-              </li>
+              {NAV.some((n) => n.icon === "ticket") ? null : (
+                <li>
+                  <Link href="/#quick-search">انتخاب زمان اقامت</Link>
+                </li>
+              )}
               <li>
                 <AccountTrigger guestReason="برای دیدن رزروهایتان با شمارهٔ همراه وارد شوید." portal>
                   رزروهای من
                 </AccountTrigger>
               </li>
-              {NAV.slice(3).map((n) => (
+              {NAV.filter((n) => n.icon === "compass").map((n) => (
                 <li key={n.href}>
                   <a href={n.href}>{n.label}</a>
                 </li>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { reservationsQuery, standingQuery } from "@/shared/api/queries";
 import type { Profile, Standing } from "@/shared/api/schemas";
+import { destHref, reservationHref } from "@/shared/config/destinations";
 import { cx } from "@/shared/lib/cx";
 import { durationLabel, faDigits, formatMoment } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
@@ -69,7 +70,7 @@ export function AccountPanel({
         {upcoming.isSuccess && reservations.length === 0 ? (
           <p className="account-empty">
             <Icon name="calendar" size={18} /> رزرو فعالی ندارید.{" "}
-            <Link href="/#availability" className="section-link" onClick={closeAccount}>
+            <Link href={destHref("calendar")} className="section-link" onClick={closeAccount}>
               دیدن زمان‌های آزاد
             </Link>
           </p>
@@ -93,6 +94,10 @@ export function AccountPanel({
                 </bdi>
                 {r.can_cancel ? <> · لغو رایگان تا {formatMoment(r.free_cancel_until)}</> : null}
               </p>
+              <Link className="account-res__open" href={reservationHref(r.code)} onClick={closeAccount}>
+                <Icon name="certificate" size={16} /> گواهی، تقویم و لغو
+                <Icon name="chevron-left" size={16} />
+              </Link>
             </li>
           ))}
         </ul>

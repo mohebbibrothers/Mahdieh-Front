@@ -1,0 +1,22 @@
+{
+  "profile": {
+    "id": "01a16fdd-734e-7fc2-a81f-1049ae9a2813",
+    "phone_masked": "+989***6438",
+    "first_name": "",
+    "last_name": "",
+    "display_name": "کاربر مهدیه",
+    "province": "",
+    "province_title": "",
+    "city": "",
+    "nationality": "IR",
+    "nationality_title": "ایران",
+    "id_document_type": "national_id",
+    "national_id_masked": "—",
+    "role": "guest",
+    "is_profile_complete": false,
+    "is_staff_member": false,
+    "date_joined": "2026-10-25T01:12:26.382434+03:30"
+  },
+  "is_new_user": true,
+  "next_step": "complete_profile"
+}

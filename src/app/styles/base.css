@@ -37,6 +37,10 @@
       --page-gutter: 18px;
       --dock-h: 127px;
     }
+    /* صفحه‌های بی‌فراخوان (مثل صدور رزرو): فقط زبانه‌های پایینی ⇒ ۶۵px. */
+    :root:not(:has(.mobile-cta)) {
+      --dock-h: 65px;
+    }
   }
   @media (max-width: 520px) {
     :root {

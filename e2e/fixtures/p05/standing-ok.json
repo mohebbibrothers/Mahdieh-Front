@@ -1,0 +1,26 @@
+{
+  "can_book": true,
+  "profile_complete": true,
+  "active": {
+    "used": 0,
+    "limit": 1,
+    "remaining": 1,
+    "window_days": null
+  },
+  "window": {
+    "used": 0,
+    "limit": 14,
+    "remaining": 14,
+    "window_days": 30
+  },
+  "year": {
+    "used": 0,
+    "limit": 60,
+    "remaining": 60,
+    "window_days": 365
+  },
+  "cooldown_until": null,
+  "suspended_until": null,
+  "next_eligible_at": null,
+  "blockers": []
+}

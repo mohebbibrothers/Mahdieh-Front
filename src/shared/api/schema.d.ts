@@ -2001,6 +2001,18 @@ export type components = {
             readonly duration_label: string;
             /** @description پایان اقامت در قالب ISO 8601 (وقت محلی سایت). */
             readonly end: string;
+            /**
+             * ساعت تقریبی ورود
+             * Format: time
+             */
+            readonly expected_arrival: string | null;
+            /**
+             * @description پیوند نظرسنجی همین اقامت برای صاحبش (همان پیوند پیامک) — فقط وقتی هنوز پذیرفتنی است.
+             *
+             *     شرط‌های ارزان (وضعیت «پایان‌یافته») پیش از هر پرس‌وجو بررسی می‌شوند؛ پس فهرست رزروهای
+             *     پیش‌رو هیچ پرس‌وجوی اضافه‌ای نمی‌زند.
+             */
+            readonly feedback_url: string | null;
             readonly floor_number: number;
             /** @description آخرین لحظهٔ لغو رایگان؛ پس از آن، لغو «دیرهنگام» با خنک‌شدن است. */
             readonly free_cancel_until: string;
@@ -2008,6 +2020,8 @@ export type components = {
             guest_note?: string;
             /** تعداد نفرات */
             guests_count: number;
+            /** @description پایان نگه‌داشت موقت (فقط وضعیت «نگه‌داشت»)؛ پس از آن، سانس خودکار آزاد می‌شود. */
+            readonly hold_expires_at: string | null;
             /**
              * شناسه
              * Format: uuid
@@ -2034,6 +2048,8 @@ export type components = {
             readonly status_label: string;
             readonly unit_code: string;
             readonly unit_title: string;
+            /** پلاک خودرو */
+            readonly vehicle_plate: string;
             readonly weekday: string;
         };
         /** @description ورودی ثبت رزرو توسط زائر. */
@@ -2218,7 +2234,14 @@ export type components = {
              * ساعت تقریبی ورود
              * Format: time
              */
-            expected_arrival?: string | null;
+            readonly expected_arrival: string | null;
+            /**
+             * @description پیوند نظرسنجی همین اقامت برای صاحبش (همان پیوند پیامک) — فقط وقتی هنوز پذیرفتنی است.
+             *
+             *     شرط‌های ارزان (وضعیت «پایان‌یافته») پیش از هر پرس‌وجو بررسی می‌شوند؛ پس فهرست رزروهای
+             *     پیش‌رو هیچ پرس‌وجوی اضافه‌ای نمی‌زند.
+             */
+            readonly feedback_url: string | null;
             readonly floor_number: number;
             /** @description آخرین لحظهٔ لغو رایگان؛ پس از آن، لغو «دیرهنگام» با خنک‌شدن است. */
             readonly free_cancel_until: string;
@@ -2231,6 +2254,8 @@ export type components = {
             readonly guest_phone_masked: string;
             /** تعداد نفرات */
             guests_count: number;
+            /** @description پایان نگه‌داشت موقت (فقط وضعیت «نگه‌داشت»)؛ پس از آن، سانس خودکار آزاد می‌شود. */
+            readonly hold_expires_at: string | null;
             /**
              * شناسه
              * Format: uuid
@@ -2279,7 +2304,7 @@ export type components = {
             readonly unit_code: string;
             readonly unit_title: string;
             /** پلاک خودرو */
-            vehicle_plate?: string;
+            readonly vehicle_plate: string;
             /**
              * نسخه
              * Format: int64

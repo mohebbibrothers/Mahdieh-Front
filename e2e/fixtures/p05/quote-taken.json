@@ -1,0 +1,50 @@
+{
+  "allowed": false,
+  "is_available": false,
+  "violations": [
+    {
+      "code": "not_available",
+      "message": "این بازه در همین لحظه اشغال است."
+    }
+  ],
+  "alternatives": [
+    {
+      "unit_code": "B1",
+      "unit_title": "اتاق بزرگ طبقهٔ اول",
+      "floor_number": 1,
+      "start": "2026-11-12T08:00:00+03:30",
+      "end": "2026-11-14T08:00:00+03:30",
+      "date_jalali": "۱۴۰۵/۰۸/۲۱",
+      "is_same_unit": true
+    },
+    {
+      "unit_code": "B1",
+      "unit_title": "اتاق بزرگ طبقهٔ اول",
+      "floor_number": 1,
+      "start": "2026-11-16T08:00:00+03:30",
+      "end": "2026-11-18T08:00:00+03:30",
+      "date_jalali": "۱۴۰۵/۰۸/۲۵",
+      "is_same_unit": true
+    },
+    {
+      "unit_code": "B1",
+      "unit_title": "اتاق بزرگ طبقهٔ اول",
+      "floor_number": 1,
+      "start": "2026-11-11T20:00:00+03:30",
+      "end": "2026-11-13T20:00:00+03:30",
+      "date_jalali": "۱۴۰۵/۰۸/۲۰",
+      "is_same_unit": true
+    }
+  ],
+  "unit": {
+    "code": "B1",
+    "title": "اتاق بزرگ طبقهٔ اول"
+  },
+  "start": "2026-11-14T08:00:00+03:30",
+  "end": "2026-11-16T08:00:00+03:30",
+  "cells": 4,
+  "duration_label": "۲ شبانه‌روز کامل",
+  "guests_count": 4,
+  "capacity_total": 8,
+  "notes": ["ظرفیت: 8 نفر · واحد: اتاق بزرگ طبقهٔ اول", "رزرو در مهدیه کاملاً رایگان است و درگاه پرداخت ندارد."]
+}

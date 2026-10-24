@@ -1,0 +1,41 @@
+{
+  "state": "submitted",
+  "reason": "",
+  "reservation": {
+    "code": "M-1405-0003",
+    "unit_title": "سوئیت طبقهٔ اول",
+    "date_jalali": "۱۴۰۵/۰۷/۲۵",
+    "duration_label": "۲ شبانه‌روز کامل"
+  },
+  "rating_labels": {
+    "1": "ضعیف",
+    "2": "قابل‌بهبود",
+    "3": "متوسط",
+    "4": "خوب",
+    "5": "عالی"
+  },
+  "subscores": [
+    {
+      "field": "cleanliness",
+      "label": "پاکیزگی"
+    },
+    {
+      "field": "hospitality",
+      "label": "برخورد و پذیرش"
+    },
+    {
+      "field": "facilities",
+      "label": "امکانات"
+    },
+    {
+      "field": "comfort",
+      "label": "آسایش و سکوت"
+    }
+  ],
+  "comment_max_length": 1200,
+  "submitted": {
+    "rating": 5,
+    "would_recommend": true,
+    "comment": "خادمان بسیار مهربان بودند."
+  }
+}

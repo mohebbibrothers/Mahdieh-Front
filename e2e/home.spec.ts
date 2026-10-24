@@ -275,7 +275,7 @@ test.describe("ورود درون‌برنامه‌ای (بدون صفحهٔ قد
     await expect(profileDialog.getByRole("option", { name: "تهران" })).toBeVisible();
     await province.press("Enter");
     await expect(province).toHaveValue("تهران");
-    await profileDialog.getByRole("textbox", { name: /^شهر\s*\*?$/ }).fill("تهران");
+    await profileDialog.getByRole("textbox", { name: /^شهر( محل سکونت)?\s*\*?$/ }).fill("تهران");
     await profileDialog.getByRole("button", { name: "ذخیره و ادامه" }).click();
 
     await expect(profileDialog).toBeHidden();
@@ -361,7 +361,10 @@ test.describe("ورود درون‌برنامه‌ای (بدون صفحهٔ قد
     await expect(page.getByRole("complementary", { name: "سفر پیش رو" })).toBeHidden();
   });
 
-  test("مهمان در پنجرهٔ واحد: «ورود و ادامهٔ رزرو» ورود را همین‌جا باز می‌کند", async ({ page }) => {
+  test("مهمان در پنجرهٔ واحد: «ورود و ادامهٔ رزرو» با همان انتخاب به گام ۱ صفحهٔ رزرو می‌رود", async ({
+    page,
+    api,
+  }) => {
     await page.goto("/");
     await page.locator('.cell:visible[data-status="free"]:not([disabled])').first().click();
     const unit = page.getByRole("dialog");
@@ -370,21 +373,21 @@ test.describe("ورود درون‌برنامه‌ای (بدون صفحهٔ قد
     // «بخشی از بازه آزاد نیست» می‌گوید. کاربر آغازی را برمی‌گزیند که ۴ نیم‌روزِ پیاپی‌اش آزاد است.
     await expect(unit.getByRole("status").filter({ hasText: "بخشی از بازه آزاد نیست" })).toBeVisible();
     await unit.getByRole("button", { name: "جمعه، ۱ آبان، روز — آزاد" }).click();
-    await unit.getByRole("button", { name: /ورود و ادامهٔ رزرو/ }).click();
-    const login = page.getByRole("dialog", { name: "ورود یا ثبت‌نام" });
-    await expect(login).toBeVisible();
-    await expect(login).toContainText("انتخاب شما حفظ می‌شود");
-    // همان صفحه (بی‌رفتن به صفحهٔ قدیمی) و انتخاب کاربر در نشانی حفظ شده است.
-    // (نوشتن در نشانی ۲۵۰ms تأخیر دارد تا تاریخچه با هر تغییر کوچک پر نشود ⇒ poll)
-    await expect
-      .poll(() => {
-        const url = new URL(page.url());
-        return { path: url.pathname, ...Object.fromEntries(url.searchParams) };
-      })
-      .toMatchObject({ path: "/", day: "2026-10-23", period: "day", cells: "4" });
+    await unit.getByRole("link", { name: /ورود و ادامهٔ رزرو/ }).click();
+    // ورود در گام ۱ خود صفحهٔ رزرو (نه صفحهٔ قدیمی) و انتخاب کاربر در نشانی حفظ شده است.
+    await expect(page.getByRole("heading", { level: 2, name: "ورود با شمارهٔ تلفن همراه" })).toBeVisible();
+    const url = new URL(page.url());
+    expect({ path: url.pathname, ...Object.fromEntries(url.searchParams) }).toMatchObject({
+      path: "/booking/",
+      day: "2026-10-23",
+      period: "day",
+      cells: "4",
+    });
+    expect(url.searchParams.get("unit")).toMatch(/^[AB][1-3]$/);
+    expect(api.calls.filter((c) => c.startsWith("POST"))).toEqual([]);
   });
 
-  test("کاربر واردشده: «انتخاب این واحد و ادامه» هرگز به ‎/book/‎ قدیمی نمی‌رود؛ تا صفحهٔ رزرو «به‌زودی»", async ({
+  test("کاربر واردشده: «انتخاب این واحد و ادامه» با همان انتخاب به گام ۳ صفحهٔ رزرو می‌رود (هرگز ‎/book/‎ قدیمی)", async ({
     page,
     api,
   }) => {
@@ -412,14 +415,14 @@ test.describe("ورود درون‌برنامه‌ای (بدون صفحهٔ قد
     await page.locator('.cell:visible[data-status="free"]:not([disabled])').first().click();
     const unit = page.getByRole("dialog");
     await unit.getByRole("button", { name: "جمعه، ۱ آبان، روز — آزاد" }).click();
-    const next = unit.getByRole("button", { name: /انتخاب این واحد و ادامه/ });
-    await expect(next).toHaveAttribute("aria-disabled", "true");
-    await expect(next).toContainText("به‌زودی");
-    // aria-disabled (نه disabled): فوکوس‌پذیر می‌ماند تا صفحه‌خوان و صفحه‌کلید توضیح «به‌زودی» را بشنوند.
-    await next.focus();
-    await page.keyboard.press("Enter");
-    await expect(page.getByRole("status").filter({ hasText: "تکمیل و صدور رزرو" })).toBeVisible();
-    expect(new URL(page.url()).pathname).toBe("/");
+    const next = unit.getByRole("link", { name: /انتخاب این واحد و ادامه/ });
+    await expect(next).toHaveAttribute("href", /^\/booking\/\?unit=A1&/);
+    await next.click();
+    await expect(page.getByRole("heading", { level: 2, name: "بررسی اهلیت رزرو و جزئیات سفر زیارتی" })).toBeVisible();
+    const url = new URL(page.url());
+    expect(url.pathname).toBe("/booking/");
+    expect(url.searchParams.get("unit")).toBe("A1");
+    expect(url.searchParams.get("day")).toBe("2026-10-23");
     const hrefs = await page.evaluate(() =>
       [...document.querySelectorAll("a[href]")].map((a) => a.getAttribute("href") ?? ""),
     );

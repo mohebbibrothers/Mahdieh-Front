@@ -1,0 +1,17 @@
+{
+  "allowed": true,
+  "is_available": true,
+  "violations": [],
+  "alternatives": [],
+  "unit": {
+    "code": "B2",
+    "title": "اتاق بزرگ طبقهٔ دوم"
+  },
+  "start": "2026-11-18T08:00:00+03:30",
+  "end": "2026-11-20T08:00:00+03:30",
+  "cells": 4,
+  "duration_label": "۲ شبانه‌روز کامل",
+  "guests_count": 4,
+  "capacity_total": 8,
+  "notes": ["ظرفیت: 8 نفر · واحد: اتاق بزرگ طبقهٔ دوم", "رزرو در مهدیه کاملاً رایگان است و درگاه پرداخت ندارد."]
+}
