@@ -532,16 +532,30 @@
   .combo:not(.combo--open) .combo__input::placeholder {
     color: var(--color-text);
   }
+  /* فلش: دکمهٔ گرد ۳۲px دقیقاً وسط ارتفاع کادر (نه چسبیده به پایین)، با هالهٔ ملایم در حالت شناور/باز */
   .combo__toggle {
     position: absolute;
     inset-block: 0;
-    inset-inline-end: 4px;
+    inset-inline-end: 6px;
     display: grid;
     place-items: center;
-    width: 40px;
+    width: 32px;
+    height: 32px;
+    margin-block: auto;
+    padding: 0;
     border: 0;
+    border-radius: 10px;
     background: none;
     color: var(--color-text-muted);
+    cursor: pointer;
+    transition:
+      background-color var(--fast) var(--ease),
+      color var(--fast) var(--ease);
+  }
+  .combo__toggle:hover,
+  .combo--open .combo__toggle {
+    background: var(--color-brand-tint);
+    color: var(--color-brand);
   }
   .combo__toggle .icon {
     transition: rotate var(--fast) var(--ease);
@@ -549,11 +563,11 @@
   .combo--open .combo__toggle .icon {
     rotate: 180deg;
   }
+  /* فهرست در لایهٔ بالایی (popover="manual")؛ جای دقیق را Combobox با CSSOM می‌دهد. */
   .combo__list {
-    position: absolute;
-    inset-inline: 0;
-    top: calc(100% + 6px);
-    z-index: 5;
+    position: fixed;
+    inset: auto;
+    margin: 0;
     max-height: 248px;
     padding: 6px;
     overflow: auto;
@@ -561,11 +575,21 @@
     border: 1px solid var(--color-border);
     border-radius: 18px;
     background: var(--color-surface);
+    color: var(--color-text);
     box-shadow: var(--shadow-pop);
+    list-style: none;
+  }
+  .combo__list:popover-open {
     animation: combo-in var(--fast) var(--ease);
   }
-  .combo__list[hidden] {
-    display: none;
+  .combo__list[data-side="top"]:popover-open {
+    animation-name: combo-in-up;
+  }
+  @keyframes combo-in-up {
+    from {
+      opacity: 0;
+      translate: 0 6px;
+    }
   }
   .combo__option {
     display: flex;

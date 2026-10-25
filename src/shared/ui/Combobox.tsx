@@ -3,6 +3,7 @@ import { useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { latinDigits } from "@/shared/lib/fa";
 import { cx } from "@/shared/lib/cx";
 import { Icon } from "./Icon";
+import { useAnchoredList } from "./use-anchored-list";
 
 export type ComboOption = {
   value: string;
@@ -62,6 +63,7 @@ export function Combobox({
   const errId = `${id}-err`;
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const controlRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState<string | null>(null);
   const [active, setActive] = useState(0);
@@ -152,6 +154,8 @@ export function Combobox({
     }
   };
 
+  useAnchoredList(open, controlRef, listRef, { dep: shown.length });
+
   const describedBy = [help ? helpId : "", error ? errId : ""].filter(Boolean).join(" ") || undefined;
   const activeId = open && shown[active] ? `${id}-o-${shown[active].value}` : undefined;
 
@@ -166,7 +170,7 @@ export function Combobox({
           </span>
         ) : null}
       </label>
-      <div className="combo__control">
+      <div className="combo__control" ref={controlRef}>
         <input
           ref={inputRef}
           id={id}
@@ -212,7 +216,7 @@ export function Combobox({
         >
           <Icon name="chevron-down" size={18} />
         </button>
-        <ul ref={listRef} id={listId} role="listbox" aria-label={label} className="combo__list" hidden={!open}>
+        <ul ref={listRef} id={listId} role="listbox" aria-label={label} className="combo__list" popover="manual">
           {shown.length === 0 ? (
             <li className="combo__empty" role="presentation">
               {emptyText}

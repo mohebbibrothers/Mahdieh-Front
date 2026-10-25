@@ -2,6 +2,7 @@
 import { useId, useRef, useState, type KeyboardEvent } from "react";
 import { cx } from "@/shared/lib/cx";
 import { Icon } from "@/shared/ui/Icon";
+import { useAnchoredList } from "@/shared/ui/use-anchored-list";
 import type { ArrivalOption } from "./model";
 
 /**
@@ -31,6 +32,7 @@ export function ArrivalPicker({
   const [active, setActive] = useState(0);
   const button = useRef<HTMLButtonElement>(null);
   const list = useRef<HTMLUListElement>(null);
+  const control = useRef<HTMLDivElement>(null);
 
   const show = () => {
     setActive(Math.max(0, all.indexOf(selected ?? all[0]!)));
@@ -67,12 +69,14 @@ export function ArrivalPicker({
     }
   };
 
+  useAnchoredList(open, control, list, { max: 300 });
+
   return (
     <div className={cx("combo picker", open && "combo--open")}>
       <span className="field-label" id={`${id}-l`}>
         ساعت تقریبی حضور در زائرسرا
       </span>
-      <div className="combo__control">
+      <div className="combo__control" ref={control}>
         <button
           ref={button}
           type="button"
@@ -104,7 +108,7 @@ export function ArrivalPicker({
           aria-labelledby={`${id}-l`}
           aria-activedescendant={open ? `${id}-o${active}` : undefined}
           className="combo__list"
-          hidden={!open}
+          popover="manual"
           onKeyDown={onListKey}
           onBlur={(e) => {
             if (!e.currentTarget.parentElement?.contains(e.relatedTarget as Node | null)) setOpen(false);

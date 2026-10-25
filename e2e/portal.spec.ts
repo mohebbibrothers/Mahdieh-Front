@@ -232,6 +232,25 @@ test.describe("P-07 پرتال زائر", () => {
     await dialog.getByRole("button", { name: /انصراف از تغییر/ }).click();
     await expect(dialog.locator(".id-vault")).toBeVisible();
 
+    // فهرست استان در لایهٔ بالایی: بدنهٔ پیمایش‌پذیر پنجره آن را نمی‌بُرد (دست‌کم چهار گزینهٔ کامل دیده می‌شود)
+    await dialog.locator(".combo input").click();
+    const list = page.locator(".combo__list:popover-open");
+    await expect(list).toBeVisible();
+    const box = (await list.boundingBox())!;
+    expect(box.height).toBeGreaterThan(170);
+    const vh = page.viewportSize()!.height;
+    expect(box.y).toBeGreaterThanOrEqual(0);
+    expect(box.y + box.height).toBeLessThanOrEqual(vh);
+    const hit = await list.evaluate((el) => {
+      const r = el.getBoundingClientRect();
+      const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      return el.contains(top);
+    });
+    expect(hit).toBe(true);
+    await page.keyboard.press("Escape");
+    await expect(list).toBeHidden();
+    await expect(dialog).toBeVisible();
+
     await dialog.getByLabel(/شهر محل سکونت/).fill("نیشابور");
     await expect(submit).toHaveText(/ثبت مشخصات/);
     await submit.click();
