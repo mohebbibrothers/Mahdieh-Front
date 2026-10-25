@@ -201,13 +201,40 @@
     color: var(--color-text);
     font: inherit;
     font-size: 0.875rem;
-    resize: vertical;
+    transition:
+      border-color var(--fast) var(--ease),
+      box-shadow var(--fast) var(--ease),
+      background-color var(--fast) var(--ease);
   }
+  .text-input::placeholder {
+    color: var(--color-text-subtle);
+    opacity: 1;
+  }
+  .text-input:hover:not(:focus-visible, :disabled) {
+    border-color: var(--color-border-strong);
+  }
+  /* فوکوس هم‌رنگ برند برای همهٔ فیلدهای متنی: حاشیهٔ سبز + هالهٔ نرم؛ بی‌حلقهٔ آبی سراسری صفحه‌کلید
+     (که با حاشیهٔ خود فیلد «دو خط کلفت» می‌ساخت). کنتراست حاشیهٔ برند با زمینه ≥ ۳:۱ (WCAG 2.4.11). */
   .text-input:focus-visible {
-    border-color: var(--color-focus);
+    border-color: var(--color-brand);
+    outline: none;
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-brand) 16%, transparent);
   }
   .text-input[aria-invalid="true"] {
     border-color: var(--color-danger-fg);
+  }
+  .text-input[aria-invalid="true"]:focus-visible {
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-danger-fg) 16%, transparent);
+  }
+  /* کادرهای چندخطی: بی‌دستگیرهٔ تغییر اندازه (چیدمان پنجره‌ها به‌هم نمی‌ریزد) و در عوض رشد خودکار
+     با متن تا سقف، سپس اسکرول کپسولی. مرورگرِ بی‌field-sizing همان ارتفاع ثابت ‎rows‎ را دارد. */
+  textarea.text-input {
+    min-block-size: 6.5rem;
+    max-block-size: 15rem;
+    overflow-y: auto;
+    resize: none;
+    line-height: 1.8;
+    field-sizing: content;
   }
   /* ‎font: inherit‎ همین لایه ‎ss01‎ (رقم فارسی) بدنه را دوباره به ارث می‌برد و ‎.latin‎ لایهٔ base را می‌پوشاند ⇒
      فیلدهای لاتین (توکن استعلام، شمارهٔ گذرنامه) صریحاً با رقم لاتین هم‌عرض. */

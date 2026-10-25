@@ -33,7 +33,7 @@ function takeVerifyParam(): string | null {
   const raw = url.searchParams.get("verify");
   if (raw === null) return null;
   url.searchParams.delete("verify");
-  window.history.replaceState(window.history.state, "", url);
+  window.history.replaceState(null, "", url); // null ⇒ Next همگام می‌شود (نه state داخلی __NA)
   return raw;
 }
 

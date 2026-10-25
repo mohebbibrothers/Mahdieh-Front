@@ -121,6 +121,37 @@
     padding-bottom: 80px;
     scroll-margin-top: calc(var(--header-h) + 12px);
   }
+  /* بازگشت از جزئیات یک رزرو به فهرست — قرص کوچک بالای کارت نتیجه */
+  .res-back {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    gap: 6px;
+    width: fit-content;
+    padding: 6px 14px 6px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    color: var(--color-brand-ink);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    transition:
+      background-color var(--fast) var(--ease),
+      border-color var(--fast) var(--ease);
+  }
+  .res-back:hover {
+    border-color: color-mix(in oklab, var(--color-brand) 45%, var(--color-border));
+    background: color-mix(in oklab, var(--color-brand) 8%, transparent);
+  }
+  .res-back .icon {
+    transition: translate var(--fast) var(--ease);
+  }
+  .res-back:hover .icon {
+    translate: 3px 0;
+  }
+  /* پوستهٔ کلیددار هر نما: در چیدمان شبکه‌ای نامرئی؛ فقط برای ساخت دوبارهٔ نما و حرکت ورود */
+  .booking-stage__view {
+    display: contents;
+  }
 
   /* نوار خلاصه */
   .stay-ribbon {
@@ -294,6 +325,25 @@
     background: var(--color-surface);
     box-shadow: 0 10px 40px var(--color-shadow);
     animation: booking-rise var(--base) var(--ease) both;
+  }
+  /* سربرگ با کنش: [نشان گام … کنش] / سرتیتر / توضیح */
+  .booking-card__head--action {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 12px;
+  }
+  .booking-card__head--action > * {
+    grid-column: 1 / -1;
+  }
+  .booking-card__head--action > .step-badge {
+    grid-area: 1 / 1;
+    justify-self: start;
+    align-self: center;
+  }
+  .booking-card__head--action > .booking-card__action {
+    grid-area: 1 / 2;
+    align-self: center;
+    margin-bottom: 8px;
   }
   .booking-card__head h2 {
     margin-bottom: 8px;
@@ -904,11 +954,6 @@
     background: var(--color-brand);
     color: var(--color-on-brand);
   }
-  .note-field__input {
-    min-height: 96px;
-    resize: vertical;
-    line-height: 1.8;
-  }
   .note-field__count {
     margin-top: 6px;
     color: var(--color-text-subtle);
@@ -964,7 +1009,10 @@
   }
   .idem-note bdi {
     color: var(--color-brand-ink);
-    font-family: ui-monospace, monospace;
+    /* «حس کد» بدون monospace سیستمی (Courier ویندوز/DejaVu در PDF): وزیرمتن + ارقام لاتین هم‌عرض */
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
     font-weight: 700;
   }
   .details__actions .btn-primary {
@@ -973,12 +1021,17 @@
 
   /* ── دکمه‌ها و چرخنده ── */
   .btn-danger {
-    border-color: var(--color-danger-fg);
-    background: var(--color-danger-fg);
-    color: var(--color-surface);
+    border-color: var(--color-danger-solid);
+    background: var(--color-danger-solid);
+    color: var(--color-danger-ink);
+    box-shadow: 0 6px 18px -8px color-mix(in oklab, var(--color-danger-solid) 70%, transparent);
   }
   .btn-danger:hover:not(:disabled) {
-    background: color-mix(in oklab, var(--color-danger-fg) 85%, black);
+    border-color: color-mix(in oklab, var(--color-danger-solid) 86%, black);
+    background: color-mix(in oklab, var(--color-danger-solid) 86%, black);
+  }
+  .btn-danger:disabled {
+    box-shadow: none;
   }
   .btn-danger-outline {
     border: 1px solid color-mix(in oklab, var(--color-danger-fg) 70%, transparent);
@@ -1183,7 +1236,10 @@
   }
   .cert__code strong {
     color: var(--color-brand-ink);
-    font-family: ui-monospace, monospace;
+    /* «حس کد» بدون monospace سیستمی (Courier ویندوز/DejaVu در PDF): وزیرمتن + ارقام لاتین هم‌عرض */
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
     font-size: 1.125rem;
     letter-spacing: 0.08em;
     white-space: nowrap;
@@ -1300,7 +1356,10 @@
   }
   .cert__short strong {
     color: var(--color-brand-ink);
-    font-family: ui-monospace, monospace;
+    /* «حس کد» بدون monospace سیستمی (Courier ویندوز/DejaVu در PDF): وزیرمتن + ارقام لاتین هم‌عرض */
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
     font-size: 1.25rem;
     font-weight: 800;
     letter-spacing: 0.12em;
@@ -1603,8 +1662,13 @@
     color: var(--color-warn-fg);
   }
   .res-card__code {
-    color: var(--color-text-muted);
-    font-family: ui-monospace, monospace;
+    color: var(--color-brand-ink);
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    /* «حس کد» بدون monospace سیستمی (Courier ویندوز/DejaVu در PDF): وزیرمتن + ارقام لاتین هم‌عرض */
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
     font-size: 0.8125rem;
   }
   .res-card__go {
@@ -1798,7 +1862,23 @@
     }
     .cert__head {
       justify-content: center;
+      gap: 14px;
       text-align: center;
+    }
+    /* نشان بالای سربرگ، تنها و وسط؛ عنوان یک‌خطی در عرض کامل */
+    .cert__titles {
+      flex-basis: 100%;
+    }
+    .cert__emblem {
+      width: 46px;
+      height: 46px;
+    }
+    .cert__titles h3 {
+      font-size: 1.1875rem;
+      text-wrap: balance;
+    }
+    .cert__titles p:last-child {
+      text-wrap: balance;
     }
     .cert__code {
       width: 100%;
@@ -1812,11 +1892,32 @@
       min-width: 0;
       justify-content: center;
     }
+    /* کارت فشرده: نماد | عنوان و بازه در عرض کامل؛ ردیف پایین: وضعیت ←→ کد رزرو */
     .res-card {
       grid-template-columns: auto minmax(0, 1fr) auto;
+      grid-template-areas:
+        "icon body body"
+        "icon status code";
+      row-gap: 10px;
+      column-gap: 12px;
+      align-items: start;
+    }
+    .res-card__icon {
+      grid-area: icon;
+      width: 40px;
+      height: 40px;
+    }
+    .res-card__body {
+      grid-area: body;
+    }
+    .res-card__status {
+      grid-area: status;
+      justify-self: start;
+      align-self: center;
     }
     .res-card__code {
-      grid-column: 2;
+      grid-area: code;
+      align-self: center;
     }
     .res-card__go {
       display: none;
@@ -1911,9 +2012,18 @@
     size: A4;
     margin: 12mm;
   }
+  /* تم تیره: ‎color-scheme: dark‎ ریشه، حاشیه‌های برگه را با «بوم تیرهٔ» خود کروم پر می‌کرد (بالا/پایین سیاه) */
+  :root,
   html,
   body {
+    color-scheme: light !important;
     background: #fff !important;
+  }
+  /* فونت ایستای چاپی (TrueType در PDF، نه Type3 فونت متغیر) ⇒ اتصال و فاصلهٔ حروف در همهٔ نمایشگرها درست */
+  .cert,
+  .cert * {
+    font-family: var(--font-vazirmatn-print), Tahoma, sans-serif !important;
+    font-variation-settings: normal !important;
   }
   /* هر چه گواهی را در بر ندارد حذف (نه نامرئی ⇒ بی برگ سفید اضافه)؛ پوسته‌های دربرگیرنده بی‌حاشیه */
   body *:not(.cert, .cert *, :has(.cert)) {

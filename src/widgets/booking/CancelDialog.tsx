@@ -37,6 +37,8 @@ export function CancelDialog({
   const preview = useQuery({ ...cancelPreviewQuery(reservation.code), enabled: isOpen });
   const [kind, setKind] = useState<(typeof REASONS)[number] | null>(null);
   const [text, setText] = useState("");
+  // دلیل انتخابی + « — » هم از همان سقف ۳۰۰ نویسهٔ سرور کم می‌شود
+  const textMax = REASON_MAX - (kind ? kind.length + 3 : 0);
   const reason = [kind, text.trim()].filter(Boolean).join(" — ").slice(0, REASON_MAX);
 
   const cancel = useMutation<Reservation, Error>({
@@ -162,12 +164,19 @@ export function CancelDialog({
             <textarea
               id={`${id}-t`}
               className="text-input"
-              rows={2}
-              maxLength={REASON_MAX - (kind ? kind.length + 3 : 0)}
+              rows={3}
+              maxLength={textMax}
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="توضیح بیشتر (اختیاری)"
+              aria-describedby={`${id}-c`}
             />
+            <p className="note-field__count" id={`${id}-c`} aria-live="polite">
+              <bdi>
+                {faDigits(text.length)} از {faDigits(textMax)}
+              </bdi>{" "}
+              نویسه
+            </p>
           </fieldset>
         ) : null}
 

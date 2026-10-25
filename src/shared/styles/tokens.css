@@ -33,6 +33,8 @@
   --c-warn-fg: oklch(48.13% 0.0889 78.47);
   --c-danger-bg: oklch(94.37% 0.0213 39.38);
   --c-danger-fg: oklch(47.79% 0.1179 27.69);
+  --c-danger-solid: oklch(47.79% 0.1179 27.69);
+  --c-danger-ink: oklch(100% 0 0);
   --c-focus: oklch(51.87% 0.1911 261.73);
   --c-overlay: oklch(28.34% 0.0327 185.86 / 0.451);
   --c-shadow: oklch(33.94% 0.0441 162.62 / 0.063);
@@ -73,6 +75,8 @@
   --c-warn-fg: oklch(90.24% 0.0796 86.56);
   --c-danger-bg: oklch(32.46% 0.0487 27.7);
   --c-danger-fg: oklch(83.35% 0.0707 30.62);
+  --c-danger-solid: oklch(56.42% 0.1654 28);
+  --c-danger-ink: oklch(100% 0 0);
   --c-focus: oklch(77.23% 0.1154 263.77);
   --c-overlay: oklch(14.92% 0.0144 178.63 / 0.722);
   --c-shadow: oklch(0% 0 0 / 0);
@@ -114,6 +118,8 @@
     --c-warn-fg: oklch(90.24% 0.0796 86.56);
     --c-danger-bg: oklch(32.46% 0.0487 27.7);
     --c-danger-fg: oklch(83.35% 0.0707 30.62);
+    --c-danger-solid: oklch(56.42% 0.1654 28);
+    --c-danger-ink: oklch(100% 0 0);
     --c-focus: oklch(77.23% 0.1154 263.77);
     --c-overlay: oklch(14.92% 0.0144 178.63 / 0.722);
     --c-shadow: oklch(0% 0 0 / 0);
@@ -154,6 +160,8 @@
   --color-warn-fg: var(--c-warn-fg);
   --color-danger-bg: var(--c-danger-bg);
   --color-danger-fg: var(--c-danger-fg);
+  --color-danger-solid: var(--c-danger-solid);
+  --color-danger-ink: var(--c-danger-ink);
   --color-focus: var(--c-focus);
   --color-overlay: var(--c-overlay);
   --color-shadow: var(--c-shadow);

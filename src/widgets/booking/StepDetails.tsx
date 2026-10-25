@@ -185,7 +185,7 @@ export function Alternatives({ items, lattice }: { items: Alternative[]; lattice
           <li key={`${a.unit_code}-${a.start}`}>
             <button type="button" className="alt-chip" onClick={() => applyAlternative(a, lattice)}>
               <span className="alt-chip__unit">
-                <bdi>{a.unit_code}</bdi> · {a.unit_title}
+                <bdi className="latin">{a.unit_code}</bdi> · {a.unit_title}
               </span>
               <span className="alt-chip__when">{a.date_jalali}</span>
               {a.is_same_unit ? <span className="alt-chip__tag">همین واحد</span> : null}

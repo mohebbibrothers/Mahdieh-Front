@@ -64,7 +64,7 @@ function writeUrl(d: Draft) {
     } else {
       for (const k of ["day", "period", "cells", "guests"]) url.searchParams.delete(k);
     }
-    if (url.href !== window.location.href) window.history.replaceState(window.history.state, "", url);
+    if (url.href !== window.location.href) window.history.replaceState(null, "", url); // null ⇒ Next همگام می‌شود (نه state داخلی __NA)
   }, 250);
 }
 

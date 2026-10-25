@@ -2,7 +2,7 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Route } from "next";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useAvailability } from "@/features/booking-draft/use-availability";
 import { openAccount } from "@/features/session/account-store";
 import { ProfileForm } from "@/features/session/ProfileForm";
@@ -63,7 +63,8 @@ function CheckoutStage({ unitCode, policies, lattice }: { unitCode: string; poli
   const ribbon: RibbonData | null = found
     ? {
         unitIcon: found.unit.unit_type === "suite" ? "suite" : "room",
-        unitTitle: `${found.unit.code} — ${found.unit.title}`,
+        unitCode: found.unit.code,
+        unitTitle: found.unit.title,
         unitMeta: `${found.floor.title} · ${found.unit.type_label}`,
         range: range ? rangeLabel(range.start, range.end) : null,
         span: spanLabel(draft.cells),
@@ -258,7 +259,7 @@ function BookingEmpty() {
                   </span>
                   <span className="res-card__body">
                     <strong>
-                      <bdi>{r.unit_code}</bdi> — {r.unit_title}
+                      <bdi className="latin">{r.unit_code}</bdi> — {r.unit_title}
                     </strong>
                     <span>{rangeLabel(r.start, r.end)}</span>
                   </span>
@@ -319,35 +320,74 @@ function BookingEmpty() {
 
 /* ── ورودی صفحه ─────────────────────────────────────────────────────────── */
 export function BookingFlow() {
-  const hydrated = useHydrated();
-  const search = useSearch();
-  const params = useMemo(() => new URLSearchParams(search), [search]);
   const config = useQuery(configQuery);
   const policies = readPolicies(config.data);
   const lattice = readLattice(config.data?.lattice);
-  const code = params.get("code");
-  const unit = params.get("unit");
 
   return (
     <>
       <BookingHero freeCancelHours={policies.cancelFreeHours} />
       <div className="booking-stage page-shell" id="booking-stage">
-        {!hydrated ? (
-          <>
-            <StayRibbon data={null} pending />
-            <BookingSteps current={null} />
-            <StepCard step={null} title="در حال آماده‌سازی…">
-              <div className="skeleton skeleton--block" aria-hidden="true" />
-            </StepCard>
-          </>
-        ) : code ? (
-          <ReservationView code={code} policies={policies} />
-        ) : unit ? (
-          <CheckoutStage unitCode={unit} policies={policies} lattice={lattice} />
-        ) : (
-          <BookingEmpty />
-        )}
+        {/* useSearchParams در خروجی ایستا مرز Suspense می‌خواهد؛ اسکلت همان حالت پیش از هیدراته شدن است */}
+        <Suspense fallback={<StageSkeleton />}>
+          <BookingStage policies={policies} lattice={lattice} />
+        </Suspense>
       </div>
     </>
+  );
+}
+
+function StageSkeleton() {
+  return (
+    <>
+      <StayRibbon data={null} pending />
+      <BookingSteps current={null} />
+      <StepCard step={null} title="در حال آماده‌سازی…">
+        <div className="skeleton skeleton--block" aria-hidden="true" />
+      </StepCard>
+    </>
+  );
+}
+
+/**
+ * نمای صفحه از نشانی: ‎code‎ ⇒ رزرو صادرشده، ‎unit‎ ⇒ گام‌های ۱ تا ۳، هیچ ⇒ فهرست/میان‌بُرها.
+ * هر جابه‌جایی درون‌صفحه‌ای (کارت رزرو، منوی بالا، بازگشت مرورگر) نمای تازه را با حرکت ورود
+ * می‌سازد و اگر آغاز آن بالای دید باشد، نرم تا همان‌جا می‌رود.
+ */
+function BookingStage({ policies, lattice }: { policies: Policies; lattice: Lattice }) {
+  const hydrated = useHydrated();
+  const search = useSearch();
+  const params = useMemo(() => new URLSearchParams(search), [search]);
+  const code = params.get("code");
+  const unit = params.get("unit");
+  const view = !hydrated ? "boot" : code ? `code:${code}` : unit ? `unit:${unit}` : "empty";
+
+  const previous = useRef<string | null>(null);
+  useEffect(() => {
+    const before = previous.current;
+    previous.current = view;
+    if (before === null || before === "boot" || before === view) return;
+    const stage = document.getElementById("booking-stage");
+    if (!stage) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 0;
+    const top = stage.getBoundingClientRect().top;
+    // آغاز نمای تازه بیرون از دید (بالا یا پایین‌تر از نیمهٔ صفحه) ⇒ رفتن نرم به آن
+    if (top < header || top > window.innerHeight * 0.55) {
+      stage.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+    }
+  }, [view]);
+
+  if (!hydrated) return <StageSkeleton />;
+  return (
+    <div key={view} className="booking-stage__view">
+      {code ? (
+        <ReservationView code={code} policies={policies} />
+      ) : unit ? (
+        <CheckoutStage unitCode={unit} policies={policies} lattice={lattice} />
+      ) : (
+        <BookingEmpty />
+      )}
+    </div>
   );
 }

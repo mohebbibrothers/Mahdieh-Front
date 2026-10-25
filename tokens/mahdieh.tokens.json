@@ -99,6 +99,13 @@
       "danger-fg": {
         "$value": "#943e36"
       },
+      "danger-solid": {
+        "$value": "#943e36",
+        "$description": "پس‌زمینهٔ دکمهٔ خطرِ پُر (کنتراست متن سفید ≥ ۴٫۵)"
+      },
+      "danger-ink": {
+        "$value": "#ffffff"
+      },
       "focus": {
         "$value": "#225fd4"
       },
@@ -211,6 +218,13 @@
       },
       "danger-fg": {
         "$value": "#f3b8ad"
+      },
+      "danger-solid": {
+        "$value": "#c4443a",
+        "$description": "پس‌زمینهٔ دکمهٔ خطرِ پُر (کنتراست متن سفید ≥ ۴٫۵)"
+      },
+      "danger-ink": {
+        "$value": "#ffffff"
       },
       "focus": {
         "$value": "#8fb4ff"

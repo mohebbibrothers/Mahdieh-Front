@@ -19,7 +19,7 @@ import { faDigits, formatMoment } from "@/shared/lib/fa";
 import { useClock } from "@/shared/lib/use-clock";
 import { Icon, type IconName } from "@/shared/ui/Icon";
 import { CancelDialog } from "./CancelDialog";
-import { CertificateSheet } from "./CertificateSheet";
+import { CertificateSheet, printCertificate } from "./CertificateSheet";
 import { FeedbackDialog } from "./FeedbackDialog";
 import { CANCELLED, CERTIFIABLE, milestones } from "./model";
 import { BookingSteps, StayRibbon, StepCard, rangeLabel, spanLabel } from "./parts";
@@ -179,6 +179,7 @@ export function ReservationView({ code, policies }: { code: string; policies: Po
   const property = useQuery(propertyQuery);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [printing, setPrinting] = useState(false);
   const [fresh] = useState(() => freshCodes.has(code));
   useEffect(() => {
     freshCodes.delete(code);
@@ -254,7 +255,8 @@ export function ReservationView({ code, policies }: { code: string; policies: Po
       <StayRibbon
         data={{
           unitIcon: unitType?.unit_type === "large_room" ? "room" : "suite",
-          unitTitle: `${r.unit_code} — ${r.unit_title}`,
+          unitCode: r.unit_code,
+          unitTitle: r.unit_title,
           unitMeta: [floorTitle ?? `طبقهٔ ${faDigits(r.floor_number)}`, unitType?.type_label]
             .filter(Boolean)
             .join(" · "),
@@ -265,7 +267,17 @@ export function ReservationView({ code, policies }: { code: string; policies: Po
         }}
       />
       <BookingSteps current={CANCELLED.has(status) ? null : 4} />
-      <StepCard step={4} title="گواهی رسمی اقامت و بلیط دیجیتال" className="booking-card--result" focusKey={status}>
+      <StepCard
+        step={4}
+        title="گواهی رسمی اقامت و بلیط دیجیتال"
+        className="booking-card--result"
+        focusKey={status}
+        action={
+          <Link className="res-back" href={destHref("bookingNav") ?? "/"}>
+            <Icon name="arrow-right" size={16} /> همهٔ رزروهای من
+          </Link>
+        }
+      >
         <Banner r={r} fresh={fresh} />
         {status === "hold" ? <HoldCountdown r={r} /> : null}
         {certPending ? <div className="skeleton skeleton--block cert-skeleton" aria-hidden="true" /> : null}
@@ -292,8 +304,17 @@ export function ReservationView({ code, policies }: { code: string; policies: Po
 
         <div className="result-actions">
           {certData ? (
-            <button type="button" className="btn btn-primary" onClick={() => window.print()}>
-              <Icon name="printer" size={18} /> چاپ گواهی اقامت / دریافت PDF
+            <button
+              type="button"
+              className="btn btn-primary"
+              aria-busy={printing || undefined}
+              disabled={printing}
+              onClick={() => {
+                setPrinting(true);
+                void printCertificate().finally(() => setPrinting(false));
+              }}
+            >
+              <Icon name="printer" size={18} /> {printing ? "آماده‌سازی برگهٔ A4…" : "چاپ گواهی اقامت / دریافت PDF"}
             </button>
           ) : null}
           {r.is_active ? (

@@ -1,19 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import localFont from "next/font/local";
 import type { ReactNode } from "react";
 import { THEME_BOOT } from "@/features/theme/theme-script";
+import { vazirmatn, vazirmatnPrint } from "@/shared/fonts";
 import { Providers } from "./providers";
 import "./globals.css";
-
-/** وزیرمتن متغیر، زیرمجموعهٔ فارسی/لاتین (۵۸KB)، میزبانی محلی؛ swap برای متن فوری. */
-const vazirmatn = localFont({
-  src: "../shared/fonts/vazirmatn-variable.woff2",
-  weight: "100 900",
-  display: "swap",
-  variable: "--font-vazirmatn",
-  preload: true,
-  fallback: ["Tahoma", "system-ui", "sans-serif"],
-});
 
 export const metadata: Metadata = {
   title: { default: "مهدیه · اقامت رایگان زائران امام رضا (ع)", template: "%s · مهدیه" },
@@ -42,7 +32,12 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="fa-IR" dir="rtl" className={vazirmatn.variable} suppressHydrationWarning>
+    <html
+      lang="fa-IR"
+      dir="rtl"
+      className={`${vazirmatn.variable} ${vazirmatnPrint.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
       </head>

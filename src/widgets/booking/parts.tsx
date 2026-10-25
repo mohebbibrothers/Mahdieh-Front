@@ -85,6 +85,8 @@ export function BookingHero({ freeCancelHours }: { freeCancelHours: number }) {
 /* ── نوار خلاصهٔ انتخاب (Ribbon) ────────────────────────────────────────── */
 export type RibbonData = {
   unitIcon: IconName;
+  /** کد واحد (A1) با رقم لاتین، جدا از عنوان فارسی — همان قرارداد صفحهٔ نخست */
+  unitCode: string;
   unitTitle: string;
   unitMeta: string;
   range: string | null;
@@ -103,7 +105,13 @@ export function StayRibbon({ data, edit, pending }: { data: RibbonData | null; e
         <div>
           <span className="stay-ribbon__kicker">واحد اقامتی انتخابی</span>
           <strong className="stay-ribbon__title">
-            <bdi>{data?.unitTitle ?? "…"}</bdi>
+            {data ? (
+              <>
+                <bdi className="latin">{data.unitCode}</bdi> — {data.unitTitle}
+              </>
+            ) : (
+              "…"
+            )}
           </strong>
           <span className="stay-ribbon__sub">{data?.unitMeta ?? "\u00a0"}</span>
         </div>
@@ -181,6 +189,7 @@ export function StepCard({
   children,
   focusKey,
   className,
+  action,
 }: {
   step: 1 | 2 | 3 | 4 | null;
   title: ReactNode;
@@ -189,6 +198,8 @@ export function StepCard({
   /** با تغییر این کلید (پس از نخستین رندر)، فوکوس به سرتیتر می‌رود تا صفحه‌خوان گام تازه را اعلام کند. */
   focusKey?: string;
   className?: string;
+  /** کنش ثانویهٔ سربرگ (مثل «همهٔ رزروهای من») — هم‌ردیف نشان گام، در سوی مقابل */
+  action?: ReactNode;
 }) {
   const id = useId();
   const head = useRef<HTMLHeadingElement>(null);
@@ -209,12 +220,13 @@ export function StepCard({
 
   return (
     <section className={cx("booking-card", className)} aria-labelledby={id}>
-      <header className="booking-card__head">
+      <header className={cx("booking-card__head", action != null && "booking-card__head--action")}>
         {step ? <span className="step-badge">گام {faDigits(step)} از ۴</span> : null}
         <h2 id={id} ref={head} tabIndex={-1}>
           {title}
         </h2>
         {lead ? <p>{lead}</p> : null}
+        {action != null ? <div className="booking-card__action">{action}</div> : null}
       </header>
       {children}
     </section>

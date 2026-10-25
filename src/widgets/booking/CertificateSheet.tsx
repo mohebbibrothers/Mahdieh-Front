@@ -1,11 +1,19 @@
 "use client";
+import { useEffect } from "react";
 import type { Certificate, Profile, Reservation } from "@/shared/api/schemas";
+import { loadPrintFonts } from "@/shared/fonts";
 import { faDigits, formatMoment } from "@/shared/lib/fa";
 import { Mark } from "@/shared/ui/Mark";
 import { Icon } from "@/shared/ui/Icon";
 import { toast } from "@/shared/ui/toast";
 import { arrivalLabel, groupShortCode, qrDataUri } from "./model";
 import { spanLabel } from "./parts";
+
+/** چاپ/PDF گواهی: نخست فونت ایستای چاپی (بی‌آن، PDF با فونت جایگزین ساخته می‌شود)، سپس پنجرهٔ چاپ. */
+export async function printCertificate(): Promise<void> {
+  await loadPrintFonts();
+  window.print();
+}
 
 /**
  * «گواهی رسمی اقامت زائر» — چیدمان طراح، داده‌ها از خود سرور:
@@ -38,6 +46,26 @@ export function CertificateSheet({
         ? `کد ملی: ${profile.national_id_masked}`
         : null;
   const arrival = arrivalLabel(reservation.expected_arrival);
+
+  // فونت چاپی در زمان بیکاری پس از نمایش (Ctrl+P هم آماده باشد) + نام پیش‌فرض فایل PDF = عنوان سند
+  useEffect(() => {
+    const warm = window.setTimeout(() => void loadPrintFonts(), 1500);
+    let title = document.title;
+    const before = () => {
+      title = document.title;
+      document.title = `گواهی اقامت مهدیه ${reservation.code}`;
+    };
+    const after = () => {
+      document.title = title;
+    };
+    window.addEventListener("beforeprint", before);
+    window.addEventListener("afterprint", after);
+    return () => {
+      window.clearTimeout(warm);
+      window.removeEventListener("beforeprint", before);
+      window.removeEventListener("afterprint", after);
+    };
+  }, [reservation.code]);
 
   const copy = async () => {
     try {
@@ -98,7 +126,7 @@ export function CertificateSheet({
         <div className="cert__wide">
           <dt>واحد و طبقهٔ اختصاص‌یافته:</dt>
           <dd>
-            <bdi>{reservation.unit_code}</bdi> — {reservation.unit_title}
+            <bdi className="latin">{reservation.unit_code}</bdi> — {reservation.unit_title}
             {floorTitle ? ` (${floorTitle})` : ` (طبقهٔ ${faDigits(reservation.floor_number)})`}
           </dd>
         </div>

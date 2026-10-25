@@ -168,6 +168,24 @@ test.describe("P-05 تکمیل و صدور رزرو", () => {
     const dialog = page.getByRole("dialog", { name: "پیش‌نمایش شرایط لغو رزرو" });
     await expect(dialog).toContainText("لغو رایگان");
     await dialog.getByRole("button", { name: "تغییر برنامهٔ سفر" }).click();
+    // کادر توضیح: بی‌دستگیرهٔ تغییر اندازه، فوکوس هم‌رنگ برند (بی‌حلقهٔ آبی)، رشد خودکار و شمارنده
+    const note = dialog.getByRole("textbox", { name: "توضیح بیشتر" });
+    await note.focus();
+    const look = await note.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return { resize: cs.resize, outline: cs.outlineStyle, ring: cs.boxShadow, h: el.getBoundingClientRect().height };
+    });
+    expect(look.resize).toBe("none");
+    expect(look.outline).toBe("none");
+    expect(look.ring).not.toBe("none");
+    await note.fill("سطر نخست\nسطر دوم\nسطر سوم\nسطر چهارم\nسطر پنجم\nسطر ششم");
+    expect(await note.evaluate((el) => el.getBoundingClientRect().height)).toBeGreaterThan(look.h);
+    const fa = (n: number) => String(n).replace(/\d/g, (d) => "۰۱۲۳۴۵۶۷۸۹"[Number(d)] ?? d);
+    const typed = (await note.inputValue()).length;
+    await expect(dialog.locator(".note-field__count")).toContainText(
+      `${fa(typed)} از ${fa(300 - ("تغییر برنامهٔ سفر".length + 3))}`,
+    );
+    await note.fill("");
     await dialog.getByRole("button", { name: /لغو قطعی رزرو/ }).click();
     await expect(dialog).toBeHidden();
     expect(body).toMatchObject({ reason_kind: "guest_request", reason: "تغییر برنامهٔ سفر" });
@@ -175,6 +193,85 @@ test.describe("P-05 تکمیل و صدور رزرو", () => {
     await expect(page.locator(".cert")).toHaveCount(0);
     await expect(page.getByRole("button", { name: /چاپ گواهی اقامت/ })).toHaveCount(0);
     expect(api.calls.filter((c) => c.endsWith("/certificate"))).toHaveLength(1);
+  });
+
+  test("فهرست ⇐ کلیک کارت ⇐ جزئیات کامل؛ «همهٔ رزروهای من»، بازگشت مرورگر و منوی بالا", async ({ page, api }) => {
+    signedIn(api);
+    const list = fixture<{ results: { code: string }[] }>("reservations-upcoming");
+    const code = list.results[0]?.code ?? "";
+    reservations(api, undefined, list);
+    reservationView(api, code, { ...p05<Json>("reservation-confirmed"), code });
+    await page.goto("/booking/");
+    await expect(heading(page, "رزروهای پیش‌روی شما")).toBeVisible();
+    // پیوند Next درون همان صفحه (فقط ‎?code=‎ عوض می‌شود) — پیش‌تر نشانی عوض می‌شد ولی جزئیات نه
+    await page.locator(".res-card").first().click();
+    await expect(heading(page, "گواهی رسمی اقامت و بلیط دیجیتال")).toBeVisible();
+    await expect(page.locator(".cert")).toBeVisible();
+    expect(new URL(page.url()).searchParams.get("code")).toBe(code);
+    await expect(currentStep(page)).toContainText("گواهی رسمی");
+
+    await page.getByRole("link", { name: "همهٔ رزروهای من" }).click();
+    await expect(heading(page, "رزروهای پیش‌روی شما")).toBeVisible();
+    expect(new URL(page.url()).searchParams.has("code")).toBe(false);
+
+    await page.goBack();
+    await expect(page.locator(".cert")).toBeVisible();
+    await page.goForward();
+    await expect(heading(page, "رزروهای پیش‌روی شما")).toBeVisible();
+
+    await page.locator(".res-card").first().click();
+    await expect(page.locator(".cert")).toBeVisible();
+    const nav = page.getByRole("navigation", { name: "ناوبری اصلی" }).getByRole("link", { name: "تکمیل و صدور رزرو" });
+    if (await nav.isVisible()) {
+      await nav.click();
+      await expect(heading(page, "رزروهای پیش‌روی شما")).toBeVisible();
+    }
+  });
+
+  test("چاپ/PDF گواهی: فونت ایستای چاپی، رنگ‌بندی روشن حتی در تم تیره، نام فایل", async ({ page, api }) => {
+    signedIn(api);
+    reservations(api);
+    reservationView(api, CODE, p05("reservation-confirmed"));
+    await page.addInitScript(() => {
+      localStorage.setItem("mahdieh-theme", "dark");
+      const w = window as unknown as { __prints: string[] };
+      w.__prints = [];
+      window.print = () => {
+        w.__prints.push(document.title);
+      };
+    });
+    await page.goto(`/booking/?code=${CODE}`);
+    await expect(page.locator(".cert")).toBeVisible();
+    await page.getByRole("button", { name: /چاپ گواهی اقامت/ }).click();
+    await expect.poll(() => page.evaluate(() => (window as unknown as { __prints: string[] }).__prints.length)).toBe(1);
+    // همهٔ وزن‌های ایستای چاپی پیش از پنجرهٔ چاپ بارگیری شده‌اند
+    const printFamily = await page.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue("--font-vazirmatn-print").trim(),
+    );
+    expect(printFamily).not.toBe("");
+    for (const w of [400, 500, 600, 700, 800]) {
+      expect(
+        await page.evaluate(
+          ([f, wt]) => document.fonts.check(`${wt} 16px ${f}`, "بسم ٱلله"),
+          [printFamily.split(",")[0]?.trim() ?? "", w],
+        ),
+      ).toBe(true);
+    }
+    await page.emulateMedia({ media: "print" });
+    const printed = await page.evaluate(() => ({
+      scheme: getComputedStyle(document.documentElement).colorScheme,
+      bg: getComputedStyle(document.body).backgroundColor,
+      font: getComputedStyle(document.querySelector(".cert h3") as Element).fontFamily,
+    }));
+    expect(printed.scheme).toBe("light");
+    expect(printed.bg).toBe("rgb(255, 255, 255)");
+    const unquote = (f: string) => f.replace(/["']/g, "");
+    expect(unquote(printed.font).startsWith(unquote(printFamily.split(",")[0]?.trim() ?? "-"))).toBe(true);
+    // نام پیش‌فرض فایل PDF = عنوان سند هنگام چاپ
+    await page.evaluate(() => window.dispatchEvent(new Event("beforeprint")));
+    expect(await page.title()).toBe(`گواهی اقامت مهدیه ${CODE}`);
+    await page.evaluate(() => window.dispatchEvent(new Event("afterprint")));
+    expect(await page.title()).not.toContain("گواهی اقامت مهدیه M-");
   });
 
   test("نظرسنجی پس از اقامت: امتیاز، توصیه و نظر ⇐ ثبت از راه API (نه صفحهٔ قدیمی)", async ({ page, api }) => {

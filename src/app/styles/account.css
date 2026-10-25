@@ -69,7 +69,7 @@
   .account-flow .text-input:focus-visible {
     border-color: var(--color-brand);
     outline: none;
-    box-shadow: 0 0 0 3px var(--color-brand-tint);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-brand) 16%, transparent);
   }
   .account-flow .text-input[aria-invalid="true"] {
     border-color: var(--color-danger-fg);
@@ -176,7 +176,7 @@
   }
   .phone-input:focus-within {
     border-color: var(--color-brand);
-    box-shadow: 0 0 0 3px var(--color-brand-tint);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--color-brand) 16%, transparent);
   }
   .phone-input[data-invalid] {
     border-color: var(--color-danger-fg);
