@@ -40,6 +40,9 @@ const base: Reservation = {
   vehicle_plate: "",
   hold_expires_at: null,
   feedback_url: null,
+  feedback_rating: null,
+  is_late_cancel: false,
+  details_editable: true,
 };
 
 describe("بازهٔ درخواست روی شبکهٔ نیم‌روز", () => {

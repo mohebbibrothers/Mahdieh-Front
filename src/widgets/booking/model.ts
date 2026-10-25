@@ -121,6 +121,25 @@ export function composePlate(p: PlateParts): string {
   return `${faDigits(p.two)} ${p.letter} ${faDigits(p.three)} ایران ${faDigits(p.region)}`;
 }
 
+/** «۱۲ ب ۳۴۵ ایران ۳۶» (همان ‎composePlate‎) ⇒ خانه‌های پلاک؛ هر قالب دیگر ⇒ ‎null‎ (پلاک خارجی/آزاد). */
+export function parsePlate(text: string): PlateParts | null {
+  const m = /^\s*(\d{2})\s*(\S)\s*(\d{3})\s*(?:ایران)?\s*(\d{2})\s*$/.exec(latinDigits(text));
+  if (!m) return null;
+  const [, two = "", letter = "", three = "", region = ""] = m;
+  return PLATE_LETTERS.includes(letter) ? { two, letter, three, region } : null;
+}
+
+/** وارون ‎composeNote‎: «نیازها: الف، ب — متن» ⇒ نیازهای شناخته و متن آزاد. */
+export function parseNote(note: string): { needs: string[]; text: string } {
+  const m = /^نیازها: ([^—]*?)(?: — ([\s\S]*))?$/.exec(note.trim());
+  if (!m) return { needs: [], text: note.trim() };
+  const listed = (m[1] ?? "").split("، ").map((s) => s.trim());
+  const known = listed.filter((n) => (NEEDS as readonly string[]).includes(n));
+  const unknown = listed.filter((n) => n && !(NEEDS as readonly string[]).includes(n));
+  const text = [unknown.length ? `نیازها: ${unknown.join("، ")}` : "", (m[2] ?? "").trim()].filter(Boolean).join(" — ");
+  return { needs: known, text };
+}
+
 /* ── ساعت تقریبی رسیدن ───────────────────────────────────────────────────── */
 export type ArrivalOption = { value: string; label: string; hint?: string };
 

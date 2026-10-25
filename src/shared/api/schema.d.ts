@@ -609,7 +609,11 @@ export type paths = {
         delete?: never;
         options?: never;
         head?: never;
-        patch?: never;
+        /**
+         * هماهنگی ورود (ساعت رسیدن، پلاک، یادداشت)
+         * @description زائر پس از ثبت، ساعت تقریبی رسیدن، پلاک خودرو و یادداشت برای پذیرش را به‌روز می‌کند — فقط پیش از پذیرش حضوری (``details_editable``). اثری بر سانس و سهمیه ندارد؛ در تاریخچه رخداد «هماهنگی ورود» ثبت می‌شود. پس از پذیرش/لغو ⇒ ۴۰۹ ``details_locked``.
+         */
+        patch: operations["reservations_partial_update"];
         trace?: never;
     };
     "/api/v1/reservations/{code}/calendar.ics": {
@@ -1841,6 +1845,16 @@ export type components = {
              */
             province: "tehran" | "alborz" | "ardabil" | "isfahan" | "ilam" | "bushehr" | "chaharmahal" | "khorasan_south" | "khorasan_razavi" | "khorasan_north" | "khuzestan" | "zanjan" | "semnan" | "sistan" | "fars" | "qazvin" | "qom" | "kurdistan" | "kerman" | "kermanshah" | "kohgiluyeh" | "golestan" | "gilan" | "lorestan" | "mazandaran" | "markazi" | "hormozgan" | "hamedan" | "yazd" | "west_azerbaijan" | "east_azerbaijan" | "";
         };
+        /** @description ویرایش جزئی هماهنگی ورود توسط زائر — هر فیلد اختیاری، دست‌کم یکی لازم. */
+        PatchedReservationDetailsUpdateRequest: {
+            /**
+             * Format: time
+             * @description ساعت تقریبی رسیدن (HH:MM)؛ تهی = نامشخص
+             */
+            expected_arrival?: string | null;
+            guest_note?: string;
+            vehicle_plate?: string;
+        };
         /** @description نقشهٔ حرارتی واحد×روز. */
         Planning: {
             days: number;
@@ -1998,6 +2012,8 @@ export type components = {
             /** @description زمان ثبت رزرو (وقت محلی سایت). */
             readonly created_at: string;
             readonly date_jalali: string;
+            /** @description آیا ساعت رسیدن، پلاک و یادداشت هنوز قابل ویرایش است؟ (پیش از پذیرش حضوری) */
+            readonly details_editable: boolean;
             readonly duration_label: string;
             /** @description پایان اقامت در قالب ISO 8601 (وقت محلی سایت). */
             readonly end: string;
@@ -2006,6 +2022,8 @@ export type components = {
              * Format: time
              */
             readonly expected_arrival: string | null;
+            /** @description امتیاز ثبت‌شدهٔ نظرسنجی (۱ تا ۵) برای اقامت پایان‌یافته؛ وگرنه ``None``. */
+            readonly feedback_rating: number | null;
             /**
              * @description پیوند نظرسنجی همین اقامت برای صاحبش (همان پیوند پیامک) — فقط وقتی هنوز پذیرفتنی است.
              *
@@ -2029,6 +2047,8 @@ export type components = {
              */
             readonly id: string;
             readonly is_active: boolean;
+            /** لغو دیرهنگام */
+            readonly is_late_cancel: boolean;
             /** @description آغاز اقامت در قالب ISO 8601 (وقت محلی سایت). */
             readonly start: string;
             /**
@@ -2093,9 +2113,10 @@ export type components = {
              *     * `no_show` - عدم‌حضور
              *     * `expired` - انقضای نگه‌داشت
              *     * `note` - یادداشت
+             *     * `details` - هماهنگی ورود
              * @enum {string}
              */
-            kind: "created" | "confirmed" | "cancelled" | "moved" | "checked_in" | "checked_out" | "no_show" | "expired" | "note";
+            kind: "created" | "confirmed" | "cancelled" | "moved" | "checked_in" | "checked_out" | "no_show" | "expired" | "note" | "details";
             readonly kind_label: string;
             /** به وضعیت */
             to_status?: string;
@@ -2227,6 +2248,8 @@ export type components = {
             /** @description زمان ثبت رزرو (وقت محلی سایت). */
             readonly created_at: string;
             readonly date_jalali: string;
+            /** @description آیا ساعت رسیدن، پلاک و یادداشت هنوز قابل ویرایش است؟ (پیش از پذیرش حضوری) */
+            readonly details_editable: boolean;
             readonly duration_label: string;
             /** @description پایان اقامت در قالب ISO 8601 (وقت محلی سایت). */
             readonly end: string;
@@ -2235,6 +2258,8 @@ export type components = {
              * Format: time
              */
             readonly expected_arrival: string | null;
+            /** @description امتیاز ثبت‌شدهٔ نظرسنجی (۱ تا ۵) برای اقامت پایان‌یافته؛ وگرنه ``None``. */
+            readonly feedback_rating: number | null;
             /**
              * @description پیوند نظرسنجی همین اقامت برای صاحبش (همان پیوند پیامک) — فقط وقتی هنوز پذیرفتنی است.
              *
@@ -2264,7 +2289,7 @@ export type components = {
             readonly id: string;
             readonly is_active: boolean;
             /** لغو دیرهنگام */
-            is_late_cancel?: boolean;
+            readonly is_late_cancel: boolean;
             /**
              * زمان ثبت عدم‌حضور
              * Format: date-time
@@ -2362,9 +2387,10 @@ export type components = {
              *     * `no_show` - عدم‌حضور
              *     * `expired` - انقضای نگه‌داشت
              *     * `note` - یادداشت
+             *     * `details` - هماهنگی ورود
              * @enum {string}
              */
-            kind: "created" | "confirmed" | "cancelled" | "moved" | "checked_in" | "checked_out" | "no_show" | "expired" | "note";
+            kind: "created" | "confirmed" | "cancelled" | "moved" | "checked_in" | "checked_out" | "no_show" | "expired" | "note" | "details";
             readonly kind_label: string;
             /** فراداده */
             metadata?: unknown;
@@ -2534,6 +2560,8 @@ export type components = {
             /** Format: uuid */
             readonly id: string;
             readonly offers_sent: number;
+            /** @description پیشنهاد باز همین درخواست (فقط در وضعیت «پیشنهاد ارسال‌شده»)؛ پرتال زائر با آن کارت «پذیرش/رد» و شمارش معکوس را بی‌نیاز از لینک پیامک نشان می‌دهد. */
+            readonly open_offer: components["schemas"]["SlotOffer"] | null;
             /** @description نوبت فعلی درخواست در صف. */
             readonly position: number;
             /** Format: date-time */
@@ -4933,7 +4961,11 @@ export interface operations {
     reservations_list: {
         parameters: {
             query?: {
-                /** @description upcoming | past | all (پیش‌فرض upcoming) */
+                /** @description مکان‌نمای صفحهٔ بعد/قبل (از meta.next) */
+                cursor?: string;
+                /** @description اندازهٔ صفحه (پیش‌فرض ۲۰، سقف ۱۰۰) */
+                page_size?: number;
+                /** @description upcoming (نزدیک‌ترین سفر نخست) | past | all (تازه‌ترین سفر نخست)؛ پیش‌فرض upcoming */
                 scope?: string;
             };
             header?: never;
@@ -5239,6 +5271,191 @@ export interface operations {
             };
             /** @description یافت نشد */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description بازه‌های آزاد جایگزین هنگام تصادم رزرو. */
+                        alternatives?: {
+                            [key: string]: unknown;
+                        }[];
+                        code: string;
+                        detail: string;
+                        /** @description نگاشت خطای فیلدها؛ در هر پاسخ ۴۲۲ همیشه حاضر است (ADR-0017). */
+                        errors?: {
+                            [key: string]: string[];
+                        };
+                        instance?: string;
+                        /** @description وضعیت تأیید دومرحله‌ای کارکنان در پاسخ‌های mfa_required/step_up_required. */
+                        mfa?: {
+                            [key: string]: unknown;
+                        };
+                        otel_trace_id?: string;
+                        /** @description ثانیه تا تلاش دوباره (۴۲۹). */
+                        retry_after?: number;
+                        status: number;
+                        title: string;
+                        trace_id?: string;
+                        /** Format: uri */
+                        type: string;
+                        /** @description همهٔ تخلف‌های قواعد رزرو، یک‌جا (نه یکی‌یکی). */
+                        violations?: {
+                            code: string;
+                            message: string;
+                        }[];
+                    } & {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    reservations_partial_update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                code: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedReservationDetailsUpdateRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Reservation"];
+                };
+            };
+            /** @description ورود لازم است */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description بازه‌های آزاد جایگزین هنگام تصادم رزرو. */
+                        alternatives?: {
+                            [key: string]: unknown;
+                        }[];
+                        code: string;
+                        detail: string;
+                        /** @description نگاشت خطای فیلدها؛ در هر پاسخ ۴۲۲ همیشه حاضر است (ADR-0017). */
+                        errors?: {
+                            [key: string]: string[];
+                        };
+                        instance?: string;
+                        /** @description وضعیت تأیید دومرحله‌ای کارکنان در پاسخ‌های mfa_required/step_up_required. */
+                        mfa?: {
+                            [key: string]: unknown;
+                        };
+                        otel_trace_id?: string;
+                        /** @description ثانیه تا تلاش دوباره (۴۲۹). */
+                        retry_after?: number;
+                        status: number;
+                        title: string;
+                        trace_id?: string;
+                        /** Format: uri */
+                        type: string;
+                        /** @description همهٔ تخلف‌های قواعد رزرو، یک‌جا (نه یکی‌یکی). */
+                        violations?: {
+                            code: string;
+                            message: string;
+                        }[];
+                    } & {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description یافت نشد */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description بازه‌های آزاد جایگزین هنگام تصادم رزرو. */
+                        alternatives?: {
+                            [key: string]: unknown;
+                        }[];
+                        code: string;
+                        detail: string;
+                        /** @description نگاشت خطای فیلدها؛ در هر پاسخ ۴۲۲ همیشه حاضر است (ADR-0017). */
+                        errors?: {
+                            [key: string]: string[];
+                        };
+                        instance?: string;
+                        /** @description وضعیت تأیید دومرحله‌ای کارکنان در پاسخ‌های mfa_required/step_up_required. */
+                        mfa?: {
+                            [key: string]: unknown;
+                        };
+                        otel_trace_id?: string;
+                        /** @description ثانیه تا تلاش دوباره (۴۲۹). */
+                        retry_after?: number;
+                        status: number;
+                        title: string;
+                        trace_id?: string;
+                        /** Format: uri */
+                        type: string;
+                        /** @description همهٔ تخلف‌های قواعد رزرو، یک‌جا (نه یکی‌یکی). */
+                        violations?: {
+                            code: string;
+                            message: string;
+                        }[];
+                    } & {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description تصادم با وضعیت موجود */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description بازه‌های آزاد جایگزین هنگام تصادم رزرو. */
+                        alternatives?: {
+                            [key: string]: unknown;
+                        }[];
+                        code: string;
+                        detail: string;
+                        /** @description نگاشت خطای فیلدها؛ در هر پاسخ ۴۲۲ همیشه حاضر است (ADR-0017). */
+                        errors?: {
+                            [key: string]: string[];
+                        };
+                        instance?: string;
+                        /** @description وضعیت تأیید دومرحله‌ای کارکنان در پاسخ‌های mfa_required/step_up_required. */
+                        mfa?: {
+                            [key: string]: unknown;
+                        };
+                        otel_trace_id?: string;
+                        /** @description ثانیه تا تلاش دوباره (۴۲۹). */
+                        retry_after?: number;
+                        status: number;
+                        title: string;
+                        trace_id?: string;
+                        /** Format: uri */
+                        type: string;
+                        /** @description همهٔ تخلف‌های قواعد رزرو، یک‌جا (نه یکی‌یکی). */
+                        violations?: {
+                            code: string;
+                            message: string;
+                        }[];
+                    } & {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+            /** @description ورودی نامعتبر */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -8036,7 +8253,12 @@ export interface operations {
     };
     waitlist_retrieve: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description مکان‌نمای صفحهٔ بعد/قبل (از meta.next) */
+                cursor?: string;
+                /** @description اندازهٔ صفحه (پیش‌فرض ۲۰، سقف ۱۰۰) */
+                page_size?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;

@@ -23,11 +23,16 @@
       "expected_arrival": null,
       "vehicle_plate": "",
       "hold_expires_at": null,
-      "feedback_url": null
+      "feedback_url": null,
+      "details_editable": true,
+      "feedback_rating": null,
+      "is_late_cancel": false
     }
   ],
   "meta": {
-    "count": 1,
-    "scope": "upcoming"
+    "next": null,
+    "previous": null,
+    "page_size": 20,
+    "total": 1
   }
 }

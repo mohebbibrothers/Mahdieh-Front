@@ -1,0 +1,38 @@
+{
+  "results": [
+    {
+      "id": "01a16fd2-ed55-76b7-8047-a4b06aab4978",
+      "code": "M-1405-0003",
+      "unit_code": "A1",
+      "unit_title": "سوئیت طبقهٔ اول",
+      "floor_number": 1,
+      "status": "completed",
+      "status_label": "پایان‌یافته",
+      "is_active": false,
+      "start": "2026-10-17T20:00:00+03:30",
+      "end": "2026-10-19T20:00:00+03:30",
+      "date_jalali": "۱۴۰۵/۰۷/۲۵",
+      "weekday": "شنبه",
+      "cells_count": 4,
+      "duration_label": "۲ شبانه‌روز کامل",
+      "guests_count": 4,
+      "guest_note": "",
+      "expected_arrival": null,
+      "vehicle_plate": "",
+      "can_cancel": false,
+      "free_cancel_until": "2026-10-16T20:00:00+03:30",
+      "hold_expires_at": null,
+      "feedback_url": "/feedback/eyJyIjoiMDFhMTZmZDItZWQ1NS03NmI3LTgwNDctYTRiMDZhYWI0OTc4IiwiYyI6Ik0tMTQwNS0wMDAzIn0:1xKjVv:3khOE5FZ8QwIF90cBzUE6oYoW5F8Xp5Reji-kucZgxA/",
+      "created_at": "2026-10-25T01:00:56.725552+03:30",
+      "details_editable": false,
+      "feedback_rating": null,
+      "is_late_cancel": false
+    }
+  ],
+  "meta": {
+    "next": null,
+    "previous": null,
+    "page_size": 10,
+    "total": 1
+  }
+}

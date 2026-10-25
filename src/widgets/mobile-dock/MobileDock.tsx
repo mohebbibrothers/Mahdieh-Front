@@ -13,7 +13,7 @@ const SPY = ["availability"] as const;
  * زبانهٔ فعال با اسکرول جابه‌جا می‌شود: «خانه» همیشه صفحهٔ جاری است (‎aria-current=page‎)،
  * و «زمان‌های آزاد» وقتی بخشش زیر چشم است ‎aria-current=location‎ می‌گیرد.
  */
-export function MobileDock({ page = "home" }: { page?: "home" | "booking" }) {
+export function MobileDock({ page = "home" }: { page?: "home" | "booking" | "portal" }) {
   const spied = useActiveSection(SPY, "home");
   const onHome = page === "home";
   const section = onHome ? spied : null;
@@ -48,7 +48,10 @@ export function MobileDock({ page = "home" }: { page?: "home" | "booking" }) {
           <Icon name="calendar" size={22} />
           <span>زمان‌های آزاد</span>
         </a>
-        <Link href={destHref("bookingNav") ?? "/"} aria-current={page === "booking" ? "page" : undefined}>
+        <Link
+          href={destHref("portal") ?? destHref("bookingNav") ?? "/"}
+          aria-current={page === "portal" ? "page" : undefined}
+        >
           <Icon name="ticket" size={22} />
           <span>رزروهای من</span>
         </Link>

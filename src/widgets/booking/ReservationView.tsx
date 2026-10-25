@@ -228,7 +228,7 @@ export function ReservationView({ code, policies }: { code: string; policies: Po
         }
       >
         <div className="empty-actions">
-          <Link className="btn btn-primary btn-lg" href={destHref("bookingNav") ?? "/"}>
+          <Link className="btn btn-primary btn-lg" href={destHref("portal") ?? destHref("bookingNav") ?? "/"}>
             <Icon name="ticket" size={18} /> رزروهای من
           </Link>
           {notFound ? null : (
@@ -273,8 +273,8 @@ export function ReservationView({ code, policies }: { code: string; policies: Po
         className="booking-card--result"
         focusKey={status}
         action={
-          <Link className="res-back" href={destHref("bookingNav") ?? "/"}>
-            <Icon name="arrow-right" size={16} /> همهٔ رزروهای من
+          <Link className="res-back" href={destHref("portal") ?? destHref("bookingNav") ?? "/"}>
+            <Icon name="arrow-right" size={16} /> همهٔ رزروها در پرتال زائر
           </Link>
         }
       >

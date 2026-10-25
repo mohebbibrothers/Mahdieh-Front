@@ -75,7 +75,7 @@ export function AccountBanners() {
             <p>{blocker.message}</p>
           </div>
         </div>
-        <AccountTrigger className="btn btn-secondary">
+        <AccountTrigger className="btn btn-secondary" portal={Boolean(standing.data?.profile_complete)}>
           {standing.data?.profile_complete ? "مشاهدهٔ وضعیت" : "تکمیل اطلاعات"}
           <Icon name="arrow-left" size={18} />
         </AccountTrigger>

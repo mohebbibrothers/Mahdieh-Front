@@ -38,11 +38,14 @@ export function SiteFooter() {
                   <Link href="/#quick-search">انتخاب زمان اقامت</Link>
                 </li>
               )}
-              <li>
-                <AccountTrigger guestReason="برای دیدن رزروهایتان با شمارهٔ همراه وارد شوید." portal>
-                  رزروهای من
-                </AccountTrigger>
-              </li>
+              {/* وقتی «پرتال زائر» در فهرست هست، «رزروهای من» تکرار همان مقصد است */}
+              {NAV.some((n) => n.icon === "user") ? null : (
+                <li>
+                  <AccountTrigger guestReason="برای دیدن رزروهایتان با شمارهٔ همراه وارد شوید." portal>
+                    رزروهای من
+                  </AccountTrigger>
+                </li>
+              )}
               {NAV.filter((n) => n.icon === "compass").map((n) => (
                 <li key={n.href}>
                   <a href={n.href}>{n.label}</a>

@@ -68,6 +68,7 @@ function Form({ token, state, onDone }: { token: string; state: FeedbackState; o
     onSuccess: (s) => {
       qc.setQueryData(feedbackStateQuery(token).queryKey, s);
       void qc.invalidateQueries({ queryKey: ["me", "reservation"] });
+      void qc.invalidateQueries({ queryKey: ["me", "reservations"] }); // سابقهٔ پرتال: ستون «ارزیابی»
       toast("سپاس از نظرتان؛ برای بهبود میزبانی زائران بعدی به کار می‌رود.", "success");
       onDone();
     },

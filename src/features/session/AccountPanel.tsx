@@ -30,6 +30,7 @@ export function AccountPanel({
   const [confirmAll, setConfirmAll] = useState(false);
   const name = profile.display_name || [profile.first_name, profile.last_name].join(" ").trim() || "زائر گرامی";
   const reservations = upcoming.data?.results ?? [];
+  const portal = destHref("portal");
 
   return (
     <div className="account-panel">
@@ -101,6 +102,16 @@ export function AccountPanel({
             </li>
           ))}
         </ul>
+        {portal ? (
+          <Link className="account-portal" href={portal} onClick={closeAccount}>
+            <Icon name="user" size={18} />
+            <span>
+              <strong>پرتال زائر</strong>
+              <small>گواهی، هماهنگی ورود، صف انتظار، سابقهٔ سفرها و امنیت حساب</small>
+            </span>
+            <Icon name="chevron-left" size={16} />
+          </Link>
+        ) : null}
       </section>
 
       <div className="account-actions account-actions--split">

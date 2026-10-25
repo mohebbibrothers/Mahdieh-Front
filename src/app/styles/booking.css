@@ -2,7 +2,8 @@
  * باگ‌های موبایل طراح رفع شده: گام‌ها در ۳۹۰px سرریز نمی‌کنند و کادر کد کوتاه هرگز دو تکه نمی‌شود. */
 @layer components {
   /* ── توکن‌های محلی برگهٔ گواهی (طلایی/کاغذی؛ تیره: شب‌رنگ) ── */
-  .booking-main {
+  .booking-main,
+  .portal-main {
     --cert-gold: color-mix(in oklab, var(--color-gold) 70%, var(--color-text));
     --cert-border: color-mix(in oklab, var(--color-gold) 55%, var(--color-border));
     --cert-bg: color-mix(in oklab, var(--color-gold) 4%, var(--color-surface));

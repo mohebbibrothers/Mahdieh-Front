@@ -10,6 +10,7 @@ import {
   plateDigits,
   plateEmpty,
   plateFilled,
+  parsePlate,
   plateLetter,
   type PlateParts,
 } from "./model";
@@ -21,11 +22,21 @@ export type PlateValue = { text: string; complete: boolean };
  * پرش خودکار به خانهٔ بعد، حرف از جدول حروف (بی‌نیاز از صفحه‌کلید فارسی)؛ و حالت «پلاک خارجی/آزاد».
  * خروجی همیشه زیر سقف ۲۰ نویسهٔ بک‌اند است؛ پلاک نیمه‌کاره «ناقص» گزارش می‌شود تا ارسال نشود.
  */
-export function PlateInput({ onChange, invalid }: { onChange: (v: PlateValue) => void; invalid: boolean }) {
+export function PlateInput({
+  onChange,
+  invalid,
+  initial = "",
+}: {
+  onChange: (v: PlateValue) => void;
+  invalid: boolean;
+  /** پلاک ثبت‌شده (ویرایش در پرتال): قالب ایرانی ⇒ خانه‌ها؛ هر قالب دیگر ⇒ حالت «خارجی / آزاد». */
+  initial?: string;
+}) {
   const id = useId();
-  const [foreign, setForeign] = useState(false);
-  const [parts, setParts] = useState<PlateParts>(EMPTY_PLATE);
-  const [free, setFree] = useState("");
+  const [seed] = useState(() => (initial ? parsePlate(initial) : null));
+  const [foreign, setForeign] = useState(() => Boolean(initial && !seed));
+  const [parts, setParts] = useState<PlateParts>(() => seed ?? EMPTY_PLATE);
+  const [free, setFree] = useState(() => (initial && !seed ? initial : ""));
   const [letters, setLetters] = useState(false);
   const twoRef = useRef<HTMLInputElement>(null);
   const letterRef = useRef<HTMLButtonElement>(null);

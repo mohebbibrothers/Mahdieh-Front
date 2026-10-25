@@ -33,7 +33,7 @@ export const PAGES: Record<PageId, PageInfo> = {
   "P-03": { title: "جزئیات واحد", path: "/units/{code}/", ready: false },
   "P-04": { title: "تقویم موجودی", path: "/calendar/", ready: false },
   "P-05": { title: "تکمیل و صدور رزرو", path: "/booking/", ready: true },
-  "P-07": { title: "پرتال زائر و پیگیری", path: "/portal/", ready: false },
+  "P-07": { title: "پرتال زائر و پیگیری", path: "/portal/", ready: true },
   "P-08": { title: "راهنمای زائر و احکام", path: "/guide/", ready: false },
 };
 
@@ -60,7 +60,7 @@ export const DEST = {
   guideFull: { page: "P-08", fallback: null },
   /** «اطلاعات تماس» (طراح ← P-08#contact-desk) */
   contact: { page: "P-08", hash: "contact-desk", fallback: null },
-  /** «رزروهای من»، «جزئیات رزرو» — تا آن زمان پنجرهٔ حساب درون‌برنامه‌ای */
+  /** «رزروهای من»، «پرتال زائر» (منو، نوار پایین، پانویس، پنجرهٔ حساب) */
   portal: { page: "P-07", fallback: null },
   /** «بازرسی گواهی با مشخصات چاپی و کد کوتاه» */
   verifyOffline: { page: "P-07", hash: "verify", fallback: null },
@@ -68,8 +68,8 @@ export const DEST = {
   booking: { page: "P-05", fallback: null },
   /** منوی اصلی: «تکمیل و صدور رزرو» (بی‌پارامتر ⇒ نمای «از کجا شروع کنم» و رزروهای پیش‌رو) */
   bookingNav: { page: "P-05", fallback: null },
-  /** «جزئیات رزرو / گواهی» با کد پیگیری (‎?code=‎) — تا ساخت پرتال (P-07) همین صفحهٔ صدور */
-  reservation: { page: "P-05", fallback: null },
+  /** «جزئیات رزرو / گواهی» با کد پیگیری (‎?code=‎) — کارت شاخص پرتال؛ صدور تازه همچنان در P-05 نمایش داده می‌شود */
+  reservation: { page: "P-07", fallback: null },
 } as const satisfies Record<string, Intent>;
 
 export type DestKey = keyof typeof DEST;
@@ -100,7 +100,7 @@ export function destHref(key: DestKey, query?: Record<string, string>): Route | 
   return intent.fallback === null ? null : asRoute(intent.fallback);
 }
 
-/** جزئیات و گواهی یک رزرو با کد پیگیری — همیشه مقصد دارد (P-05 تا ساخت پرتال P-07). */
+/** جزئیات و گواهی یک رزرو با کد پیگیری — همیشه مقصد دارد (پرتال P-07؛ در نبود آن نمای رزرو P-05). */
 export function reservationHref(code: string): Route {
   return destHref("reservation", { code }) ?? build(PAGES["P-05"], undefined, { code });
 }

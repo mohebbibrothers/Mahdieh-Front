@@ -1,7 +1,9 @@
 {
   "results": [],
   "meta": {
-    "count": 0,
-    "scope": "upcoming"
+    "next": null,
+    "previous": null,
+    "page_size": 20,
+    "total": 0
   }
 }

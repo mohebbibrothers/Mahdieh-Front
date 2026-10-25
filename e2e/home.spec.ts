@@ -117,7 +117,8 @@ test.describe("P-01 صفحهٔ خانه", () => {
     await page.goto("/");
     const banner = page.getByRole("complementary", { name: "وضعیت رزرو شما" });
     await expect(banner).toContainText("لغو دیرهنگام");
-    await expect(banner.getByRole("button", { name: /مشاهدهٔ وضعیت/ })).toBeVisible();
+    // پروفایل کامل ⇒ «مشاهدهٔ وضعیت» مستقیم به پرتال زائر (جزئیات مانع و سهمیه‌ها همان‌جاست)
+    await expect(banner.getByRole("link", { name: /مشاهدهٔ وضعیت/ })).toHaveAttribute("href", "/portal/");
   });
 
   test("سرصفحه: از چپ «حساب» ← «حالت شب» ← «حالت آسان» (موبایل: «فهرست» در همان لبه)", async ({ page }, info) => {

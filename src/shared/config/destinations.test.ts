@@ -1,5 +1,14 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { DEST, destHref, pendingDestinations, PAGES, unitPageHref, type DestKey, type PageId } from "./destinations";
+import {
+  DEST,
+  destHref,
+  pendingDestinations,
+  PAGES,
+  reservationHref,
+  unitPageHref,
+  type DestKey,
+  type PageId,
+} from "./destinations";
 
 /** همان الگوی آزمون نگهبان e2e: قالب‌های قدیمی جنگو (apps/web، apps/core) و پیشخوان مدیریت. */
 const LEGACY =
@@ -52,7 +61,8 @@ describe("نقشهٔ مقصدها", () => {
     expect(destHref("booking", { unit: "A1", day: "2026-10-23", period: "day", cells: "4", guests: "4" })).toBe(
       "/booking/?unit=A1&day=2026-10-23&period=day&cells=4&guests=4",
     );
-    expect(destHref("reservation", { code: "M-1405-0142" })).toBe("/booking/?code=M-1405-0142");
+    expect(destHref("reservation", { code: "M-1405-0142" })).toBe("/portal/?code=M-1405-0142");
+    expect(destHref("verifyOffline")).toBe("/portal/#verify");
     expect(unitPageHref("B 2")).toBe("/units/B%202/");
     // جنگو فقط مسیر دقیق ‎routes.json‎ (با اسلش پایانی) را به فرانت می‌دهد.
     for (const key of KEYS) expect(destHref(key), key).toMatch(/^\/[a-z][a-z/-]*\/(?:[?#]|$)/);
@@ -62,6 +72,13 @@ describe("نقشهٔ مقصدها", () => {
     expect(PAGES["P-05"].ready).toBe(true);
     expect(destHref("bookingNav")).toBe("/booking/");
     expect(destHref("booking", { unit: "A1" })).not.toMatch(LEGACY);
+  });
+
+  it("پرتال زائر (P-07) منتشر شده: «رزروهای من»، جزئیات رزرو و بازرسی آفلاین به آن می‌روند", () => {
+    expect(PAGES["P-07"].ready).toBe(true);
+    expect(destHref("portal")).toBe("/portal/");
+    expect(reservationHref("M-1405-0011")).toBe("/portal/?code=M-1405-0011");
+    expect(destHref("verifyOffline")).toBe("/portal/#verify");
   });
 
   it("فهرست صفحه‌های منتظر کامل است و هر قصد دقیقاً به یک صفحه تعلق دارد", () => {

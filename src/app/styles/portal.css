@@ -1,0 +1,2325 @@
+/* P-07 «پرتال زائر» — اندازه‌ها و نقطه‌شکست‌ها از طراح (P-07-guest-portal.html / source/p07/portal.css)،
+ * رنگ‌ها فقط از توکن‌ها (روشن/تیره/آسان). طلایی = ‎--color-gold‎، زمردی = ‎--color-brand‎.
+ * بهبودها: جدول سابقه در موبایل کارت می‌شود (نه اسکرول افقی)، گام‌شمار عمودی، پلاک بی‌جابه‌جایی دوسویه. */
+@layer components {
+  .portal-main {
+    --pt-gold: var(--color-gold);
+    /* روشن: همان فام و اشباع طلایی، فقط روشنایی ۰٫۵ ⇒ کنتراست ≈ ۵:۱ (WCAG AA؛ هم‌خانوادهٔ ‎gold-dark‎ طراح)
+     * بی‌آنکه با جوهر سبز متن زیتونی شود. این مقدار جایگزینِ مرورگرهای بی رنگ نسبی است (‎@supports‎ پایین). */
+    --pt-gold-ink: color-mix(in oklab, var(--color-gold) 40%, var(--color-text));
+    --pt-gold-soft: color-mix(in oklab, var(--color-gold) 9%, var(--color-surface));
+    --pt-gold-line: color-mix(in oklab, var(--color-gold) 42%, transparent);
+    --pt-em: var(--color-brand);
+    --pt-em-ink: var(--color-brand-ink);
+    --pt-em-soft: var(--color-brand-tint);
+    --pt-em-line: color-mix(in oklab, var(--color-brand) 30%, transparent);
+    --pt-ground: color-mix(in oklab, var(--color-sunken) 40%, var(--color-surface));
+    --pt-line: var(--color-border);
+    --pt-shadow-sm: 0 2px 8px var(--color-shadow);
+    --pt-shadow-md: 0 8px 24px var(--color-shadow);
+    padding-block: clamp(24px, 4vw, 48px) clamp(32px, 5vw, 64px);
+    background: var(--color-canvas);
+  }
+  .pt-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(28px, 4.5vw, 48px);
+  }
+  .pt-anchor,
+  .pt-section {
+    scroll-margin-top: calc(var(--header-h, 89px) + 16px);
+  }
+  .pt-deck-skel {
+    height: 380px;
+    border-radius: clamp(20px, 3vw, 28px);
+  }
+  .pt-stay-skel {
+    height: 520px;
+    border-radius: clamp(20px, 3vw, 26px);
+  }
+
+  /* ── دِک فرمان ── */
+  .pt-deck {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(24px, 3.5vw, 44px) clamp(20px, 4vw, 48px);
+    border: 1px solid var(--pt-line);
+    border-radius: clamp(20px, 3vw, 28px);
+    background: var(--color-surface);
+    box-shadow: var(--pt-shadow-md);
+  }
+  .pt-deck::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, var(--pt-gold) 35%, var(--pt-em) 65%, transparent);
+    opacity: 0.85;
+  }
+  .pt-deck__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: clamp(24px, 3vw, 36px);
+    text-align: center;
+  }
+  .pt-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0 0 12px;
+    color: var(--color-text-muted);
+    font-size: clamp(12.5px, 1.4vw, 14px);
+    font-weight: 600;
+  }
+  .pt-eyebrow::before,
+  .pt-eyebrow::after {
+    content: "";
+    width: 32px;
+    height: 1.5px;
+    background: var(--pt-gold);
+    opacity: 0.8;
+  }
+  .pt-deck h1 {
+    margin: 0 0 14px;
+    color: var(--color-text);
+    font-size: clamp(24px, 3.4vw, 36px);
+    font-weight: 800;
+    line-height: 1.3;
+    text-wrap: balance;
+  }
+  .pt-deck h1 em {
+    color: var(--pt-gold-ink);
+    font-style: normal;
+  }
+  .pt-deck__lead {
+    max-width: 680px;
+    margin: 0 auto 24px;
+    color: var(--color-text-muted);
+    font-size: clamp(14px, 1.6vw, 15.5px);
+    line-height: 1.8;
+    text-wrap: pretty;
+  }
+  .pt-deck__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  /* ── نوار وضعیت زائر ── */
+  .pt-standing {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 16px 24px;
+    border: 1px solid var(--pt-line);
+    border-radius: 18px;
+    background: var(--pt-ground);
+  }
+  .pt-standing__who {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+  }
+  .pt-standing__who p {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    min-width: 0;
+  }
+  .pt-standing__who strong {
+    color: var(--color-text);
+    font-size: 16px;
+    font-weight: 700;
+  }
+  /* جداکنندهٔ «·» در فاصلهٔ میان آیتم‌ها؛ اگر آیتمی به اول خط بعد بشکند، نقطه‌اش بیرون لبه می‌افتد و بریده می‌شود */
+  .pt-standing__who p > span {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    overflow: hidden;
+    color: var(--color-text-muted);
+    font-size: 12.5px;
+  }
+  .pt-standing__who p > span > span {
+    position: relative;
+  }
+  .pt-standing__who p > span > span + span::before {
+    content: "·";
+    position: absolute;
+    inset-inline-start: -10px;
+    color: var(--color-text-subtle);
+  }
+  .pt-avatar {
+    display: grid;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    place-content: center;
+    border: 2px solid var(--pt-gold);
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--pt-em), color-mix(in oklab, var(--pt-em) 55%, black));
+    color: var(--color-on-brand);
+    font-size: 16px;
+    font-weight: 700;
+    box-shadow: 0 4px 12px color-mix(in oklab, var(--pt-em) 25%, transparent);
+  }
+  .pt-standing__quota {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+  }
+  /* سه سهمیه در یک کپسول طلایی با جداکننده (هم‌خانوادهٔ کپسول تک‌سهمیهٔ طراح) */
+  .pt-quotas {
+    display: inline-flex;
+    align-items: stretch;
+    overflow: hidden;
+    border: 1px solid var(--pt-gold-line);
+    border-radius: 14px;
+    background: var(--pt-gold-soft);
+  }
+  .pt-quotas .pt-quota {
+    border: 0;
+    border-radius: 0;
+    background: none;
+    padding: 9px 13px;
+  }
+  .pt-quotas .pt-quota + .pt-quota {
+    border-inline-start: 1px solid var(--pt-gold-line);
+  }
+  /* دسکتاپ پهن: مثل طرح، هویت | سهمیه‌ها | اهلیت در یک ردیف؛ خط مشخصات هویت در صورت نیاز می‌شکند */
+  @media (min-width: 1101px) {
+    .pt-standing {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+    .pt-standing__quota {
+      flex-wrap: nowrap;
+    }
+    .pt-standing__why {
+      grid-column: 1 / -1;
+    }
+  }
+  .pt-standing__skel {
+    width: 320px;
+    height: 40px;
+    border-radius: 14px;
+  }
+  .pt-quota {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border: 1px solid var(--pt-gold-line);
+    border-radius: 14px;
+    background: var(--pt-gold-soft);
+    color: var(--pt-gold-ink);
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .pt-quota b {
+    font-weight: 800;
+  }
+  .pt-quota__dots {
+    display: flex;
+    gap: 5px;
+  }
+  .pt-quota__dots i {
+    width: 14px;
+    height: 14px;
+    border: 2px solid var(--pt-gold);
+    border-radius: 50%;
+  }
+  .pt-quota__dots i[data-used] {
+    background: var(--pt-gold);
+  }
+  .pt-quota__track {
+    flex-shrink: 0;
+    width: 54px;
+    height: 6px;
+    transform: scaleX(-1); /* پر شدن از راست (RTL) */
+  }
+  .pt-quota__rail {
+    fill: color-mix(in oklab, var(--pt-gold) 22%, transparent);
+  }
+  .pt-quota__fill {
+    fill: var(--pt-gold);
+  }
+  .pt-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 14px;
+    border: 1px solid var(--pt-em-line);
+    border-radius: 14px;
+    background: var(--pt-em-soft);
+    color: var(--pt-em-ink);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .pt-badge--hold {
+    border-color: color-mix(in oklab, var(--color-warn-fg) 30%, transparent);
+    background: var(--color-warn-bg);
+    color: var(--color-warn-fg);
+    white-space: normal;
+  }
+  .pt-badge--warn {
+    cursor: pointer;
+    border-color: color-mix(in oklab, var(--color-warn-fg) 35%, transparent);
+    background: var(--color-warn-bg);
+    color: var(--color-warn-fg);
+  }
+  .pt-badge--warn:hover {
+    border-color: var(--color-warn-fg);
+  }
+  .pt-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--pt-em);
+    animation: pt-pulse 2s infinite ease-out;
+  }
+  @keyframes pt-pulse {
+    0% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 color-mix(in oklab, var(--pt-em) 60%, transparent);
+    }
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 7px transparent;
+    }
+    100% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+  .pt-standing__why {
+    display: flex;
+    flex-basis: 100%;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 12.5px;
+  }
+
+  /* ── مهمان: ورود درجا ── */
+  .pt-guest {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: clamp(20px, 3vw, 40px);
+    align-items: start;
+    padding: clamp(18px, 2.4vw, 28px);
+    border: 1px solid var(--pt-line);
+    border-radius: 18px;
+    background: var(--pt-ground);
+  }
+  .pt-guest h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 8px;
+    font-size: clamp(17px, 2vw, 20px);
+    font-weight: 800;
+  }
+  .pt-guest__copy > p {
+    margin: 0 0 16px;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .pt-guest ul {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .pt-guest li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-text);
+    font-size: 14px;
+  }
+  .pt-guest li .icon {
+    flex-shrink: 0;
+    padding: 6px;
+    box-sizing: content-box;
+    border-radius: 10px;
+    background: var(--pt-em-soft);
+    color: var(--pt-em-ink);
+  }
+  .pt-guest__form {
+    padding: clamp(16px, 2vw, 22px);
+    border: 1px solid var(--pt-line);
+    border-radius: 16px;
+    background: var(--color-surface);
+  }
+
+  /* ── کارت شاخص اقامت ── */
+  .pt-stay {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(22px, 3vw, 36px);
+    border: 1px solid var(--pt-line);
+    border-radius: clamp(20px, 3vw, 26px);
+    background: var(--color-surface);
+    box-shadow: var(--pt-shadow-md);
+    animation: pt-rise var(--duration-slow, 0.45s) var(--ease-out, ease) both;
+  }
+  @keyframes pt-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  .pt-stay__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .pt-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 36px;
+    padding: 6px 14px;
+    border: 1px solid var(--pt-line);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      border-color var(--duration-fast, 0.15s),
+      background var(--duration-fast, 0.15s);
+  }
+  .pt-chip:hover {
+    border-color: var(--pt-gold);
+  }
+  .pt-chip[aria-pressed="true"] {
+    border-color: var(--pt-em);
+    background: var(--pt-em-soft);
+    color: var(--pt-em-ink);
+  }
+  .pt-stay__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--pt-line);
+  }
+  .pt-stay__title {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+  .pt-stay__title h2 {
+    margin: 0;
+    color: var(--color-text);
+    font-size: clamp(20px, 2.6vw, 26px);
+    font-weight: 800;
+    line-height: 1.4;
+  }
+  .pt-stay__code {
+    color: var(--color-text-muted);
+    font-size: 0.72em;
+    font-weight: 700;
+  }
+  .pt-stay__specs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 16px;
+    overflow: hidden; /* «·» اولِ خطِ شکسته بیرون لبه می‌افتد و بریده می‌شود */
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 13.5px;
+  }
+  .pt-stay__specs > span {
+    position: relative;
+  }
+  .pt-stay__specs > span + span::before {
+    content: "·";
+    position: absolute;
+    inset-inline-start: -10px;
+    color: var(--color-text-subtle);
+  }
+  .pt-stay__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border: 1.5px solid var(--pt-em-line);
+    border-radius: var(--radius-pill);
+    background: var(--pt-em-soft);
+    color: var(--pt-em-ink);
+    font-size: 13.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .pt-stay__badge[data-status="hold"] {
+    border-color: color-mix(in oklab, var(--color-warn-fg) 35%, transparent);
+    background: var(--color-warn-bg);
+    color: var(--color-warn-fg);
+  }
+  .pt-stay__badge[data-status="checked_in"] {
+    border-color: var(--pt-gold-line);
+    background: var(--pt-gold-soft);
+    color: var(--pt-gold-ink);
+  }
+  .pt-stay__badge[data-status="completed"] {
+    border-color: var(--pt-line);
+    background: var(--pt-ground);
+    color: var(--color-text-muted);
+  }
+
+  /* نشان وضعیت مشترک (جدول، کارت، نتیجهٔ استعلام) */
+  .pt-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 110px;
+    padding: 6px 16px;
+    border: 1px solid var(--pt-line);
+    border-radius: var(--radius-pill);
+    background: var(--pt-ground);
+    color: var(--color-text);
+    font-size: 12.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .pt-pill[data-tone="ok"] {
+    border-color: var(--pt-em-line);
+    background: var(--pt-em-soft);
+    color: var(--pt-em-ink);
+  }
+  .pt-pill[data-tone="live"] {
+    border-color: var(--pt-gold-line);
+    background: var(--pt-gold-soft);
+    color: var(--pt-gold-ink);
+  }
+  .pt-pill[data-tone="hold"] {
+    border-color: color-mix(in oklab, var(--color-warn-fg) 30%, transparent);
+    background: var(--color-warn-bg);
+    color: var(--color-warn-fg);
+  }
+  .pt-pill[data-tone="danger"] {
+    border-color: color-mix(in oklab, var(--color-danger-fg) 28%, transparent);
+    background: var(--color-danger-bg);
+    color: var(--color-danger-fg);
+  }
+  .pt-pill[data-tone="muted"] {
+    color: var(--color-text-muted);
+  }
+
+  /* نگه‌داشت در انتظار تأیید */
+  .pt-hold {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+    padding: 14px 18px;
+    border: 1px solid color-mix(in oklab, var(--color-warn-fg) 28%, transparent);
+    border-radius: 16px;
+    background: var(--color-warn-bg);
+    color: var(--color-warn-fg);
+  }
+  .pt-hold > p:not(.pt-hold__timer) {
+    display: flex;
+    flex: 1 1 260px;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  .pt-hold strong {
+    font-size: 14.5px;
+  }
+  .pt-hold__ring {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-content: center;
+    border-radius: 50%;
+    background: color-mix(in oklab, var(--color-warn-fg) 14%, transparent);
+    animation: pt-spin-soft 3s linear infinite;
+  }
+  @keyframes pt-spin-soft {
+    50% {
+      transform: rotate(180deg);
+    }
+    to {
+      transform: rotate(180deg);
+    }
+  }
+  .pt-hold__timer,
+  .pt-offer__timer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+    font-size: 12px;
+  }
+  .pt-hold__timer bdi,
+  .pt-offer__timer bdi {
+    font-size: 22px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* شبکهٔ چهارگانهٔ داده‌ها */
+  .pt-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 18px;
+    margin: 0 0 26px;
+  }
+  .pt-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    padding: 16px 18px;
+    border: 1px solid var(--pt-line);
+    border-radius: 16px;
+    background: var(--pt-ground);
+  }
+  .pt-metric dt {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-muted);
+    font-size: 12.5px;
+  }
+  .pt-metric dd {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    color: var(--color-text);
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .pt-metric dd small {
+    color: var(--color-text-muted);
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+  .pt-metric__gold {
+    color: var(--pt-gold-ink) !important;
+  }
+  .pt-code {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+  .pt-code__text {
+    padding: 4px 10px;
+    border: 1px dashed var(--pt-em-line);
+    border-radius: 8px;
+    background: var(--pt-em-soft);
+    color: var(--pt-em-ink);
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+  }
+  .pt-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border: 1px solid var(--pt-line);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      border-color var(--duration-fast, 0.15s),
+      color var(--duration-fast, 0.15s),
+      background var(--duration-fast, 0.15s);
+  }
+  .pt-copy:hover,
+  .pt-copy[data-done] {
+    border-color: var(--pt-em);
+    background: var(--color-surface);
+    color: var(--pt-em-ink);
+  }
+
+  /* نوار هماهنگی ورود (طلایی) */
+  .pt-dock {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 26px;
+    padding: 16px 20px;
+    border: 1px solid var(--pt-gold-line);
+    border-radius: 18px;
+    background: var(--pt-gold-soft);
+  }
+  .pt-dock__info {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 22px;
+    min-width: 0;
+  }
+  .pt-dock__item {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--color-text);
+    font-size: 13.5px;
+  }
+  .pt-dock__item em {
+    color: var(--color-text-muted);
+    font-style: normal;
+  }
+  .pt-dock__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-text-muted);
+    font-weight: 600;
+  }
+  .pt-dock__note > span:last-child {
+    max-width: 46ch;
+    overflow: hidden;
+    color: var(--color-text);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pt-dock__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+  }
+  .pt-dock__cue {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--pt-gold-ink);
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+
+  /* پلاک ملی (نمایش) */
+  .pt-plate {
+    display: inline-flex;
+    align-items: stretch;
+    overflow: hidden;
+    height: 34px;
+    border: 1.5px solid #18181b;
+    border-radius: 6px;
+    background: #fff;
+    color: #18181b;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.12);
+    direction: ltr;
+  }
+  .pt-plate--free {
+    align-items: center;
+    padding-inline: 10px;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+  }
+  .pt-plate__flag {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 6px;
+    background: #1e3a8a;
+    color: #fff;
+    font-size: 7px;
+    line-height: 1;
+  }
+  .pt-plate__flag i {
+    width: 14px;
+    height: 8px;
+    margin-bottom: 2px;
+    border-radius: 1px;
+    background: linear-gradient(#239f40 33%, #fff 33% 66%, #da0000 66%);
+  }
+  .pt-plate__flag b {
+    font-weight: 700;
+    letter-spacing: 0.4px;
+  }
+  .pt-plate__main {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 8px;
+    font-size: 15px;
+  }
+  .pt-plate__main b {
+    font-weight: 800;
+  }
+  .pt-plate__region {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 6px;
+    border-inline-start: 1.5px solid #18181b;
+    background: #f4f4f5;
+    font-size: 12px;
+    line-height: 1.15;
+  }
+  .pt-plate__region small {
+    font-size: 8px;
+    font-weight: 700;
+  }
+
+  /* گام‌شمار سفر — افقی؛ ≤۷۶۸ عمودی */
+  .pt-journey {
+    display: grid;
+    grid-template-columns: repeat(var(--steps, 5), 1fr);
+    gap: 12px;
+    margin: 0 0 30px;
+    padding: 8px 0 0;
+    list-style: none;
+  }
+  .pt-journey:has(> :nth-child(4):last-child) {
+    --steps: 4;
+  }
+  .pt-journey:has(> :nth-child(3):last-child) {
+    --steps: 3;
+  }
+  .pt-journey:has(> :nth-child(2):last-child) {
+    --steps: 2;
+  }
+  .pt-journey__step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .pt-journey__step:not(:first-child)::before {
+    content: "";
+    position: absolute;
+    top: 18px;
+    inset-inline-end: calc(50% + 20px);
+    width: calc(100% - 28px);
+    height: 2px;
+    background: var(--pt-line);
+  }
+  .pt-journey__step[data-state="done"]:not(:first-child)::before {
+    background: var(--pt-em);
+  }
+  .pt-journey__step[data-state="current"]:not(:first-child)::before {
+    background: linear-gradient(to left, var(--pt-em), var(--pt-gold));
+  }
+  .pt-journey__step[data-state="stopped"]:not(:first-child)::before {
+    background: color-mix(in oklab, var(--color-danger-fg) 45%, transparent);
+  }
+  .pt-journey__dot {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 8px;
+    place-content: center;
+    border: 2px solid var(--pt-line);
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    font-size: 13px;
+    font-weight: 700;
+    transition: all var(--duration-base, 0.25s) var(--ease-out, ease);
+  }
+  [data-state="done"] > .pt-journey__dot {
+    border-color: var(--pt-em);
+    background: var(--pt-em);
+    color: var(--color-on-brand);
+    box-shadow: 0 4px 10px color-mix(in oklab, var(--pt-em) 25%, transparent);
+  }
+  [data-state="current"] > .pt-journey__dot {
+    border-color: var(--pt-gold);
+    background: var(--pt-gold);
+    color: #18181b;
+    box-shadow:
+      0 0 0 4px var(--pt-gold-soft),
+      0 4px 12px color-mix(in oklab, var(--pt-gold) 40%, transparent);
+    animation: pt-step 2s infinite ease-out;
+  }
+  [data-state="stopped"] > .pt-journey__dot {
+    border-color: var(--color-danger-fg);
+    background: var(--color-danger-bg);
+    color: var(--color-danger-fg);
+  }
+  @keyframes pt-step {
+    50% {
+      transform: scale(1.08);
+    }
+  }
+  .pt-journey__body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .pt-journey__body strong {
+    color: var(--color-text);
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+  .pt-journey__body span,
+  .pt-journey__body time {
+    color: var(--color-text-muted);
+    font-size: 11.5px;
+    line-height: 1.5;
+  }
+  .pt-journey__body time {
+    color: var(--color-text-subtle);
+  }
+  [data-state="upcoming"] .pt-journey__body strong {
+    color: var(--color-text-muted);
+  }
+
+  /* کنش‌ها — ۴ کادر هماهنگ؛ لغو در انتهای ردیف */
+  .pt-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    padding-top: 24px;
+    border-top: 1px solid var(--pt-line);
+  }
+  .pt-act {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 10px 20px;
+    border: 1.5px solid var(--pt-line);
+    border-radius: 14px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: var(--pt-shadow-sm);
+    transition:
+      transform var(--duration-fast, 0.2s) var(--ease-out, ease),
+      box-shadow var(--duration-fast, 0.2s),
+      background var(--duration-fast, 0.2s),
+      border-color var(--duration-fast, 0.2s),
+      color var(--duration-fast, 0.2s);
+  }
+  .pt-act:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--pt-shadow-md);
+  }
+  /* دکمهٔ اصلی کارت = توکن CTA سراسری (روشن: زمردی، تیره: طلایی مثل مرجع P-01) ⇒ هم‌رنگ دکمهٔ بالای صفحه و پنجره‌ها */
+  .pt-act--cert {
+    border-color: var(--color-cta);
+    background: var(--color-cta);
+    color: var(--color-on-cta);
+    box-shadow: 0 4px 14px color-mix(in oklab, var(--color-cta) 25%, transparent);
+  }
+  .pt-act--cert:hover {
+    border-color: var(--color-cta-hover);
+    background: var(--color-cta-hover);
+  }
+  .pt-act--ics:hover {
+    border-color: var(--pt-gold);
+    background: var(--pt-gold-soft);
+    color: var(--pt-gold-ink);
+  }
+  .pt-act--gcal {
+    border-color: var(--pt-gold-line);
+    color: var(--pt-em-ink);
+  }
+  .pt-act--gcal:hover {
+    border-color: var(--pt-em);
+    background: var(--pt-em-soft);
+  }
+  .pt-act__ext {
+    opacity: 0.7;
+    transition: transform var(--duration-fast, 0.2s);
+  }
+  .pt-act--gcal:hover .pt-act__ext {
+    opacity: 1;
+    transform: translate(-2px, -2px);
+  }
+  .pt-act--cancel {
+    margin-inline-start: auto;
+    border-color: color-mix(in oklab, var(--color-danger-fg) 30%, transparent);
+    background: color-mix(in oklab, var(--color-danger-bg) 55%, var(--color-surface));
+    color: var(--color-danger-fg);
+  }
+  .pt-act--cancel:hover {
+    border-color: color-mix(in oklab, var(--color-danger-fg) 60%, transparent);
+    background: var(--color-danger-bg);
+  }
+  .pt-stay__fine {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 14px 0 0;
+    color: var(--color-text-muted);
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+  .pt-stay__fine .icon {
+    flex-shrink: 0;
+  }
+
+  /* بی‌سفر */
+  .pt-stay--empty {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 20px;
+    align-items: center;
+  }
+  .pt-stay--empty h2 {
+    margin: 0 0 6px;
+    font-size: clamp(18px, 2.2vw, 22px);
+    font-weight: 800;
+  }
+  .pt-stay--empty p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .pt-stay__art {
+    display: grid;
+    width: 64px;
+    height: 64px;
+    place-content: center;
+    border-radius: 18px;
+    background: var(--pt-gold-soft);
+    color: var(--pt-gold-ink);
+  }
+  .pt-stay--error .pt-stay__art {
+    background: var(--color-warn-bg);
+    color: var(--color-warn-fg);
+  }
+  .pt-stay__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* ── سرتیتر بخش‌ها ── */
+  .pt-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 14px;
+    margin-bottom: 22px;
+  }
+  .pt-head h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    color: var(--color-text);
+    font-size: clamp(19px, 2.2vw, 22px);
+    font-weight: 800;
+    line-height: 1.45;
+  }
+  .pt-head h2::before {
+    content: "";
+    flex-shrink: 0;
+    width: 4px;
+    height: 22px;
+    border-radius: 2px;
+    background: var(--pt-em);
+  }
+  .pt-head h2 .icon {
+    flex-shrink: 0;
+    color: var(--pt-gold-ink);
+  }
+  .pt-head p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 13px;
+  }
+  .pt-head p b {
+    color: var(--pt-em-ink);
+  }
+
+  /* ── صف انتظار و پیشنهاد ── */
+  .pt-wait {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .pt-wait__card {
+    overflow: hidden;
+    border: 1px solid var(--pt-line);
+    border-radius: 20px;
+    background: var(--color-surface);
+    box-shadow: var(--pt-shadow-sm);
+  }
+  .pt-wait__card[data-offer] {
+    border-color: var(--pt-gold);
+    box-shadow:
+      0 0 0 3px var(--pt-gold-soft),
+      var(--pt-shadow-md);
+  }
+  .pt-wait__main {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 22px;
+  }
+  .pt-wait__pos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    border: 1px solid var(--pt-gold-line);
+    border-radius: 16px;
+    background: var(--pt-gold-soft);
+    color: var(--pt-gold-ink);
+    line-height: 1.1;
+  }
+  .pt-wait__pos small {
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .pt-wait__pos b {
+    font-size: 22px;
+    font-weight: 800;
+  }
+  .pt-wait__body {
+    display: flex;
+    flex: 1 1 240px;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    font-size: 13.5px;
+  }
+  .pt-wait__body strong {
+    font-size: 15px;
+  }
+  .pt-wait__meta {
+    color: var(--color-text-muted);
+    font-size: 12.5px;
+  }
+  .pt-offer {
+    display: grid;
+    gap: 14px;
+    padding: 18px 22px 20px;
+    border-top: 1px dashed var(--pt-gold-line);
+    background: var(--pt-gold-soft);
+  }
+  .pt-offer__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+  }
+  .pt-offer__head > p:not(.pt-offer__timer) {
+    display: flex;
+    flex: 1 1 240px;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    font-size: 13.5px;
+  }
+  .pt-offer__head strong {
+    color: var(--pt-gold-ink);
+    font-size: 15px;
+  }
+  .pt-offer__icon {
+    display: grid;
+    width: 44px;
+    height: 44px;
+    place-content: center;
+    border-radius: 14px;
+    background: var(--pt-gold);
+    color: #18181b;
+    animation: pt-step 2.4s infinite ease-out;
+  }
+  .pt-offer__timer {
+    color: var(--pt-gold-ink);
+  }
+  .pt-offer__timer[data-low] {
+    color: var(--color-danger-fg);
+  }
+  .pt-offer__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .pt-reasons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .pt-reasons legend {
+    margin-bottom: 8px;
+    padding: 0;
+    color: var(--color-text);
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+  .pt-reason {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1px solid var(--pt-line);
+    border-radius: 12px;
+    background: var(--color-surface);
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  .pt-reason:has(input:checked) {
+    border-color: var(--pt-em);
+    background: var(--pt-em-soft);
+    color: var(--pt-em-ink);
+    font-weight: 700;
+  }
+  .pt-reason input {
+    accent-color: var(--pt-em);
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ── سابقهٔ اقامت ── */
+  .pt-table-wrap {
+    overflow: hidden;
+    border: 1px solid var(--pt-line);
+    border-radius: 20px;
+    background: var(--color-surface);
+    box-shadow: var(--pt-shadow-sm);
+  }
+  .pt-past-skel {
+    height: 64px;
+    margin: 12px;
+    border-radius: 12px;
+  }
+  .pt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    text-align: center;
+  }
+  .pt-table th {
+    padding: 16px 14px;
+    border-bottom: 1px solid var(--pt-line);
+    background: var(--pt-ground);
+    color: var(--color-text-muted);
+    font-weight: 800;
+    white-space: nowrap;
+  }
+  .pt-table td {
+    padding: 18px 14px;
+    border-bottom: 1px solid var(--pt-line);
+    vertical-align: middle;
+  }
+  .pt-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  .pt-table tbody tr {
+    transition: background var(--duration-fast, 0.15s);
+  }
+  .pt-table tbody tr:hover {
+    background: color-mix(in oklab, var(--pt-gold-soft) 60%, transparent);
+  }
+  .pt-past-code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 118px;
+    padding: 6px 14px;
+    border: 1px dashed var(--pt-em-line);
+    border-radius: 10px;
+    background: var(--pt-em-soft);
+    color: var(--pt-em-ink);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: border-color var(--duration-fast, 0.15s);
+  }
+  .pt-past-code:hover {
+    border-style: solid;
+    border-color: var(--pt-em);
+  }
+  .pt-cell2 {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .pt-cell2 strong {
+    font-weight: 700;
+  }
+  .pt-cell2 small {
+    color: var(--color-text-muted);
+    font-size: 12px;
+  }
+  .pt-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1px solid color-mix(in oklab, var(--pt-gold) 40%, transparent);
+    border-radius: var(--radius-pill);
+    background: var(--pt-gold-soft);
+    color: var(--pt-gold-ink);
+    font-size: 12.5px;
+    font-weight: 700;
+  }
+  .pt-rating__stars {
+    display: inline-flex;
+    gap: 1px;
+    color: var(--pt-gold);
+  }
+  .pt-soft {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    background: var(--pt-ground);
+    color: var(--color-text-muted);
+    font-size: 12px;
+  }
+  .pt-soft--warn {
+    background: var(--color-warn-bg);
+    color: var(--color-warn-fg);
+  }
+  .pt-soft--danger {
+    background: var(--color-danger-bg);
+    color: var(--color-danger-fg);
+  }
+  .pt-more {
+    display: flex;
+    justify-content: center;
+    margin-top: 16px;
+  }
+  .pt-more small {
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+  .pt-empty {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    padding: 22px 24px;
+    border: 1px dashed var(--pt-line);
+    border-radius: 20px;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+  }
+  .pt-empty p {
+    display: flex;
+    flex: 1 1 260px;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    font-size: 13.5px;
+  }
+  .pt-empty strong {
+    color: var(--color-text);
+    font-size: 15px;
+  }
+
+  /* ── کارت‌های عمومی (حساب، استعلام) ── */
+  .pt-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+    padding: clamp(18px, 2.4vw, 24px);
+    border: 1px solid var(--pt-line);
+    border-radius: 20px;
+    background: var(--color-surface);
+    box-shadow: var(--pt-shadow-sm);
+  }
+  .pt-card__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .pt-card__head h3,
+  .pt-card > h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+  }
+  .pt-card__head h3 .icon {
+    color: var(--pt-em-ink);
+  }
+  .pt-card__hint,
+  .pt-card__warn {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 12.5px;
+    line-height: 1.8;
+  }
+  .pt-card__hint .icon,
+  .pt-card__warn .icon {
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .pt-card__warn {
+    color: var(--color-warn-fg);
+  }
+  .pt-count {
+    display: grid;
+    min-width: 26px;
+    height: 26px;
+    padding-inline: 6px;
+    place-content: center;
+    border-radius: var(--radius-pill);
+    background: var(--pt-em-soft);
+    color: var(--pt-em-ink);
+    font-size: 12.5px;
+    font-weight: 800;
+  }
+  .pt-acc {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr));
+    gap: 20px;
+    align-items: start;
+  }
+  .pt-kv {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px 18px;
+    margin: 0;
+  }
+  .pt-kv div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--pt-line);
+  }
+  .pt-kv dt {
+    color: var(--color-text-muted);
+    font-size: 12px;
+  }
+  .pt-kv dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .pt-ics {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1px solid var(--pt-gold-line);
+    border-radius: 16px;
+    background: var(--pt-gold-soft);
+    color: var(--color-text);
+    text-decoration: none;
+    transition:
+      border-color var(--duration-fast, 0.15s),
+      transform var(--duration-fast, 0.15s);
+  }
+  .pt-ics:hover {
+    border-color: var(--pt-gold);
+    transform: translateY(-1px);
+  }
+  .pt-ics > .icon:first-child {
+    color: var(--pt-gold-ink);
+  }
+  .pt-ics span {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .pt-ics small {
+    color: var(--color-text-muted);
+    font-size: 12px;
+  }
+  .pt-devices {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .pt-devices li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--pt-line);
+    border-radius: 14px;
+    background: var(--pt-ground);
+  }
+  .pt-devices li[data-current] {
+    border-color: var(--pt-em-line);
+    background: var(--pt-em-soft);
+  }
+  .pt-devices__icon {
+    display: grid;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    place-content: center;
+    border-radius: 12px;
+    background: var(--color-surface);
+    color: var(--pt-em-ink);
+  }
+  .pt-devices__body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .pt-devices__body strong {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+  .pt-devices__body em {
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--pt-em);
+    color: var(--color-on-brand);
+    font-size: 11px;
+    font-style: normal;
+    font-weight: 700;
+  }
+  .pt-devices__body small {
+    color: var(--color-text-muted);
+    font-size: 12px;
+  }
+  .pt-devices__revoke {
+    flex-shrink: 0;
+    color: var(--color-danger-fg);
+  }
+  .pt-dialog-text {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  /* ── همراه سفر ── */
+  .pt-amenities {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 14px;
+    margin-bottom: 20px;
+    padding: 14px 18px;
+    border: 1px solid var(--pt-line);
+    border-radius: 18px;
+    background: var(--color-surface);
+  }
+  .pt-amenities p {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: var(--pt-gold-ink);
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+  .pt-amenities ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .pt-amenities li {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1px solid var(--pt-line);
+    border-radius: var(--radius-pill);
+    background: var(--pt-ground);
+    font-size: 12.5px;
+  }
+  .pt-amenities li .icon {
+    color: var(--pt-em-ink);
+  }
+  .pt-amenities li[data-highlight] {
+    border-color: var(--pt-em-line);
+    background: var(--pt-em-soft);
+    color: var(--pt-em-ink);
+    font-weight: 700;
+  }
+  .pt-guide {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 20px;
+    margin-bottom: clamp(24px, 4vw, 36px);
+  }
+  .pt-guide-skel {
+    height: 160px;
+    border-radius: 18px;
+  }
+  .pt-guide__card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 22px;
+    border: 1px solid var(--pt-line);
+    border-radius: 18px;
+    background: var(--color-surface);
+    box-shadow: var(--pt-shadow-sm);
+    transition:
+      transform var(--duration-fast, 0.2s) var(--ease-out, ease),
+      box-shadow var(--duration-fast, 0.2s);
+  }
+  .pt-guide__card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--pt-shadow-md);
+  }
+  .pt-guide__icon {
+    display: grid;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    place-content: center;
+    border-radius: 12px;
+    background: var(--pt-em-soft);
+    color: var(--pt-em-ink);
+  }
+  .pt-guide__card h3 {
+    margin: 0 0 6px;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+  .pt-guide__card p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .pt-guide__card ol {
+    margin: 8px 0 0;
+    padding-inline-start: 18px;
+    color: var(--color-text-muted);
+    font-size: 12.5px;
+    line-height: 1.8;
+  }
+  .pt-hotline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: clamp(20px, 3vw, 32px);
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--pt-em), color-mix(in oklab, var(--pt-em) 50%, black));
+    color: #fff;
+    box-shadow: 0 12px 32px color-mix(in oklab, var(--pt-em) 25%, transparent);
+  }
+  /* متغیر سفارشی در زمان تجزیه اعتبارسنجی نمی‌شود ⇒ جایگزین فقط با ‎@supports‎ امن است. */
+  @supports (color: oklch(from red l c h)) {
+    .portal-main {
+      --pt-gold-ink: oklch(from var(--color-gold) 0.5 calc(c * 1.15) h);
+    }
+  }
+  :root[data-theme="dark"] .portal-main {
+    --pt-gold-ink: color-mix(in oklab, var(--color-gold) 70%, var(--color-text));
+  }
+  :root[data-theme="dark"] .pt-hotline {
+    background: linear-gradient(135deg, oklch(42% 0.08 174), oklch(28% 0.05 176));
+  }
+  .pt-hotline__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 640px;
+  }
+  .pt-hotline h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    font-size: clamp(18px, 2.2vw, 22px);
+    font-weight: 800;
+  }
+  .pt-hotline p {
+    margin: 0;
+    color: rgb(255 255 255 / 0.9);
+    font-size: 13.5px;
+    line-height: 1.8;
+  }
+  .pt-hotline__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    width: fit-content;
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: 700;
+    text-decoration: underline;
+    text-decoration-color: rgb(255 255 255 / 0.4);
+    text-underline-offset: 4px;
+  }
+  .pt-hotline__phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    border-radius: 14px;
+    background: #fff;
+    color: oklch(40% 0.08 175);
+    font-size: 16px;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.15);
+    transition:
+      transform var(--duration-fast, 0.2s),
+      background var(--duration-fast, 0.2s);
+  }
+  .pt-hotline__phone:hover {
+    background: oklch(97% 0.02 90);
+    transform: translateY(-2px);
+  }
+
+  /* ── استعلام اصالت ── */
+  .pt-verify {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 20px;
+    align-items: start;
+  }
+  .pt-verify__online {
+    align-items: flex-start;
+    background: radial-gradient(120% 80% at 100% 0%, var(--pt-em-soft), transparent 60%), var(--color-surface);
+  }
+  .pt-verify__online p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 13.5px;
+    line-height: 1.8;
+  }
+  .pt-verify__icon {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-content: center;
+    border-radius: 16px;
+    background: var(--pt-em);
+    color: var(--color-on-brand);
+  }
+  .pt-offline {
+    display: grid;
+    gap: 14px;
+  }
+  .pt-offline__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .pt-field {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .pt-field .field-label small {
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+  .pt-stamp {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  }
+  .pt-stamp legend {
+    grid-column: 1 / -1;
+    margin-bottom: 6px;
+    padding: 0;
+  }
+  .pt-unit-pick {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pt-unit-pick button {
+    min-width: 58px;
+    min-height: 44px;
+    padding: 6px 14px;
+    border: 1.5px solid var(--pt-line);
+    border-radius: 12px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    transition:
+      border-color var(--duration-fast, 0.15s),
+      background var(--duration-fast, 0.15s);
+  }
+  .pt-unit-pick button:hover {
+    border-color: var(--pt-gold);
+  }
+  .pt-unit-pick button[aria-pressed="true"] {
+    border-color: var(--pt-em);
+    background: var(--pt-em-soft);
+    color: var(--pt-em-ink);
+  }
+  .pt-unit-pick[data-invalid] button {
+    border-color: color-mix(in oklab, var(--color-danger-fg) 45%, var(--pt-line));
+  }
+  .pt-short {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-align: center;
+  }
+
+  /* ── پنجره‌ها ── */
+  .pt-lookup {
+    display: grid;
+    gap: 16px;
+  }
+  .pt-lookup__card {
+    padding: 20px;
+    border: 1px solid var(--pt-line);
+    border-radius: 18px;
+    background: var(--pt-ground);
+  }
+  .pt-lookup__label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+  .pt-lookup__label small {
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+  .pt-lookup__input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 16px;
+    border: 2px solid var(--pt-gold);
+    border-radius: 14px;
+    background: var(--color-raised);
+    color: var(--pt-gold);
+    box-shadow: 0 4px 14px color-mix(in oklab, var(--pt-gold) 12%, transparent);
+    transition:
+      border-color var(--duration-fast, 0.2s),
+      box-shadow var(--duration-fast, 0.2s);
+  }
+  .pt-lookup__input:focus-within {
+    border-color: var(--pt-em);
+    box-shadow:
+      0 0 0 4px var(--pt-em-soft),
+      0 6px 20px color-mix(in oklab, var(--pt-em) 15%, transparent);
+  }
+  .pt-lookup__input input {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 4px;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--pt-em-ink);
+    font: inherit;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    /* ‎font: inherit‎ رقم فارسی بدنه (‎ss01‎) را برمی‌گرداند ⇒ کد رهگیری صریحاً با رقم لاتین هم‌عرض */
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+  .pt-lookup__input input::placeholder {
+    color: var(--color-text-subtle);
+    opacity: 0.6;
+  }
+  .pt-lookup__chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    color: var(--color-text-muted);
+    font-size: 12px;
+  }
+  .pt-lookup__chip {
+    padding: 4px 10px;
+    border: 1px solid var(--pt-line);
+    border-radius: 8px;
+    background: var(--color-surface);
+    color: var(--pt-gold-ink);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .pt-lookup__chip:hover {
+    border-color: var(--pt-gold);
+    background: var(--pt-gold-soft);
+  }
+  .pt-lookup__result {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 16px;
+    border: 1px solid var(--pt-em-line);
+    border-radius: 16px;
+    background: var(--pt-em-soft);
+    animation: pt-rise var(--duration-base, 0.3s) var(--ease-out, ease) both;
+  }
+  .pt-lookup__result > div {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 13px;
+  }
+  .pt-lookup__result strong {
+    font-size: 15px;
+  }
+  .pt-lookup__result .btn {
+    grid-column: 1 / -1;
+  }
+  .pt-arrival {
+    display: grid;
+    gap: 16px;
+  }
+  .pt-arrival__lead {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid var(--pt-gold-line);
+    border-radius: 14px;
+    background: var(--pt-gold-soft);
+    color: var(--color-text);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+  .pt-arrival__lead .icon {
+    flex-shrink: 0;
+    margin-top: 3px;
+    color: var(--pt-gold-ink);
+  }
+  .pt-arrival__row {
+    grid-template-columns: 1fr;
+  }
+  .pt-cert .cert {
+    margin: 0;
+  }
+
+  /* پنجرهٔ حساب: ورود به پرتال */
+  .account-portal {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    background: var(--color-brand-tint);
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  .account-portal:hover {
+    border-color: var(--color-brand);
+  }
+  .account-portal > .icon:first-child {
+    color: var(--color-brand-ink);
+  }
+  .account-portal span {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .account-portal small {
+    color: var(--color-text-muted);
+    font-size: 12px;
+  }
+
+  /* ── ۹۰۱–۱۱۰۰: دو ستونه‌های فشرده ── */
+  @media (max-width: 1100px) {
+    .pt-verify {
+      grid-template-columns: 1fr;
+    }
+    .pt-act--cancel {
+      margin-inline-start: 0;
+    }
+  }
+
+  /* ── ≤۹۰۰ ── */
+  @media (max-width: 900px) {
+    .pt-guest {
+      grid-template-columns: 1fr;
+    }
+    .pt-stay--empty {
+      grid-template-columns: auto 1fr;
+    }
+    .pt-stay__cta {
+      grid-column: 1 / -1;
+    }
+  }
+
+  /* ── ≤۷۶۸ (طراح): ستونی، گام‌شمار عمودی، جدول ⇐ کارت ── */
+  @media (max-width: 768px) {
+    .pt-deck {
+      padding: 24px 16px;
+    }
+    .pt-deck__actions {
+      flex-direction: column;
+      align-items: stretch;
+      width: 100%;
+    }
+    .pt-deck__actions .btn {
+      justify-content: center;
+      width: 100%;
+    }
+    .pt-standing {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+      padding: 16px;
+      text-align: center;
+    }
+    .pt-standing__who {
+      flex-direction: column;
+    }
+    .pt-standing__who p {
+      align-items: center;
+    }
+    .pt-standing__who p > span {
+      justify-content: center;
+    }
+    .pt-standing__quota {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
+    }
+    .pt-standing__quota .pt-badge {
+      justify-content: center;
+    }
+    .pt-standing__why {
+      justify-content: center;
+    }
+    .pt-metrics {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .pt-dock {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .pt-dock__info {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+    .pt-dock__note > span:last-child {
+      white-space: normal;
+    }
+    .pt-dock__foot {
+      flex-direction: column;
+      align-items: stretch;
+      padding-top: 12px;
+      border-top: 1px dashed var(--pt-gold-line);
+    }
+    .pt-dock__edit {
+      justify-content: center;
+      width: 100%;
+    }
+    .pt-journey {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding-inline: 4px;
+    }
+    .pt-journey__step {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 14px;
+      text-align: start;
+    }
+    .pt-journey__step:not(:first-child)::before {
+      display: none;
+    }
+    .pt-journey__step:not(:last-child)::after {
+      content: "";
+      position: absolute;
+      top: 36px;
+      inset-inline-start: 17px;
+      width: 2px;
+      height: calc(100% - 20px);
+      background: var(--pt-line);
+    }
+    .pt-journey__step[data-state="done"]:not(:last-child)::after {
+      background: var(--pt-em);
+    }
+    .pt-journey__dot {
+      flex-shrink: 0;
+      margin-bottom: 0;
+    }
+    .pt-journey__body {
+      align-items: flex-start;
+    }
+    .pt-actions {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .pt-act {
+      width: 100%;
+    }
+    .pt-stay--empty {
+      grid-template-columns: 1fr;
+      text-align: center;
+      justify-items: center;
+    }
+    .pt-stay__cta {
+      flex-direction: column;
+      width: 100%;
+    }
+    .pt-stay__cta .btn {
+      justify-content: center;
+    }
+    /* جدول ⇐ کارت (به‌جای اسکرول افقی طراح) */
+    .pt-table-wrap {
+      overflow: visible;
+      border: 0;
+      background: none;
+      box-shadow: none;
+    }
+    .pt-table,
+    .pt-table tbody,
+    .pt-table tr,
+    .pt-table td {
+      display: block;
+    }
+    .pt-table thead {
+      display: none;
+    }
+    .pt-table tbody {
+      display: grid;
+      gap: 12px;
+    }
+    .pt-table tbody tr {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      border: 1px solid var(--pt-line);
+      border-radius: 18px;
+      background: var(--color-surface);
+      box-shadow: var(--pt-shadow-sm);
+    }
+    .pt-table td {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 12px 16px;
+      border-bottom: 1px dashed var(--pt-line);
+      text-align: start;
+    }
+    .pt-table td::before {
+      content: attr(data-label);
+      color: var(--color-text-muted);
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+    .pt-table td:first-child,
+    .pt-table td:last-child {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--pt-ground);
+    }
+    .pt-table td:last-child {
+      border-bottom: 0;
+    }
+    .pt-table td:nth-child(2) {
+      grid-column: 1 / -1;
+    }
+    .pt-cell2 {
+      align-items: flex-start;
+    }
+    .pt-kv {
+      grid-template-columns: 1fr;
+    }
+    .pt-hotline {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .pt-hotline__phone {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .pt-standing__who p > span,
+    .pt-stay__specs {
+      flex-direction: column;
+      gap: 2px;
+    }
+    .pt-standing__who p > span > span + span::before,
+    .pt-stay__specs > span + span::before {
+      content: none;
+    }
+    .pt-quotas {
+      flex-direction: column;
+    }
+    .pt-quotas .pt-quota {
+      justify-content: center;
+    }
+    .pt-quotas .pt-quota + .pt-quota {
+      border-inline-start: 0;
+      border-block-start: 1px solid var(--pt-gold-line);
+    }
+    .pt-offline__grid {
+      grid-template-columns: 1fr;
+    }
+    .pt-guide__card {
+      padding: 18px;
+    }
+    .pt-wait__main {
+      padding: 16px;
+    }
+    .pt-wait__main > .btn {
+      width: 100%;
+      justify-content: center;
+    }
+    .pt-offer {
+      padding: 16px;
+    }
+    .pt-offer__actions .btn {
+      flex: 1 1 100%;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .pt-eyebrow::before,
+    .pt-eyebrow::after {
+      width: 18px;
+    }
+    .pt-quota {
+      white-space: normal;
+    }
+    .pt-table tbody tr {
+      grid-template-columns: 1fr;
+    }
+    .pt-table td {
+      grid-column: 1 / -1;
+    }
+    .pt-amenities {
+      padding: 14px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .pt-stay {
+      padding: 18px 14px;
+    }
+    .pt-metric {
+      padding: 14px;
+    }
+    .pt-plate__main {
+      font-size: 13px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pt-stay,
+    .pt-lookup__result,
+    .pt-pulse,
+    .pt-hold__ring,
+    .pt-offer__icon,
+    [data-state="current"] > .pt-journey__dot {
+      animation: none;
+    }
+  }
+}
+
+/* چاپ گواهی از درون پنجرهٔ پرتال: پنجره و بدنه‌اش بی‌سقف ارتفاع و بی‌اسکرول، پس‌زمینهٔ تیره حذف */
+@media print {
+  dialog:has(.cert),
+  dialog:has(.cert) .app-dialog__body {
+    position: static !important;
+    max-height: none !important;
+    overflow: visible !important;
+    inset: auto !important;
+    transform: none !important;
+  }
+  dialog:has(.cert)::backdrop {
+    display: none !important;
+    background: none !important;
+  }
+}

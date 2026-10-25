@@ -206,11 +206,25 @@ export const reservationSchema = z.object({
   hold_expires_at: z.nullable(z.string()),
   /** پیوند نظرسنجی همین اقامت (فقط پایان‌یافته و هنوز بی‌پاسخ)؛ پیش‌فرض برای بک‌اند پیش از ۱۴۰۵/۰۸/۰۳ */
   feedback_url: z._default(z.nullable(z.string()), null),
+  /** امتیاز ثبت‌شدهٔ اقامت پایان‌یافته (۱ تا ۵) یا null — پرتال (P-07) */
+  feedback_rating: z._default(z.nullable(z.int()), null),
+  /** لغو کمتر از مهلت رایگان (سهمیه برنمی‌گردد و خنک‌شدن دارد) */
+  is_late_cancel: z._default(z.boolean(), false),
+  /** «هماهنگی ورود» (ساعت رسیدن/پلاک/یادداشت) هنوز قابل ویرایش است ⇒ ‎PATCH‎ */
+  details_editable: z._default(z.boolean(), false),
 }) satisfies z.ZodMiniType<S["Reservation"]>;
+export const pageMetaSchema = z.object({
+  next: z.nullable(z.string()),
+  previous: z.nullable(z.string()),
+  page_size: z.number(),
+  total: z.exactOptional(z.number()),
+}) satisfies z.ZodMiniType<S["PageMeta"]>;
+export type PageMeta = z.infer<typeof pageMetaSchema>;
 export const reservationListSchema = z.object({
   results: z.array(reservationSchema),
-  meta: z.record(z.string(), z.unknown()),
-});
+  meta: pageMetaSchema,
+}) satisfies z.ZodMiniType<S["ReservationList"]>;
+export type ReservationList = z.infer<typeof reservationListSchema>;
 export type Reservation = z.infer<typeof reservationSchema>;
 
 export const alternativeSchema = z.object({
@@ -275,6 +289,7 @@ export const reservationEventsSchema = z.object({
         "no_show",
         "expired",
         "note",
+        "details",
       ]),
       kind_label: z.string(),
       from_status: z.exactOptional(z.string()),
@@ -284,6 +299,29 @@ export const reservationEventsSchema = z.object({
   ),
 }) satisfies z.ZodMiniType<S["ReservationEventList"]>;
 export type ReservationEvent = z.infer<typeof reservationEventsSchema>["results"][number];
+
+/**
+ * نگهبان زمان کامپایل: فهرست نوع رخدادها باید **دقیقاً** همان قرارداد بک‌اند باشد. ‎satisfies‎ زیرمجموعه را
+ * می‌پذیرد؛ رخداد تازهٔ سرور (مثل «هماهنگی ورود») بی این نگهبان فقط در زمان اجرا و در مرورگر زائر
+ * (شکست ‎parse‎ گاه‌شمار) آشکار می‌شد.
+ */
+type SameUnion<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
+const exactEventKinds: SameUnion<ReservationEvent["kind"], S["ReservationEvent"]["kind"]> = true;
+const exactStatuses: SameUnion<ReservationStatus, NonNullable<S["Reservation"]["status"]>> = true;
+void exactEventKinds;
+void exactStatuses;
+
+export const slotOfferSchema = z.object({
+  id: z.string(),
+  entry_id: z.string(),
+  status: z.string(),
+  unit_code: z.string(),
+  starts_at: z.string(),
+  ends_at: z.string(),
+  expires_at: z.string(),
+  seconds_left: z.number(),
+}) satisfies z.ZodMiniType<S["SlotOffer"]>;
+export type SlotOffer = z.infer<typeof slotOfferSchema>;
 
 export const waitlistEntrySchema = z.object({
   id: z.string(),
@@ -298,8 +336,34 @@ export const waitlistEntrySchema = z.object({
   position: z.number(),
   offers_sent: z.number(),
   created_at: z.string(),
+  /** پیشنهاد باز همین درخواست (فقط «پیشنهاد ارسال‌شده») — پرتال بی لینک پیامک پاسخ می‌دهد */
+  open_offer: z._default(z.nullable(slotOfferSchema), null),
 }) satisfies z.ZodMiniType<S["Waitlist"]>;
 export type WaitlistEntry = z.infer<typeof waitlistEntrySchema>;
+export const waitlistListSchema = z.object({
+  results: z.array(waitlistEntrySchema),
+  meta: pageMetaSchema,
+}) satisfies z.ZodMiniType<S["WaitlistList"]>;
+export const offerAcceptedSchema = z.object({
+  offer: slotOfferSchema,
+  reservation_code: z.string(),
+  reservation_id: z.string(),
+}) satisfies z.ZodMiniType<S["OfferAccepted"]>;
+
+export const sessionItemSchema = z.object({
+  id: z.string(),
+  device: z.string(),
+  network: z.string(),
+  is_current: z.boolean(),
+  created_at: z.string(),
+  last_seen_at: z.string(),
+}) satisfies z.ZodMiniType<S["SessionItem"]>;
+export type SessionItem = z.infer<typeof sessionItemSchema>;
+export const sessionListSchema = z.object({ results: z.array(sessionItemSchema) }) satisfies z.ZodMiniType<
+  S["SessionList"]
+>;
+
+export const offlineCheckSchema = z.object({ valid: z.boolean() }) satisfies z.ZodMiniType<S["OfflineCheckResult"]>;
 
 const helpItem = z.object({
   slug: z.string(),

@@ -147,7 +147,8 @@ test.describe("P-05 تکمیل و صدور رزرو", () => {
     await page.goto(CHECKOUT);
     await expect(page.getByRole("alert").filter({ hasText: "یک رزرو فعال دارید" })).toBeVisible();
     await expect(page.getByRole("button", { name: "تأیید نهایی و صدور گواهی اقامت" })).toBeDisabled();
-    await expect(page.locator('a[href="/booking/?code=MHD-7K3Q9"]').first()).toBeVisible();
+    // رزرو فعال در پرتال زائر (P-07) مدیریت می‌شود ⇒ پیوند مانع به همان‌جا
+    await expect(page.locator('a[href="/portal/?code=MHD-7K3Q9"]').first()).toBeVisible();
     expect(api.calls.filter((c) => c === "POST /api/v1/reservations")).toEqual([]);
   });
 
@@ -195,7 +196,7 @@ test.describe("P-05 تکمیل و صدور رزرو", () => {
     expect(api.calls.filter((c) => c.endsWith("/certificate"))).toHaveLength(1);
   });
 
-  test("فهرست ⇐ کلیک کارت ⇐ جزئیات کامل؛ «همهٔ رزروهای من»، بازگشت مرورگر و منوی بالا", async ({ page, api }) => {
+  test("فهرست ⇐ کارت به پرتال زائر؛ گواهی مستقیم پس از صدور؛ پیوند پرتال و منوی بالا", async ({ page, api }) => {
     signedIn(api);
     const list = fixture<{ results: { code: string }[] }>("reservations-upcoming");
     const code = list.results[0]?.code ?? "";
@@ -203,28 +204,21 @@ test.describe("P-05 تکمیل و صدور رزرو", () => {
     reservationView(api, code, { ...p05<Json>("reservation-confirmed"), code });
     await page.goto("/booking/");
     await expect(heading(page, "رزروهای پیش‌روی شما")).toBeVisible();
-    // پیوند Next درون همان صفحه (فقط ‎?code=‎ عوض می‌شود) — پیش‌تر نشانی عوض می‌شد ولی جزئیات نه
-    await page.locator(".res-card").first().click();
+    // مدیریت هر رزرو (گواهی، هماهنگی ورود، لغو) در پرتال زائر (P-07) است ⇒ کارت به همان‌جا می‌رود.
+    await expect(page.locator(".res-card").first()).toHaveAttribute("href", `/portal/?code=${code}`);
+
+    // نشانی مستقیم گواهی (پایان صدور در همین صفحه) همچنان کامل نمایش داده می‌شود.
+    await page.goto(`/booking/?code=${code}`);
     await expect(heading(page, "گواهی رسمی اقامت و بلیط دیجیتال")).toBeVisible();
     await expect(page.locator(".cert")).toBeVisible();
-    expect(new URL(page.url()).searchParams.get("code")).toBe(code);
     await expect(currentStep(page)).toContainText("گواهی رسمی");
+    await expect(page.getByRole("link", { name: "همهٔ رزروها در پرتال زائر" })).toHaveAttribute("href", "/portal/");
 
-    await page.getByRole("link", { name: "همهٔ رزروهای من" }).click();
-    await expect(heading(page, "رزروهای پیش‌روی شما")).toBeVisible();
-    expect(new URL(page.url()).searchParams.has("code")).toBe(false);
-
-    await page.goBack();
-    await expect(page.locator(".cert")).toBeVisible();
-    await page.goForward();
-    await expect(heading(page, "رزروهای پیش‌روی شما")).toBeVisible();
-
-    await page.locator(".res-card").first().click();
-    await expect(page.locator(".cert")).toBeVisible();
     const nav = page.getByRole("navigation", { name: "ناوبری اصلی" }).getByRole("link", { name: "تکمیل و صدور رزرو" });
     if (await nav.isVisible()) {
       await nav.click();
       await expect(heading(page, "رزروهای پیش‌روی شما")).toBeVisible();
+      expect(new URL(page.url()).searchParams.has("code")).toBe(false);
     }
   });
 
