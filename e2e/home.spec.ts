@@ -4,9 +4,13 @@ import { NOW, expect, fixture, horizontalOverflow, test } from "./support/fixtur
 
 const cells = (page: Page) => page.locator(".cell:visible");
 
-/** قالب‌های قدیمی جنگو (apps/web، apps/core) و پیشخوان مدیریت — هیچ پیوندی نباید به آن‌ها برسد. */
+/**
+ * قالب‌های قدیمی جنگو (apps/web، apps/core) و پیشخوان مدیریت — هیچ پیوندی نباید به آن‌ها برسد.
+ * ‎/calendar/‎ خودش اکنون صفحهٔ P-04 فرانت است (FrontMiddleware قالب قدیمی را می‌پوشاند)؛ فقط
+ * تکهٔ htmx قدیمیِ ‎/calendar/grid/‎ ممنوع می‌ماند.
+ */
 const LEGACY =
-  /^(?:https?:\/\/[^/]+)?\/(?:board|book|calendar|demo|feedback|help|login|logout|my|profile|units|verify|django-admin)(?:[/?#]|$)/;
+  /^(?:https?:\/\/[^/]+)?\/(?:board|book|calendar\/grid|demo|feedback|help|login|logout|my|profile|units|verify|django-admin)(?:[/?#]|$)/;
 
 /** تا پایان ورود پلکانی کارت‌های فهرست (اندازه‌گیری وسط حرکت ۱۰px خطا دارد). */
 async function settleListCards(page: Page) {
@@ -29,6 +33,8 @@ test.describe("P-01 صفحهٔ خانه", () => {
     expect(api.calls).toContain("GET /api/v1/auth/session");
     expect(api.calls.some((c) => c.startsWith("GET /api/v1/calendar?days="))).toBe(true);
     expect(api.calls.some((c) => c.startsWith("GET /api/v1/me"))).toBe(false);
+    // P-04 آماده است ⇒ «تقویم کامل» بخش هفتگی به صفحهٔ تقویم می‌رود (نه بازگشت به خانه)
+    await expect(page.getByRole("link", { name: /تقویم کامل ۹۰ روز آینده/ })).toHaveAttribute("href", "/calendar/");
   });
 
   test("سانس آغازشده و سانسِ داخل حداقل فاصلهٔ ثبت غیرفعال‌اند", async ({ page, api }, info) => {

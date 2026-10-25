@@ -72,12 +72,18 @@ function CheckoutStage({ unitCode, policies, lattice }: { unitCode: string; poli
         capacity: found.unit.capacity_total,
       }
     : null;
-  const editHref = `/?${new URLSearchParams({
+  // «ویرایش»: بازگشت به تقویم P-04 با همان انتخاب (کشوی خلاصه باز)؛ تا پیش از انتشار تقویم، جست‌وجوی خانه
+  const editParams = {
     ...(draft.day ? { day: draft.day } : {}),
     period: draft.period,
     cells: String(draft.cells),
     guests: String(draft.guests),
-  }).toString()}#quick-search` as Route;
+  };
+  const editHref =
+    (found && draft.day
+      ? destHref("calendarFull", { from: draft.day, pick: found.unit.code, ...editParams })
+      : destHref("calendarFull", draft.guests ? { guests: String(draft.guests) } : {})) ??
+    (`/?${new URLSearchParams(editParams).toString()}#quick-search` as Route);
 
   const signOutAndRestart = async () => {
     try {

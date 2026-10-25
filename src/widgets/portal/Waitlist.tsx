@@ -26,7 +26,7 @@ export function Waitlist({ onAccepted }: { onAccepted: (code: string) => void })
   const entries = list.data?.results ?? [];
   if (!entries.length) return null;
   return (
-    <section className="pt-section" aria-labelledby="pt-wait-title">
+    <section className="pt-section" aria-labelledby="pt-wait-title" id="waitlist">
       <SectionHead
         id="pt-wait-title"
         icon="bell"

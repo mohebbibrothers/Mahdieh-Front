@@ -493,6 +493,14 @@
     padding: 18px 24px 22px;
     overscroll-behavior: contain;
   }
+  .app-dialog__body:focus {
+    outline: none;
+  }
+  .app-dialog__body:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: -4px;
+    border-radius: 14px;
+  }
   .app-dialog__actions {
     display: flex;
     flex-wrap: wrap;

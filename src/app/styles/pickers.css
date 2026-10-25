@@ -87,6 +87,12 @@
   .popover--stamp-end-time {
     position-anchor: --mahdieh-set;
   }
+  .anchor--calendar-from {
+    anchor-name: --mahdieh-cfrom;
+  }
+  .popover--calendar-from {
+    position-anchor: --mahdieh-cfrom;
+  }
   .picker-popover {
     width: min(340px, calc(100vw - 24px));
     padding: 14px;

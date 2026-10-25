@@ -284,6 +284,26 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/calendar/windows": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * کشف نخستین بازهٔ آزاد هر واحد
+         * @description برای هر واحد فعال، زودترین ران پیوستهٔ نیم‌روزهای آزاد را در کل افق رزرو برمی‌گرداند (آغاز دست‌کم به‌اندازهٔ حداقل مهلت پیش از ورود پس از اکنون). واحدی که ظرفیتش از ``guests`` کمتر است ``fits_guests=false`` و بازهٔ تهی دارد.
+         */
+        get: operations["calendar_windows_retrieve"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/certificates/verify-offline": {
         parameters: {
             query?: never;
@@ -1282,6 +1302,17 @@ export type components = {
             title: string;
             unit_type: string;
         };
+        /** @description پاسخ کشف بازه — مرزهای جست‌وجو + ردیف هر واحد. */
+        CalendarWindows: {
+            guests: number;
+            /** Format: date-time */
+            horizon_end: string;
+            max_cells: number;
+            min_cells: number;
+            /** Format: date-time */
+            not_before: string;
+            units: components["schemas"]["UnitWindow"][];
+        };
         /** @description پیامد لغو در همین لحظه (سند). */
         CancelPreview: {
             cancellable: boolean;
@@ -1443,6 +1474,31 @@ export type components = {
             /** Format: double */
             expected_occupancy: number;
             samples: number;
+            weekday: string;
+        };
+        /** @description نخستین ران پیوستهٔ آزاد یک واحد (کشف بازه). */
+        FreeWindow: {
+            /** @description بلندترین اقامت مجاز از همین آغاز */
+            bookable_cells: number;
+            /** @description طول کامل ران آزاد (نیم‌روز) */
+            cells: number;
+            date_jalali: string;
+            /** Format: date */
+            day: string;
+            /** Format: date-time */
+            end: string;
+            /** @description ران تا پایان افق جست‌وجو ادامه دارد */
+            open_ended: boolean;
+            /**
+             * @description * `day` - day
+             *     * `night` - night
+             * @enum {string}
+             */
+            period: "day" | "night";
+            /** Format: date-time */
+            start: string;
+            start_label: string;
+            stay_label: string;
             weekday: string;
         };
         /** @description کارت زائر: مشخصات پوشانده، وضعیت توان رزرو و رزروهای اخیر (سند). */
@@ -2543,6 +2599,16 @@ export type components = {
             sort_order?: number;
             /** Format: uri */
             readonly url: string | null;
+        };
+        /** @description یک واحد در پاسخ کشف بازه. */
+        UnitWindow: {
+            capacity_total: number;
+            code: string;
+            fits_guests: boolean;
+            floor_number: number;
+            title: string;
+            unit_type: string;
+            window: components["schemas"]["FreeWindow"] | null;
         };
         /** @description یک تخلف قاعده: کد ماشین‌خوان + پیام فارسی. */
         Violation: {
@@ -3902,6 +3968,80 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Calendar"];
+                };
+            };
+            /** @description No response body */
+            304: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description ورودی نامعتبر */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description بازه‌های آزاد جایگزین هنگام تصادم رزرو. */
+                        alternatives?: {
+                            [key: string]: unknown;
+                        }[];
+                        code: string;
+                        detail: string;
+                        /** @description نگاشت خطای فیلدها؛ در هر پاسخ ۴۲۲ همیشه حاضر است (ADR-0017). */
+                        errors?: {
+                            [key: string]: string[];
+                        };
+                        instance?: string;
+                        /** @description وضعیت تأیید دومرحله‌ای کارکنان در پاسخ‌های mfa_required/step_up_required. */
+                        mfa?: {
+                            [key: string]: unknown;
+                        };
+                        otel_trace_id?: string;
+                        /** @description ثانیه تا تلاش دوباره (۴۲۹). */
+                        retry_after?: number;
+                        status: number;
+                        title: string;
+                        trace_id?: string;
+                        /** Format: uri */
+                        type: string;
+                        /** @description همهٔ تخلف‌های قواعد رزرو، یک‌جا (نه یکی‌یکی). */
+                        violations?: {
+                            code: string;
+                            message: string;
+                        }[];
+                    } & {
+                        [key: string]: unknown;
+                    };
+                };
+            };
+        };
+    };
+    calendar_windows_retrieve: {
+        parameters: {
+            query?: {
+                /** @description تعداد همسفران (۱ تا 60)؛ پیش‌فرض ۱ */
+                guests?: number;
+                /** @description کوتاه‌ترین ران پذیرفتنی (نیم‌روز)؛ پیش‌فرض کف سیاست */
+                min_cells?: number;
+            };
+            header?: {
+                /** @description ETag پاسخ قبلی؛ بی‌تغییر ⇒ ۳۰۴ بدون بدنه */
+                "If-None-Match"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CalendarWindows"];
                 };
             };
             /** @description No response body */

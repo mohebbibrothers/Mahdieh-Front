@@ -2,6 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { ApiError, api, unwrap } from "./client";
 import {
   calendarSchema,
+  calendarWindowsSchema,
   configSchema,
   helpSchema,
   metaSchema,
@@ -24,12 +25,22 @@ export const qk = {
   meta: ["meta"] as const,
   property: ["property"] as const,
   calendar: (days: number) => ["calendar", days] as const,
+  /** بازهٔ دلخواه صفحهٔ تقویم (P-04) — زیر همان پیشوند ‎["calendar"]‎ تا هر ابطال تقویم آن را هم تازه کند. */
+  calendarRange: (from: string, days: number) => ["calendar", "range", from, days] as const,
+  windows: (guests: number, minCells: number) => ["calendar", "windows", guests, minCells] as const,
   occasions: (from: string, to: string) => ["occasions", from, to] as const,
   help: ["help"] as const,
   session: ["session"] as const,
   standing: ["me", "standing"] as const,
   reservations: (scope: "upcoming" | "past" | "all") => ["me", "reservations", scope] as const,
 };
+
+/**
+ * تلاش دوباره فقط برای خطاهای گذرا: قطع شبکه و ۵xx (تا دو بار). ۴۲۹ و ۵۰۳ را صفحه خودش با شمارش
+ * معکوس ‎retry_after‎ سرور مدیریت می‌کند (تلاش کور فقط محدودیت را طولانی‌تر می‌کند).
+ */
+export const retryTransient = (count: number, e: Error) =>
+  count < 2 && !(e instanceof ApiError && (e.status < 500 || e.status === 503));
 
 export const configQuery = queryOptions({
   queryKey: qk.config,
@@ -58,6 +69,39 @@ export const calendarQuery = (days: number) =>
     staleTime: 20_000,
     refetchInterval: 60_000,
     refetchIntervalInBackground: false,
+  });
+
+/**
+ * بازهٔ دلخواه تقویم (‎from + days‎). ‎placeholderData‎ دادهٔ بازهٔ قبلی را تا رسیدن بازهٔ تازه نگه
+ * می‌دارد (بی پرش اسکلتون هنگام «بازهٔ بعد»)؛ بازبینی شرطی (ETag ⇒ ۳۰۴) را خود مرورگر انجام می‌دهد.
+ */
+export const calendarRangeQuery = (from: string, days: number) =>
+  queryOptions({
+    queryKey: qk.calendarRange(from, days),
+    queryFn: ({ signal }) =>
+      unwrap(api.GET("/api/v1/calendar", { params: { query: { from, days } }, signal }), (d) =>
+        calendarSchema.parse(d),
+      ),
+    staleTime: 20_000,
+    refetchInterval: 60_000,
+    refetchIntervalInBackground: false,
+    placeholderData: (prev) => prev,
+    retry: retryTransient,
+  });
+
+/** کشف بازه: نخستین ران آزاد هر واحد در کل افق رزرو (برای همسفران و کوتاه‌ترین مدت داده‌شده). */
+export const windowsQuery = (guests: number, minCells: number) =>
+  queryOptions({
+    queryKey: qk.windows(guests, minCells),
+    queryFn: ({ signal }) =>
+      unwrap(api.GET("/api/v1/calendar/windows", { params: { query: { guests, min_cells: minCells } }, signal }), (d) =>
+        calendarWindowsSchema.parse(d),
+      ),
+    staleTime: 30_000,
+    refetchInterval: 120_000,
+    refetchIntervalInBackground: false,
+    placeholderData: (prev) => prev,
+    retry: retryTransient,
   });
 
 export const occasionsQuery = (from: string, to: string) =>

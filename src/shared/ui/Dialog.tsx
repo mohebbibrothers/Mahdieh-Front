@@ -94,7 +94,10 @@ export function AppDialog({
               <Icon name="x" size={18} />
             </button>
           </header>
-          <div className="app-dialog__body">{children}</div>
+          {/* ناحیهٔ پیمایش‌پذیر باید با صفحه‌کلید هم پیمایش شود (پنجره‌های فقط‌متن، مثل راهنما) */}
+          <div className="app-dialog__body" tabIndex={0}>
+            {children}
+          </div>
           {actions ? <footer className="app-dialog__actions">{actions}</footer> : null}
         </div>
       ) : null}

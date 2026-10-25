@@ -120,6 +120,42 @@ export const occasionsSchema = z.array(
 );
 export type Occasion = z.infer<typeof occasionsSchema>[number];
 
+const freeWindow = z.object({
+  start: z.string(),
+  end: z.string(),
+  day: z.string(),
+  date_jalali: z.string(),
+  weekday: z.string(),
+  period: z.enum(["day", "night"]),
+  start_label: z.string(),
+  cells: z.int(),
+  bookable_cells: z.int(),
+  stay_label: z.string(),
+  open_ended: z.boolean(),
+}) satisfies z.ZodMiniType<S["FreeWindow"]>;
+
+/** کشف بازه (P-04): نخستین ران آزاد هر واحد در کل افق رزرو — با قواعد خود موتور. */
+export const calendarWindowsSchema = z.object({
+  not_before: z.string(),
+  horizon_end: z.string(),
+  guests: z.int(),
+  min_cells: z.int(),
+  max_cells: z.int(),
+  units: z.array(
+    z.object({
+      code: z.string(),
+      title: z.string(),
+      floor_number: z.int(),
+      unit_type: z.string(),
+      capacity_total: z.int(),
+      fits_guests: z.boolean(),
+      window: z.nullable(freeWindow),
+    }) satisfies z.ZodMiniType<S["UnitWindow"]>,
+  ),
+}) satisfies z.ZodMiniType<S["CalendarWindows"]>;
+export type CalendarWindows = z.infer<typeof calendarWindowsSchema>;
+export type FreeWindow = z.infer<typeof freeWindow>;
+
 export const profileSchema = z.object({
   id: z.string(),
   display_name: z.string(),

@@ -31,7 +31,7 @@ export type PageInfo = {
 export const PAGES: Record<PageId, PageInfo> = {
   "P-02": { title: "واحدهای اقامتی", path: "/units/", ready: false },
   "P-03": { title: "جزئیات واحد", path: "/units/{code}/", ready: false },
-  "P-04": { title: "تقویم موجودی", path: "/calendar/", ready: false },
+  "P-04": { title: "تقویم موجودی", path: "/calendar/", ready: true },
   "P-05": { title: "تکمیل و صدور رزرو", path: "/booking/", ready: true },
   "P-07": { title: "پرتال زائر و پیگیری", path: "/portal/", ready: true },
   "P-08": { title: "راهنمای زائر و احکام", path: "/guide/", ready: false },

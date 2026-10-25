@@ -39,6 +39,8 @@ export function JalaliDatePicker({
   quick = [],
   invalid,
   placeholder = "انتخاب تاریخ",
+  min,
+  max,
 }: {
   anchor: PopoverAnchor;
   label: string;
@@ -48,6 +50,9 @@ export function JalaliDatePicker({
   quick?: QuickDay[];
   invalid?: boolean | undefined;
   placeholder?: string;
+  /** کران پایین/بالای روزهای قابل انتخاب (بی نمایش بازه؛ مثلاً «امروز تا پایان افق رزرو») */
+  min?: string | undefined;
+  max?: string | undefined;
 }) {
   return (
     <Popover
@@ -73,6 +78,8 @@ export function JalaliDatePicker({
         <Calendar
           value={value}
           rangeFrom={rangeFrom ?? null}
+          min={min ?? null}
+          max={max ?? null}
           quick={quick}
           onPick={(d) => {
             onChange(d);
@@ -89,9 +96,13 @@ function Calendar({
   rangeFrom,
   quick,
   onPick,
+  min,
+  max,
 }: {
   value: string | null;
   rangeFrom: string | null;
+  min: string | null;
+  max: string | null;
   quick: QuickDay[];
   onPick: (isoDay: string | null) => void;
 }) {
@@ -107,7 +118,14 @@ function Calendar({
   // صفحهٔ سال‌ها: ۱۲ سال (۳×۴) که سال نما در ردیف دوم می‌نشیند ⇒ گذشته و آینده هر دو در دسترس
   const [yearPage, setYearPage] = useState(() => toJalali(initial).jy - 4);
   const todayYear = toJalali(today).jy;
-  const minYear = rangeFrom ? toJalali(rangeFrom).jy : null;
+  const lower =
+    [rangeFrom, min]
+      .filter((x): x is string => Boolean(x))
+      .sort()
+      .at(-1) ?? null;
+  const outOfBounds = (d: string) => Boolean((lower && d < lower) || (max && d > max));
+  const minYear = lower ? toJalali(lower).jy : null;
+  const maxYear = max ? toJalali(max).jy : null;
   // تعویض نما ⇒ فوکوس روی گزینهٔ برگزیدهٔ نمای تازه (دکمهٔ عنوانِ کلیک‌شده از DOM رفته است)
   const root = useRef<HTMLDivElement>(null);
   const firstMode = useRef(true);
@@ -130,7 +148,7 @@ function Calendar({
   const rangeEnd = rangeFrom ? (hover ?? value) : null;
 
   const moveFocus = (next: string) => {
-    if (rangeFrom && next < rangeFrom) return;
+    if (outOfBounds(next)) return;
     setFocus(next);
     const j = toJalali(next);
     if (j.jy !== view.jy || j.jm !== view.jm) setView({ jy: j.jy, jm: j.jm });
@@ -265,7 +283,7 @@ function Calendar({
               aria-pressed={view.jy === y}
               data-autofocus={view.jy === y || undefined}
               data-current={y === todayYear || undefined}
-              disabled={minYear !== null && y < minYear}
+              disabled={(minYear !== null && y < minYear) || (maxYear !== null && y > maxYear)}
               onClick={() => {
                 setView((v) => ({ ...v, jy: y }));
                 setMode("months");
@@ -315,7 +333,7 @@ function Calendar({
             <div role="row" key={r} className="picker-cal__row">
               {cells.slice(r * 7, r * 7 + 7).map((d, c) => {
                 if (!d) return <span key={`e${c}`} role="gridcell" aria-hidden="true" />;
-                const disabled = Boolean(rangeFrom && d < rangeFrom);
+                const disabled = outOfBounds(d);
                 const inRange = Boolean(rangeFrom && rangeEnd && d > rangeFrom && d < rangeEnd);
                 const edge = Boolean(rangeFrom && (d === rangeFrom || (rangeEnd && d === rangeEnd)));
                 const selected = d === value;
@@ -355,7 +373,7 @@ function Calendar({
             type="button"
             className="picker-chip"
             aria-pressed={q.value === value}
-            disabled={Boolean(rangeFrom && q.value < rangeFrom)}
+            disabled={outOfBounds(q.value)}
             onClick={() => onPick(q.value)}
           >
             {q.label}
