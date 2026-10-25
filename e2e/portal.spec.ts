@@ -78,6 +78,8 @@ test.describe("P-07 پرتال زائر", () => {
 
   for (const theme of ["light", "dark"] as const) {
     test(`دسترس‌پذیری WCAG AA همهٔ بخش‌ها (همراه پیشنهاد صف) — تم ${theme}`, async ({ page, api }) => {
+      // ورود نرم کارت‌ها (‎pt-rise‎، شفافیت ۰←۱) نباید وسط سنجش تباین باشد — همان روش صفحهٔ نخست
+      await page.emulateMedia({ reducedMotion: "reduce" });
       await page.addInitScript((t) => localStorage.setItem("mahdieh-theme", t), theme);
       pilgrim(api, p07("waitlist-offer"));
       await page.goto("/portal/");
