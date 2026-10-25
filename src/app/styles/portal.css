@@ -1373,6 +1373,249 @@
     font-size: 15px;
   }
 
+  /* ── «دفتر دل‌نوشته» پیش از نخستین اقامت ── */
+  .pt-journal {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(180px, 0.42fr) minmax(0, 1fr);
+    overflow: hidden;
+    border: 1px solid var(--pt-gold-line);
+    border-radius: 22px;
+    background: radial-gradient(120% 140% at 100% 0%, var(--pt-gold-soft), transparent 60%), var(--color-surface);
+    box-shadow: var(--pt-shadow-sm);
+  }
+  .pt-journal__art {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 28px 20px;
+    background:
+      radial-gradient(circle at 50% 45%, color-mix(in oklab, var(--color-gold) 22%, transparent), transparent 62%),
+      var(--pt-em-soft);
+  }
+  .pt-journal__book {
+    position: relative;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 14px;
+    width: 128px;
+    aspect-ratio: 3 / 4;
+    border-radius: 8px 16px 16px 8px;
+    background: linear-gradient(135deg, var(--pt-em), color-mix(in oklab, var(--pt-em) 70%, #000));
+    color: color-mix(in oklab, var(--color-gold) 85%, #fff);
+    box-shadow:
+      inset 8px 0 0 color-mix(in oklab, #000 18%, transparent),
+      0 18px 36px -18px color-mix(in oklab, var(--pt-em) 80%, #000);
+    rotate: -4deg;
+    animation: pt-journal-float 6s ease-in-out infinite;
+  }
+  .pt-journal__ribbon {
+    position: absolute;
+    inset-block-start: -4px;
+    inset-inline-start: 26px;
+    width: 12px;
+    height: 58%;
+    background: var(--color-gold);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 86%, 0 100%);
+  }
+  .pt-journal__seal {
+    position: absolute;
+    inset-block-end: 16px;
+    inset-inline-end: -12px;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--color-surface);
+    border-radius: 50%;
+    background: var(--color-gold);
+    color: #2b2108;
+  }
+  .pt-journal__lines {
+    display: grid;
+    gap: 6px;
+    width: 56%;
+  }
+  .pt-journal__lines i {
+    height: 3px;
+    border-radius: 3px;
+    background: color-mix(in oklab, var(--color-gold) 55%, transparent);
+  }
+  .pt-journal__lines i:nth-child(2) {
+    width: 80%;
+  }
+  .pt-journal__lines i:nth-child(3) {
+    width: 60%;
+  }
+  @keyframes pt-journal-float {
+    50% {
+      translate: 0 -6px;
+      rotate: -2deg;
+    }
+  }
+  .pt-journal__body {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: 12px;
+    padding: clamp(18px, 2.6vw, 28px);
+  }
+  .pt-journal__eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--pt-gold-ink);
+    font-size: 12.5px;
+    font-weight: 800;
+  }
+  .pt-journal h3 {
+    margin: 0;
+    font-size: clamp(16px, 1.6vw, 19px);
+    font-weight: 800;
+    line-height: 1.6;
+  }
+  .pt-journal__lead {
+    max-width: 62ch;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 13.5px;
+    line-height: 2;
+  }
+  .pt-journal__lead b {
+    color: var(--color-text);
+  }
+  .pt-journal__count {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 16px 8px 8px;
+    border: 1px solid var(--pt-em-line);
+    border-radius: 999px;
+    background: var(--pt-em-soft);
+    font-size: 13px;
+  }
+  .pt-journal__count strong {
+    display: grid;
+    place-items: center;
+    min-width: 44px;
+    height: 44px;
+    padding-inline: 10px;
+    border-radius: 999px;
+    background: var(--pt-em);
+    color: var(--color-on-brand);
+    font-size: 18px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+  .pt-journal__count span {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .pt-journal__steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+    margin: 4px 0 2px;
+    padding: 0;
+    list-style: none;
+  }
+  .pt-journal__steps li {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+  }
+  .pt-journal__steps li:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 14px;
+    inset-inline: 36px -6px;
+    height: 2px;
+    border-radius: 2px;
+    background: repeating-linear-gradient(to left, var(--pt-line) 0 6px, transparent 6px 10px);
+    z-index: 0;
+  }
+  .pt-journal__steps li[data-state="done"]::after {
+    background: var(--pt-em);
+  }
+  .pt-journal__dot {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border: 2px solid var(--pt-line);
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+  }
+  .pt-journal__steps li[data-state="current"] .pt-journal__dot {
+    border-color: var(--pt-em);
+    color: var(--pt-em);
+    box-shadow: 0 0 0 5px var(--pt-em-soft);
+  }
+  .pt-journal__steps li[data-state="done"] .pt-journal__dot {
+    border-color: var(--pt-em);
+    background: var(--pt-em);
+    color: var(--color-on-brand);
+  }
+  .pt-journal__steps li > span:last-child {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+    padding-top: 4px;
+    background: var(--color-surface);
+    position: relative;
+    z-index: 1;
+    padding-inline-end: 6px;
+  }
+  .pt-journal__steps b {
+    font-size: 13px;
+  }
+  .pt-journal__steps small {
+    color: var(--color-text-muted);
+    font-size: 11.5px;
+    line-height: 1.7;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pt-journal__book {
+      animation: none;
+    }
+  }
+  @media (max-width: 760px) {
+    .pt-journal {
+      grid-template-columns: 1fr;
+    }
+    .pt-journal__art {
+      padding: 30px 16px 22px;
+    }
+    .pt-journal__book {
+      width: 96px;
+    }
+    .pt-journal__steps {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .pt-journal__steps li:not(:last-child)::after {
+      inset-block: 34px -10px;
+      inset-inline: 14px auto;
+      width: 2px;
+      height: auto;
+      background: repeating-linear-gradient(to bottom, var(--pt-line) 0 6px, transparent 6px 10px);
+    }
+    .pt-journal__steps li[data-state="done"]::after {
+      background: var(--pt-em);
+    }
+    .pt-journal__count {
+      border-radius: 18px;
+    }
+  }
+
   /* ── کارت‌های عمومی (حساب، استعلام) ── */
   .pt-card {
     display: flex;
@@ -1789,8 +2032,19 @@
     color: var(--color-text-muted);
     font-weight: 500;
   }
+  /* ورود و تخلیه زیر هم؛ در هر ردیف «تاریخ کامل | ساعت» تا «پنجشنبه، ۷ آبان ۱۴۰۵» هرگز بریده نشود. */
+  .pt-offline__stamps {
+    grid-template-columns: 1fr;
+  }
   .pt-stamp {
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(112px, 0.5fr);
+    column-gap: 10px;
+  }
+  @media (max-width: 480px) {
+    .pt-stamp {
+      grid-template-columns: minmax(0, 1fr) auto;
+      column-gap: 8px;
+    }
   }
   .pt-stamp legend {
     grid-column: 1 / -1;

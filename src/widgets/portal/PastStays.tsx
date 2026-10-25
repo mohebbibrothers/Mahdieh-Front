@@ -2,11 +2,20 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
+import { useNow } from "@/features/booking-draft/use-availability";
 import { pastStaysQuery } from "@/shared/api/portal";
 import { feedbackToken } from "@/shared/api/reservations";
 import type { Reservation } from "@/shared/api/schemas";
 import { destHref } from "@/shared/config/destinations";
-import { durationLabel, faDigits, formatDayMonth, formatYear, tehranToday } from "@/shared/lib/fa";
+import {
+  durationLabel,
+  faDigits,
+  formatClock,
+  formatDayLabel,
+  formatDayMonth,
+  formatYear,
+  tehranToday,
+} from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
 import { FeedbackDialog } from "@/widgets/booking/FeedbackDialog";
 import { type FeedbackCell, feedbackCell } from "./model";
@@ -26,8 +35,30 @@ function pastRange(start: string, end: string): string {
   return `${am} ${formatYear(a)} الی ${bm} ${formatYear(b)}`;
 }
 
-/** سابقهٔ اقامت‌های پیشین (طراح: جدول وسط‌چین؛ موبایل: کارت به‌جای اسکرول افقی). */
-export function PastStays({ onOpen }: { onOpen: (code: string) => void }) {
+const DAY_MS = 86_400_000;
+/** شمار روزهای تقویمی تهران تا روز ورود (۰ = امروز). */
+function daysUntil(startIso: string, now: number): number {
+  const a = tehranToday(new Date(now));
+  const b = day(startIso);
+  return Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / DAY_MS);
+}
+
+/**
+ * سابقهٔ اقامت‌های پیشین (طراح: جدول وسط‌چین؛ موبایل: کارت به‌جای اسکرول افقی).
+ * حالت خالی سه‌گانه: سفر پیش‌رو دارد ⇒ «دفتر دل‌نوشته» با شمارش معکوس و مسیر تا ثبت دل‌نوشته؛
+ * سفری ندارد و مجاز است ⇒ دعوت به برنامه‌ریزی؛ مسدود است ⇒ فقط راهنما (دکمهٔ رزروِ بی‌ثمر نمی‌دهیم).
+ */
+export function PastStays({
+  onOpen,
+  upcoming = null,
+  canBook,
+}: {
+  onOpen: (code: string) => void;
+  /** نزدیک‌ترین سفر فعال پیش‌رو (برای حالت خالی) */
+  upcoming?: Reservation | null;
+  /** ‎standing.can_book‎؛ ‎undefined‎ = هنوز نامعلوم ⇒ همان دعوت عادی */
+  canBook?: boolean | undefined;
+}) {
   const past = useInfiniteQuery(pastStaysQuery);
   const rows = past.data?.pages.flatMap((p) => p.results) ?? [];
   const total = past.data?.pages[0]?.meta.total ?? rows.length;
@@ -63,6 +94,19 @@ export function PastStays({ onOpen }: { onOpen: (code: string) => void }) {
               تلاش دوباره
             </button>
           </div>
+        </div>
+      ) : !rows.length && upcoming ? (
+        <JournalTeaser r={upcoming} onOpen={onOpen} />
+      ) : !rows.length && canBook === false ? (
+        <div className="pt-empty">
+          <Icon name="feather" size={28} />
+          <p>
+            <strong>هنوز سفری به پایان نرسانده‌اید</strong>
+            <span>پس از هر اقامت، سابقهٔ آن و امکان ثبت دل‌نوشته برای خادمان همین‌جا می‌آید.</span>
+          </p>
+          <Link className="btn btn-secondary" href={destHref("guide")}>
+            <Icon name="compass" size={18} /> راهنمای زائر و قواعد نوبت‌دهی
+          </Link>
         </div>
       ) : !rows.length ? (
         <div className="pt-empty">
@@ -230,4 +274,86 @@ function FeedbackView({ cell, onFeedback }: { cell: FeedbackCell; onFeedback: (t
     case "none":
       return <span className="pt-soft">—</span>;
   }
+}
+
+/** «دفتر دل‌نوشته» پیش از نخستین اقامت: دفتر بسته + شمارش معکوس + مسیر سه‌گام تا ثبت دل‌نوشته. */
+function JournalTeaser({ r, onOpen }: { r: Reservation; onOpen: (code: string) => void }) {
+  const now = useNow().getTime();
+  const start = Date.parse(r.start);
+  const end = Date.parse(r.end);
+  const staying = r.status === "checked_in" || (now >= start && now < end);
+  const days = daysUntil(r.start, now);
+  const stage = staying ? 1 : now >= end ? 2 : 0;
+  const steps = [
+    { icon: "prayer" as const, title: "زیارت و اقامت", when: formatDayLabel(day(r.start)) },
+    { icon: "luggage" as const, title: "تخلیه", when: `${formatDayLabel(day(r.end))}، ساعت ${formatClock(r.end)}` },
+    { icon: "feather" as const, title: "ثبت دل‌نوشته", when: "همان روز، با پیوند پیامکی و همین‌جا" },
+  ];
+  return (
+    <article className="pt-journal" aria-labelledby="pt-journal-title">
+      <div className="pt-journal__art" aria-hidden="true">
+        <div className="pt-journal__book">
+          <span className="pt-journal__ribbon" />
+          <span className="pt-journal__seal">
+            <Icon name="lock" size={16} />
+          </span>
+          <Icon name="feather" size={28} />
+          <span className="pt-journal__lines">
+            <i />
+            <i />
+            <i />
+          </span>
+        </div>
+      </div>
+      <div className="pt-journal__body">
+        <span className="pt-journal__eyebrow">
+          <Icon name="sparkle" size={14} /> دفتر دل‌نوشتهٔ شما
+        </span>
+        <h3 id="pt-journal-title">دفتر دل‌نوشته پس از نخستین زیارت گشوده می‌شود</h3>
+        <p className="pt-journal__lead">
+          نخستین سفر شما به{" "}
+          <b>
+            {r.unit_title} <bdi className="latin">{r.unit_code}</bdi>
+          </b>{" "}
+          در راه است؛ پس از تخلیه، سابقهٔ آن و امکان ارزیابی خادمان و نوشتن حال‌وهوای زیارت همین‌جا باز می‌شود.
+        </p>
+        <div className="pt-journal__count" role="status">
+          {staying ? (
+            <>
+              <strong>
+                <Icon name="prayer" size={20} />
+              </strong>
+              <span>در حال اقامت؛ قبول باشد. دفتر پس از تخلیه گشوده می‌شود.</span>
+            </>
+          ) : days <= 1 ? (
+            <>
+              <strong>{days <= 0 ? "امروز" : "فردا"}</strong>
+              <span>روز تشرّف · تحویل کلید از ساعت {formatClock(r.start)}</span>
+            </>
+          ) : (
+            <>
+              <strong>{faDigits(days)}</strong>
+              <span>روز تا زیارت · {formatDayLabel(day(r.start))}</span>
+            </>
+          )}
+        </div>
+        <ol className="pt-journal__steps">
+          {steps.map((st, i) => (
+            <li key={st.title} data-state={i < stage ? "done" : i === stage ? "current" : "next"}>
+              <span className="pt-journal__dot">
+                <Icon name={i < stage ? "check" : st.icon} size={14} />
+              </span>
+              <span>
+                <b>{st.title}</b>
+                <small>{st.when}</small>
+              </span>
+            </li>
+          ))}
+        </ol>
+        <button type="button" className="btn btn-secondary" onClick={() => onOpen(r.code)}>
+          <Icon name="ticket" size={18} /> مشاهدهٔ سفر پیش‌رو
+        </button>
+      </div>
+    </article>
+  );
 }

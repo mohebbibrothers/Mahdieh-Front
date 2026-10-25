@@ -1792,7 +1792,7 @@ export type components = {
             /** @default  */
             last_name: string;
             /**
-             * @description کد ملی ۱۰ رقمی (اتباع ایران)؛ رمزنگاری‌شده ذخیره می‌شود.
+             * @description کد ملی ۱۰ رقمی (اتباع ایران)؛ رمزنگاری‌شده ذخیره می‌شود. در ویرایش پروفایل کامل، خالی = همان کد ملی ثبت‌شده نگه داشته می‌شود.
              * @default
              */
             national_id: string;
@@ -1802,7 +1802,7 @@ export type components = {
              */
             nationality: string;
             /**
-             * @description شمارهٔ گذرنامه (زائر خارجی)؛ رمزنگاری‌شده ذخیره می‌شود.
+             * @description شمارهٔ گذرنامه (زائر خارجی)؛ رمزنگاری‌شده ذخیره می‌شود. در ویرایش با همان ملیت، خالی = همان گذرنامهٔ ثبت‌شده نگه داشته می‌شود.
              * @default
              */
             passport_number: string;

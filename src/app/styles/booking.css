@@ -392,9 +392,18 @@
     justify-self: start;
   }
   .profile-kind__seg button {
-    min-height: 48px;
+    min-height: 56px;
+    padding-block: 6px;
+  }
+  /* عنوان + زیرعنوان دوسطری (در عرض کم «(کد ملی ۱۰ رقمی)» دیگر وسط عنوان نمی‌شکند) */
+  .profile-kind__seg button > span {
+    display: grid;
+    gap: 1px;
+    line-height: 1.45;
+    text-align: start;
   }
   .profile-kind__seg small {
+    display: block;
     opacity: 0.8;
     font-size: 0.75rem;
     font-weight: 450;

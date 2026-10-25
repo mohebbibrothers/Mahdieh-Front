@@ -89,7 +89,7 @@ export function AccountSecurity({ profile }: { profile: Profile }) {
         onOpenChange={setEditOpen}
         title="مشخصات سرپرست زائران"
         subtitle="اطلاعات سجلی برای ثبت رسمی در دفتر پذیرش مهدیه."
-        size="sm"
+        size="lg"
       >
         {editOpen ? (
           <div className="account-flow">

@@ -44,7 +44,11 @@ export function ProfileForm({
   lead?: ReactNode;
 }) {
   const page = variant === "page";
-  /** ویرایش مشخصات کامل: سرور کل پروفایل را دوباره می‌سنجد ⇒ مدرک هویتی (که هرگز برنمی‌گردد) دوباره لازم است. */
+  /**
+   * ویرایش مشخصات کامل: مدرک هویتی ثبت‌شده (رمزنگاری‌شده؛ فقط ۴ نویسهٔ آخر برمی‌گردد) حفظ می‌شود و دوباره
+   * خواسته نمی‌شود — مدرک خالی در ‎PATCH‎ یعنی «همان قبلی» (سرور: ‎_keeps_document‎). فقط با تغییر نوع تابعیت
+   * یا کشور، یا انتخاب آگاهانهٔ «تغییر»، مدرک تازه لازم است.
+   */
   const editing = Boolean(profile?.is_profile_complete);
   const config = useQuery(configQuery);
   const formId = useId();
@@ -60,7 +64,23 @@ export function ProfileForm({
   const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [changeDoc, setChangeDoc] = useState(false);
+  const [initial] = useState(v);
   const foreign = v.nationality !== IRAN;
+  const masked = profile?.national_id_masked && profile.national_id_masked !== "—" ? profile.national_id_masked : null;
+  const docOnFile =
+    editing &&
+    Boolean(masked) &&
+    (foreign
+      ? profile?.id_document_type === "passport" && v.nationality === profile.nationality
+      : profile?.id_document_type === "national_id");
+  const keepDoc = docOnFile && !changeDoc;
+  const dirty =
+    (["first_name", "last_name", "nationality", "province", "city"] as const).some(
+      (k) => v[k].trim() !== initial[k].trim(),
+    ) ||
+    (!keepDoc && Boolean((foreign ? v.passport_number : v.national_id).trim()));
+  const clean = editing && !dirty;
 
   const provinces = useMemo<ComboOption[]>(
     () =>
@@ -95,9 +115,11 @@ export function ProfileForm({
     if (v.last_name.trim().length < 2) e.last_name = "نام خانوادگی را کامل بنویسید.";
     if (foreign) {
       if (!v.nationality) e.nationality = "کشور محل تابعیت را انتخاب کنید.";
-      if (v.passport_number.trim().length < 5) e.passport_number = "شمارهٔ گذرنامه را مطابق گذرنامه وارد کنید.";
+      if (!keepDoc && v.passport_number.trim().length < 5)
+        e.passport_number = "شمارهٔ گذرنامه را مطابق گذرنامه وارد کنید.";
     } else {
-      if (!isValidNationalId(v.national_id)) e.national_id = "کد ملی ۱۰ رقمی معتبر نیست؛ دوباره بررسی کنید.";
+      if (!keepDoc && !isValidNationalId(v.national_id))
+        e.national_id = "کد ملی ۱۰ رقمی معتبر نیست؛ دوباره بررسی کنید.";
       if (!v.province) e.province = "استان محل سکونت را انتخاب کنید.";
     }
     const city = v.city.trim().length;
@@ -108,6 +130,11 @@ export function ProfileForm({
   const submit = async (ev: FormEvent) => {
     ev.preventDefault();
     setFormError(null);
+    if (clean) {
+      if (onSkip) onSkip();
+      else if (profile) onDone(profile);
+      return;
+    }
     const local = localCheck();
     if (Object.keys(local).length) {
       setErrors(local);
@@ -121,8 +148,8 @@ export function ProfileForm({
         first_name: v.first_name.trim(),
         last_name: v.last_name.trim(),
         city: v.city.trim(),
-        national_id: foreign ? "" : latinDigits(v.national_id).replace(/\D/g, ""),
-        passport_number: foreign ? v.passport_number.trim().toUpperCase() : "",
+        national_id: foreign || keepDoc ? "" : latinDigits(v.national_id).replace(/\D/g, ""),
+        passport_number: foreign && !keepDoc ? v.passport_number.trim().toUpperCase() : "",
         province: foreign ? "" : v.province,
       });
       onDone(saved);
@@ -141,6 +168,7 @@ export function ProfileForm({
     label: string,
     extra: Partial<React.InputHTMLAttributes<HTMLInputElement>> = {},
     after: ReactNode = null,
+    tail: ReactNode = null,
   ) => (
     <div className="acc-field" data-field={k}>
       <label className="field-label" htmlFor={`${formId}-${k}`}>
@@ -167,6 +195,7 @@ export function ProfileForm({
       ) : (
         after
       )}
+      {tail}
     </div>
   );
 
@@ -179,9 +208,77 @@ export function ProfileForm({
   };
 
   const defaultLead = editing
-    ? "برای ویرایش، همهٔ مشخصات یک‌جا بازبینی می‌شود؛ مدرک هویتی را دوباره وارد کنید (رمزنگاری‌شده نگه‌داری می‌شود و هرگز نمایش داده نمی‌شود)."
+    ? "مدرک هویتی شما محفوظ است و دوباره خواسته نمی‌شود؛ فقط مواردی را که تغییر کرده ویرایش کنید."
     : "برای رزرو، مشخصات سرپرست زائران یک بار ثبت می‌شود. کد ملی و گذرنامه رمزنگاری‌شده نگه‌داری می‌شوند و جایی نمایش داده نمی‌شوند.";
   const leadNode = lead === undefined ? defaultLead : lead;
+
+  const docField: Field = foreign ? "passport_number" : "national_id";
+  const docName = foreign ? "شمارهٔ گذرنامه" : "کد ملی";
+  /** کارت «گاوصندوق مدرک»: نمای پوشانده + نشان رمزنگاری + تغییر آگاهانه. */
+  const vault = (
+    <div className="acc-field id-vault" data-field={docField}>
+      <span className="field-label" id={`${formId}-vault`}>
+        {foreign ? "شمارهٔ گذرنامه (Passport No.)" : "کد ملی ۱۰ رقمی"}
+      </span>
+      <div className="id-vault__card" role="group" aria-labelledby={`${formId}-vault`}>
+        <span className="id-vault__icon" aria-hidden="true">
+          <Icon name="lock" size={18} />
+        </span>
+        <span className="id-vault__body">
+          <bdi className="id-vault__value latin" dir="ltr">
+            {(foreign ? "•••• " : "•••••• ") + (masked ?? "").replace(/^\*+/, "")}
+          </bdi>
+          <span className="id-vault__badge">
+            <Icon name="shield-check" size={12} /> ثبت‌شده و رمزنگاری‌شده
+          </span>
+        </span>
+        <button
+          type="button"
+          className="btn btn-ghost btn-sm id-vault__change"
+          onClick={() => {
+            setChangeDoc(true);
+            requestAnimationFrame(() => document.getElementById(`${formId}-${docField}`)?.focus());
+          }}
+        >
+          <Icon name="pencil" size={14} /> تغییر {docName}
+        </button>
+      </div>
+      <p className="field-help">برای حریم خصوصی فقط ۴ نویسهٔ آخر نمایش داده می‌شود؛ نیازی به وارد کردن دوباره نیست.</p>
+    </div>
+  );
+  const cancelChange =
+    docOnFile && changeDoc ? (
+      <button
+        type="button"
+        className="text-link id-vault__cancel"
+        onClick={() => {
+          setChangeDoc(false);
+          setV((s) => ({ ...s, [docField]: "" }));
+          setErrors((e) => ({ ...e, [docField]: undefined }));
+        }}
+      >
+        <Icon name="x" size={12} /> انصراف از تغییر و حفظ {docName} ثبت‌شده
+      </button>
+    ) : null;
+
+  const provinceField = (
+    <div className="acc-field" data-field="province">
+      <Combobox
+        label="استان محل سکونت"
+        required
+        options={provinces}
+        value={v.province}
+        onChange={set("province")}
+        error={errors.province}
+        placeholder="نام استان را بنویسید"
+        quickPicks={page ? 5 : 0}
+      />
+    </div>
+  );
+  const cityField = text("city", foreign ? "شهر محل سکونت در کشور مبدأ" : "شهر محل سکونت", {
+    autoComplete: "address-level2",
+    maxLength: 60,
+  });
 
   return (
     <form id={formId} className={cx("profile-form", page && "profile-form--page")} onSubmit={submit} noValidate>
@@ -201,13 +298,13 @@ export function ProfileForm({
           <button type="button" aria-pressed={!foreign} onClick={() => pickNationality("ir")}>
             <Icon name="id-card" size={18} />
             <span>
-              زائر ایرانی <small>(کد ملی ۱۰ رقمی)</small>
+              زائر ایرانی <small>با کد ملی ۱۰ رقمی</small>
             </span>
           </button>
           <button type="button" aria-pressed={foreign} onClick={() => pickNationality("intl")}>
             <Icon name="globe" size={18} />
             <span>
-              زائر بین‌المللی <small>(گذرنامهٔ معتبر)</small>
+              زائر بین‌المللی <small>با گذرنامهٔ معتبر</small>
             </span>
           </button>
         </div>
@@ -236,7 +333,9 @@ export function ProfileForm({
         })}
       </div>
 
-      {foreign ? (
+      {foreign && keepDoc ? (
+        vault
+      ) : foreign ? (
         text(
           "passport_number",
           "شمارهٔ گذرنامه (Passport No.)",
@@ -248,7 +347,16 @@ export function ProfileForm({
             autoCapitalize: "characters",
           },
           <p className="field-help">حروف لاتین و ارقام مطابق صفحهٔ اول گذرنامهٔ معتبر</p>,
+          cancelChange,
         )
+      ) : keepDoc ? (
+        <>
+          {vault}
+          <div className="acc-row">
+            {provinceField}
+            {cityField}
+          </div>
+        </>
       ) : (
         <div className="acc-row">
           {text(
@@ -269,26 +377,12 @@ export function ProfileForm({
             ) : (
               <p className="field-help">صحت کد ملی بر پایهٔ الگوریتم رسمی رقم کنترلی ثبت احوال سنجیده می‌شود.</p>
             ),
+            cancelChange,
           )}
-          <div className="acc-field" data-field="province">
-            <Combobox
-              label="استان محل سکونت"
-              required
-              options={provinces}
-              value={v.province}
-              onChange={set("province")}
-              error={errors.province}
-              placeholder="نام استان را بنویسید"
-              quickPicks={page ? 5 : 0}
-            />
-          </div>
+          {provinceField}
         </div>
       )}
-      {text("city", foreign ? "شهر محل سکونت در کشور مبدأ" : "شهر محل سکونت", {
-        autoComplete: "address-level2",
-        maxLength: 60,
-      })}
-
+      {foreign || !keepDoc ? cityField : null}
       {formError ? (
         <p className="account-alert" data-tone="danger" role="alert">
           <Icon name="info" size={18} /> {formError}
@@ -302,10 +396,10 @@ export function ProfileForm({
           disabled={busy}
           aria-busy={busy || undefined}
         >
-          {busy ? "در حال ذخیره…" : submitLabel}
-          <Icon name="arrow-left" size={18} />
+          {busy ? "در حال ذخیره…" : clean ? "بدون تغییر — بستن" : submitLabel}
+          <Icon name={clean ? "x" : "arrow-left"} size={18} />
         </button>
-        {onSkip ? (
+        {onSkip && !clean ? (
           <button
             type="button"
             className={cx("btn", page ? "btn-secondary btn-lg" : "btn-ghost btn-block")}

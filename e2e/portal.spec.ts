@@ -150,7 +150,7 @@ test.describe("P-07 پرتال زائر", () => {
     await expect(page.locator("#stay")).toContainText(CODE);
   });
 
-  test("بازرسی آفلاین: تاریخ عددی ⇒ همان رشتهٔ چاپی سرور؛ نتیجهٔ معتبر و جعلی", async ({ page, api }) => {
+  test("بازرسی آفلاین: تقویم و ساعت ⇒ همان رشتهٔ چاپی سرور؛ نتیجهٔ معتبر و جعلی", async ({ page, api }) => {
     const sent: Record<string, unknown>[] = [];
     api.set("/api/v1/auth/csrf", { body: CSRF });
     api.set("/api/v1/certificates/verify-offline", async (route) => {
@@ -164,10 +164,23 @@ test.describe("P-07 پرتال زائر", () => {
     await form.getByLabel(/نام سرپرست/).fill("مرتضی رضوی");
     await form.getByRole("button", { name: "B2", exact: true }).click();
     for (let i = 1; i < 4; i++) await form.getByRole("button", { name: "افزودن یک نفر" }).click();
-    await form.getByLabel("تاریخ ورود").fill("1405/8/27");
-    await form.getByLabel("ساعت ورود").fill("8:00");
-    await form.getByLabel("تاریخ تخلیه").fill("۲۹ آبان ۱۴۰۵");
-    await form.getByLabel("ساعت تخلیه").fill("۰۸:۰۰");
+    // تقویم خورشیدی (امروزِ آزمون ۲۸ مهر) ⇒ ماه بعد ⇒ ۲۷ آبان؛ ساعت از «ساعت‌های پرکاربرد» سرور.
+    const pop = page.locator(".picker-popover:popover-open");
+    await form.getByRole("button", { name: /^تاریخ ورود/ }).click();
+    await expect(pop.getByRole("grid", { name: "مهر ۱۴۰۵" })).toBeVisible();
+    await pop.getByRole("button", { name: "ماه بعد" }).click();
+    await pop.getByRole("button", { name: /، ۲۷ آبان ۱۴۰۵$/ }).click();
+    await expect(form.getByRole("button", { name: /^تاریخ ورود/ })).toContainText("۲۷ آبان ۱۴۰۵");
+    await form.getByRole("button", { name: /^ساعت ورود/ }).click();
+    await pop.getByRole("button", { name: /آغاز سانس روز/ }).click();
+    // تخلیه: روزهای پیش از ورود غیرفعال؛ میان‌بُر «۲ شبانه‌روز»؛ ساعت با جدول ساعت ⇒ دقیقه.
+    await form.getByRole("button", { name: /^تاریخ تخلیه/ }).click();
+    await expect(pop.getByRole("button", { name: /، ۲۶ آبان ۱۴۰۵$/ })).toBeDisabled();
+    await pop.getByRole("button", { name: "۲ شبانه‌روز" }).click();
+    await form.getByRole("button", { name: /^ساعت تخلیه/ }).click();
+    await pop.getByRole("button", { name: "ساعت ۸", exact: true }).click();
+    await pop.getByRole("button", { name: "دقیقهٔ ۰", exact: true }).click();
+    await expect(form.getByRole("button", { name: /^ساعت تخلیه/ })).toContainText("۰۸:۰۰");
     await form.getByPlaceholder("XXXX-XXXX").fill("f6z2-xdtg");
     await form.getByRole("button", { name: /بررسی اصالت/ }).click();
 
@@ -186,6 +199,83 @@ test.describe("P-07 پرتال زائر", () => {
     await form.getByLabel(/نام سرپرست/).fill("مرتضی رضوی جعلی");
     await form.getByRole("button", { name: /بررسی اصالت/ }).click();
     await expect(page.locator("#verify .verify-result[data-tone=danger]")).toBeVisible();
+  });
+
+  test("ویرایش مشخصات: کد ملی ثبت‌شده محفوظ است؛ بی‌تغییر «بستن»، با تغییر فقط ذخیره بی مدرک", async ({
+    page,
+    api,
+  }) => {
+    pilgrim(api);
+    const sent: Record<string, unknown>[] = [];
+    api.set("/api/v1/me/profile", async (route) => {
+      const b = route.request().postDataJSON() as Record<string, unknown>;
+      sent.push(b);
+      return route.fulfill({
+        json: { ...(p05<Record<string, unknown>>("session-complete").profile as object), city: b.city },
+      });
+    });
+    await page.goto("/portal/");
+    await page
+      .locator("#account")
+      .getByRole("button", { name: /ویرایش|تکمیل مشخصات/ })
+      .click();
+    const dialog = page.getByRole("dialog", { name: "مشخصات سرپرست زائران" });
+    await expect(dialog.locator(".id-vault")).toContainText("5227");
+    await expect(dialog.locator(".id-vault")).toContainText("ثبت‌شده و رمزنگاری‌شده");
+    await expect(dialog.getByRole("textbox", { name: /کد ملی ۱۰ رقمی/ })).toHaveCount(0);
+    const submit = dialog.locator("button[type=submit]");
+    await expect(submit).toHaveText(/بدون تغییر — بستن/);
+
+    // «تغییر کد ملی» ⇒ فیلد؛ «انصراف» ⇒ دوباره گاوصندوق
+    await dialog.getByRole("button", { name: "تغییر کد ملی" }).click();
+    await expect(dialog.getByRole("textbox", { name: /کد ملی ۱۰ رقمی/ })).toBeFocused();
+    await dialog.getByRole("button", { name: /انصراف از تغییر/ }).click();
+    await expect(dialog.locator(".id-vault")).toBeVisible();
+
+    await dialog.getByLabel(/شهر محل سکونت/).fill("نیشابور");
+    await expect(submit).toHaveText(/ثبت مشخصات/);
+    await submit.click();
+    await expect(dialog).toBeHidden();
+    expect(sent).toHaveLength(1);
+    expect(sent[0]).toMatchObject({ city: "نیشابور", national_id: "", passport_number: "", province: "tehran" });
+  });
+
+  test("استعلام QR: زبانهٔ دوربین (بی‌دوربین ⇒ راهنما) و پیوند آفلاین ⇒ بستن پنجره، درخشش و فوکوس فرم", async ({
+    page,
+    api,
+  }) => {
+    api.allowConsole(/camera|getUserMedia|Permission|NotFound|NotAllowed/i);
+    await page.goto("/portal/");
+    await page.locator("#verify").getByRole("button", { name: "استعلام گواهی اقامت" }).click();
+    const dialog = page.getByRole("dialog", { name: "استعلام گواهی اقامت" });
+    // پیش‌فرض: رایانه ⇒ «نشانی یا کد»، گوشی (اشاره‌گر لمسی) ⇒ «اسکن با دوربین»
+    const scanTab = dialog.getByRole("tab", { name: "اسکن با دوربین" });
+    const isMobile = test.info().project.name === "mobile";
+    await expect(scanTab).toHaveAttribute("aria-selected", isMobile ? "true" : "false");
+    await scanTab.click();
+    await expect(dialog.locator(".qr-scan__state")).toBeVisible({ timeout: 10_000 });
+    await expect(dialog.getByText("انتخاب عکس QR")).toBeVisible();
+    await dialog.locator(".qr-scan__state").getByRole("button", { name: "چسباندن نشانی" }).click();
+    await expect(dialog.getByRole("tab", { name: "نشانی یا کد" })).toHaveAttribute("aria-selected", "true");
+
+    await dialog.getByRole("link", { name: /بازرسی با مشخصات چاپی/ }).click();
+    await expect(dialog).toBeHidden();
+    await expect(page.locator(".pt-verify__offline[data-flash]")).toBeVisible();
+    await expect(page.locator("#verify form").getByPlaceholder("M-1405-0000")).toBeFocused();
+    expect(new URL(page.url()).hash).toBe("#verify");
+  });
+
+  test("سابقهٔ خالی + سفر پیش‌رو ⇒ «دفتر دل‌نوشته» با شمارش معکوس و رفتن به سفر", async ({ page, api }) => {
+    pilgrim(api);
+    lists(api, p07("reservations-upcoming"), fixture("reservations-empty"));
+    await page.goto("/portal/");
+    const journal = page.locator("#history .pt-journal");
+    await expect(journal).toContainText("دفتر دل‌نوشته پس از نخستین زیارت گشوده می‌شود");
+    await expect(journal.locator(".pt-journal__count")).toContainText("روز تا زیارت");
+    await expect(journal.locator(".pt-journal__steps li")).toHaveCount(3);
+    await journal.getByRole("button", { name: "مشاهدهٔ سفر پیش‌رو" }).click();
+    await expect(page).toHaveURL(/code=M-1405-0011/);
+    expect(await horizontalOverflow(page)).toBeNull();
   });
 
   test("خطای سرور در خواندن نشست: «تلاش دوباره»، نه فرم ورود گمراه‌کننده", async ({ page, api }) => {

@@ -1,14 +1,29 @@
 "use client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useEffect, useId, useRef, useState } from "react";
+import { type KeyboardEvent, useEffect, useId, useRef, useState } from "react";
 import { configQuery, verifyCertificate } from "@/shared/api/queries";
 import type { Verification } from "@/shared/api/schemas";
 import { destHref } from "@/shared/config/destinations";
 import { faDigits } from "@/shared/lib/fa";
+import { requestVerifyJump } from "@/shared/lib/verify-jump";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon } from "@/shared/ui/Icon";
 import { parseCertificateToken } from "./parse-token";
+import { QrScanner } from "./QrScanner";
+
+type Tab = "scan" | "paste";
+/** گوشی/تبلت (اشاره‌گر لمسی) با دوربین ⇒ زبانهٔ اسکن؛ رایانه ⇒ چسباندن نشانی (دوربین هم در دسترس). */
+const defaultTab = (): Tab =>
+  typeof window !== "undefined" &&
+  Boolean(navigator.mediaDevices?.getUserMedia) &&
+  window.matchMedia("(pointer: coarse)").matches
+    ? "scan"
+    : "paste";
+const TABS: Array<{ id: Tab; label: string; icon: "scan" | "link" }> = [
+  { id: "scan", label: "اسکن با دوربین", icon: "scan" },
+  { id: "paste", label: "نشانی یا کد", icon: "link" },
+];
 
 /**
  * استعلام گواهی اقامت — تأیید امضای سمت سرور (نه هش سمت کاربر که جعل‌پذیر بود) و تطبیق
@@ -73,6 +88,8 @@ function VerifyCertificateDialog({
   const id = useId();
   const [raw, setRaw] = useState("");
   const [inputError, setInputError] = useState<string | null>(null);
+  const [tab, setTab] = useState<Tab>("paste");
+  const tabRefs = useRef<Partial<Record<Tab, HTMLButtonElement | null>>>({});
   const config = useQuery({ ...configQuery, enabled: isOpen });
   const mutation = useMutation({ mutationFn: (token: string) => verifyCertificate(token) });
   const autoRan = useRef<string | null>(null);
@@ -84,10 +101,43 @@ function VerifyCertificateDialog({
     // پر کردن فرم از پیوند QR (منبع بیرونی) — یک بار برای هر پیوند.
     /* eslint-disable react-hooks/set-state-in-effect */
     setRaw(initial);
+    setTab("paste");
     if (token) mutate(token);
     else setInputError("پیوند گواهی کامل نیست. نشانی کامل زیر QR را وارد کنید.");
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [isOpen, initial, mutate]);
+
+  const wasOpen = useRef(false);
+  useEffect(() => {
+    if (isOpen && !wasOpen.current && initial === null) setTab(defaultTab()); // همگام با محیط دستگاه، هنگام باز شدن
+    wasOpen.current = isOpen;
+  }, [isOpen, initial]);
+
+  const submitToken = (text: string) => {
+    const token = parseCertificateToken(text);
+    if (!token) {
+      setInputError("نشانی یا کد واردشده شبیه گواهی مهدیه نیست. نشانی کامل زیر QR را وارد کنید.");
+      return;
+    }
+    setInputError(null);
+    mutation.mutate(token);
+  };
+
+  const onTabKey = (e: KeyboardEvent, current: Tab) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+    e.preventDefault();
+    const i = TABS.findIndex((t) => t.id === current);
+    const next =
+      e.key === "Home"
+        ? TABS[0]
+        : e.key === "End"
+          ? TABS[TABS.length - 1]
+          : TABS[(i + (e.key === "ArrowLeft" ? 1 : -1) + TABS.length) % TABS.length]; // راست‌به‌چپ
+    if (!next) return;
+    setTab(next.id);
+    mutation.reset();
+    tabRefs.current[next.id]?.focus();
+  };
 
   const statusLabel = (value: string | null) => {
     const list = (config.data?.labels.reservation_status ?? []) as Array<{ value: string; label: string }>;
@@ -105,49 +155,83 @@ function VerifyCertificateDialog({
         }
       }}
       title="استعلام گواهی اقامت"
-      subtitle="نشانی زیر QR گواهی را بچسبانید؛ امضای آن روی سرور مهدیه بررسی می‌شود."
+      subtitle="QR گواهی را با دوربین اسکن کنید یا نشانی زیر آن را بچسبانید؛ امضا روی سرور مهدیه بررسی می‌شود."
       size="sm"
     >
-      <form
-        className="verify-form"
-        noValidate
-        onSubmit={(e) => {
-          e.preventDefault();
-          const token = parseCertificateToken(raw);
-          if (!token) {
-            setInputError("نشانی یا کد واردشده شبیه گواهی مهدیه نیست. نشانی کامل زیر QR را وارد کنید.");
-            return;
-          }
-          setInputError(null);
-          mutation.mutate(token);
-        }}
-      >
-        <label htmlFor={`${id}-token`} className="field-label">
-          نشانی یا کد تأیید
-        </label>
-        <textarea
-          id={`${id}-token`}
-          className="text-input verify-form__input latin"
-          dir="ltr"
-          rows={3}
-          value={raw}
-          onChange={(e) => setRaw(e.target.value)}
-          placeholder="https://…/verify/…"
-          aria-invalid={inputError ? true : undefined}
-          aria-describedby={inputError ? `${id}-err` : undefined}
-          autoComplete="off"
-          spellCheck={false}
-        />
-        {inputError ? (
-          <p id={`${id}-err`} className="field-error" role="alert">
-            {inputError}
-          </p>
-        ) : null}
-        <button type="submit" className="btn btn-primary btn-block" disabled={mutation.isPending}>
-          {mutation.isPending ? "در حال بررسی…" : "بررسی گواهی"}
-          <Icon name="shield-check" size={18} />
-        </button>
-      </form>
+      <div className="verify-tabs" role="tablist" aria-label="روش استعلام">
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            ref={(el) => {
+              tabRefs.current[t.id] = el;
+            }}
+            type="button"
+            role="tab"
+            id={`${id}-tab-${t.id}`}
+            aria-controls={`${id}-panel-${t.id}`}
+            aria-selected={tab === t.id}
+            tabIndex={tab === t.id ? 0 : -1}
+            onKeyDown={(e) => onTabKey(e, t.id)}
+            onClick={() => {
+              if (tab !== t.id) mutation.reset();
+              setTab(t.id);
+            }}
+          >
+            <Icon name={t.icon} size={16} />
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {tab === "scan" ? (
+        <div role="tabpanel" id={`${id}-panel-scan`} aria-labelledby={`${id}-tab-scan`} className="verify-panel">
+          <QrScanner
+            onDetect={(text) => {
+              setRaw(text);
+              submitToken(text);
+            }}
+            onPaste={() => setTab("paste")}
+          />
+        </div>
+      ) : (
+        <form
+          role="tabpanel"
+          id={`${id}-panel-paste`}
+          aria-labelledby={`${id}-tab-paste`}
+          className="verify-form verify-panel"
+          noValidate
+          onSubmit={(e) => {
+            e.preventDefault();
+            submitToken(raw);
+          }}
+        >
+          <label htmlFor={`${id}-token`} className="field-label">
+            نشانی یا کد تأیید
+          </label>
+          <textarea
+            id={`${id}-token`}
+            className="text-input verify-form__input latin"
+            dir="ltr"
+            rows={3}
+            value={raw}
+            onChange={(e) => setRaw(e.target.value)}
+            placeholder="https://…/verify/…"
+            aria-invalid={inputError ? true : undefined}
+            aria-describedby={inputError ? `${id}-err` : undefined}
+            autoComplete="off"
+            spellCheck={false}
+          />
+          {inputError ? (
+            <p id={`${id}-err`} className="field-error" role="alert">
+              {inputError}
+            </p>
+          ) : null}
+          <button type="submit" className="btn btn-primary btn-block" disabled={mutation.isPending}>
+            {mutation.isPending ? "در حال بررسی…" : "بررسی گواهی"}
+            <Icon name="shield-check" size={18} />
+          </button>
+        </form>
+      )}
 
       {mutation.isError ? (
         <div className="verify-result" data-tone="danger" role="alert">
@@ -162,7 +246,16 @@ function VerifyCertificateDialog({
       {verifyOffline ? (
         <p className="verify-foot">
           گواهی بدون اینترنت در دست دارید؟{" "}
-          <Link href={verifyOffline} className="text-link">
+          <Link
+            href={verifyOffline}
+            className="text-link"
+            onClick={(e) => {
+              // پنجره بسته شود (در هر صفحه)؛ در خود پرتال: پیمایش نرم تا کارت آفلاین + درخشش + فوکوس.
+              onOpenChange(false);
+              mutation.reset();
+              if (requestVerifyJump()) e.preventDefault();
+            }}
+          >
             بازرسی با مشخصات چاپی و کد کوتاه
           </Link>
         </p>

@@ -137,7 +137,11 @@ export function Portal() {
         )}
       </div>
       <Waitlist onAccepted={(c) => focusStay(c)} />
-      <PastStays onOpen={focusStay} />
+      <PastStays
+        onOpen={focusStay}
+        upcoming={[...active].sort((x, y) => x.start.localeCompare(y.start))[0] ?? null}
+        canBook={standing.data?.can_book}
+      />
       {profile ? <AccountSecurity profile={profile} /> : null}
       <Companion unitCode={featured && featured.is_active ? featured.unit_code : null} />
       <VerifySection />

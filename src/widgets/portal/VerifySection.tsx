@@ -1,12 +1,16 @@
 "use client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { VerifyCertificateButton } from "@/features/verify-certificate/VerifyCertificate";
 import { type OfflineFields, checkOffline } from "@/shared/api/portal";
-import { propertyQuery } from "@/shared/api/queries";
-import { faDigits } from "@/shared/lib/fa";
+import { configQuery, propertyQuery } from "@/shared/api/queries";
+import { addDays, faDigits, tehranToday } from "@/shared/lib/fa";
+import { jalaliNumeric } from "@/shared/lib/jalali";
+import { VERIFY_HASH, VERIFY_JUMP_EVENT } from "@/shared/lib/verify-jump";
 import { Icon } from "@/shared/ui/Icon";
+import { JalaliDatePicker } from "@/shared/ui/JalaliDatePicker";
 import { Stepper } from "@/shared/ui/Stepper";
+import { TimePicker, type TimePreset } from "@/shared/ui/TimePicker";
 import { certificateStamp, normalizeCode, normalizeShortCode } from "./model";
 import { SectionHead } from "./parts";
 
@@ -38,8 +42,52 @@ const EMPTY: Draft = {
  * ۸ نویسه‌ای. کد کوتاه HMAC کلیددار سرور است (نه هش قابل‌بازسازی طرح اولیه) ⇒ بی کلید سرور جعل‌ناپذیر.
  */
 export function VerifySection() {
+  const sectionRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    let timers: number[] = [];
+    let userMoved = false;
+    const markMoved = () => {
+      userMoved = true;
+    };
+    const go = () => {
+      const section = sectionRef.current;
+      const card = section?.querySelector<HTMLElement>(".pt-verify__offline");
+      if (!section || !card) return;
+      timers.forEach((t) => window.clearTimeout(t));
+      userMoved = false;
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const align = (smooth: boolean) => {
+        if (!userMoved) card.scrollIntoView({ behavior: smooth && !reduce ? "smooth" : "auto", block: "start" });
+      };
+      align(true);
+      card.removeAttribute("data-flash");
+      void card.offsetWidth; // بازآغاز انیمیشن درخشش در کلیک‌های پیاپی
+      card.setAttribute("data-flash", "");
+      timers = [
+        // بخش‌های بالایی (سفر جاری/سابقه) ممکن است دیرتر بارگذاری و جابه‌جا شوند ⇒ تراز دوباره.
+        window.setTimeout(() => align(false), 900),
+        window.setTimeout(
+          () => {
+            card.querySelector<HTMLElement>("input, button")?.focus({ preventScroll: true });
+          },
+          reduce ? 50 : 650,
+        ),
+        window.setTimeout(() => card.removeAttribute("data-flash"), 2600),
+      ];
+    };
+    window.addEventListener(VERIFY_JUMP_EVENT, go);
+    window.addEventListener("wheel", markMoved, { passive: true });
+    window.addEventListener("touchmove", markMoved, { passive: true });
+    if (window.location.hash === VERIFY_HASH) timers.push(window.setTimeout(go, 150));
+    return () => {
+      timers.forEach((t) => window.clearTimeout(t));
+      window.removeEventListener(VERIFY_JUMP_EVENT, go);
+      window.removeEventListener("wheel", markMoved);
+      window.removeEventListener("touchmove", markMoved);
+    };
+  }, []);
   return (
-    <section className="pt-section" aria-labelledby="pt-verify-title" id="verify">
+    <section ref={sectionRef} className="pt-section" aria-labelledby="pt-verify-title" id="verify">
       <SectionHead
         id="pt-verify-title"
         icon="shield-check"
@@ -53,8 +101,8 @@ export function VerifySection() {
           </span>
           <h3>استعلام برخط با QR</h3>
           <p>
-            QR روی گواهی را با دوربین گوشی اسکن کنید یا نشانی زیر آن را این‌جا بچسبانید؛ امضای دیجیتال روی سرور مهدیه
-            بررسی و با وضعیت لحظه‌ای رزرو تطبیق داده می‌شود.
+            QR روی گواهی را <b>همین‌جا با دوربین</b> اسکن کنید، عکس آن را برگزینید یا نشانی زیرش را بچسبانید؛ امضای
+            دیجیتال روی سرور مهدیه بررسی و با وضعیت لحظه‌ای رزرو تطبیق داده می‌شود.
           </p>
           <VerifyCertificateButton className="btn btn-primary btn-block" />
         </article>
@@ -64,6 +112,18 @@ export function VerifySection() {
   );
 }
 
+/** مرز سانس‌ها از ‎/config.lattice‎ (پیش‌فرض ۰۸:۰۰ و ۲۰:۰۰) ⇒ ساعت‌های پرکاربرد روی گواهی. */
+function stampPresets(lattice: Record<string, number> | undefined): TimePreset[] {
+  const start = lattice?.grid_start_hour ?? 8;
+  const cell = lattice?.cell_hours ?? 12;
+  const count = Math.max(1, Math.min(lattice?.cells_per_day ?? 2, 4));
+  return Array.from({ length: count }, (_, k) => {
+    const h = (start + k * cell) % 24;
+    const label = count === 2 ? (k === 0 ? "آغاز سانس روز" : "آغاز سانس شب") : `آغاز سانس ${faDigits(k + 1)}`;
+    return { value: `${String(h).padStart(2, "0")}:00`, label };
+  });
+}
+
 function OfflineVerify() {
   const id = useId();
   const property = useQuery(propertyQuery);
@@ -71,8 +131,11 @@ function OfflineVerify() {
   const [touched, setTouched] = useState(false);
   const units = property.data?.flatMap((f) => f.units.map((u) => ({ ...u, floor: f.number }))) ?? [];
   const unit = units.find((u) => u.code === d.unit);
-  const starts = certificateStamp(d.startDate, d.startTime);
-  const ends = certificateStamp(d.endDate, d.endTime);
+  const config = useQuery(configQuery);
+  const presets = stampPresets(config.data?.lattice);
+  const today = tehranToday();
+  const starts = d.startDate ? certificateStamp(jalaliNumeric(d.startDate), d.startTime) : null;
+  const ends = d.endDate ? certificateStamp(jalaliNumeric(d.endDate), d.endTime) : null;
   const short = normalizeShortCode(d.short);
   const missing = {
     code: !normalizeCode(d.code),
@@ -183,51 +246,58 @@ function OfflineVerify() {
           />
         </div>
 
-        <div className="pt-offline__grid">
+        <div className="pt-offline__grid pt-offline__stamps">
           <fieldset className="pt-field pt-stamp">
             <legend className="field-label">آغاز پذیرش (ورود)</legend>
-            <input
-              className="text-input"
-              dir="ltr"
-              inputMode="numeric"
-              value={d.startDate}
-              onChange={(e) => set("startDate", e.target.value)}
-              placeholder="۱۴۰۵/۰۸/۱۰"
-              aria-label="تاریخ ورود"
-              aria-invalid={err("starts")}
+            <JalaliDatePicker
+              anchor="stamp-start-date"
+              label="تاریخ ورود"
+              value={d.startDate || null}
+              onChange={(v) => {
+                set("startDate", v ?? "");
+                if (v && d.endDate && d.endDate < v) set("endDate", "");
+              }}
+              quick={[
+                { label: "دیروز", value: addDays(today, -1) },
+                { label: "امروز", value: today },
+                { label: "فردا", value: addDays(today, 1) },
+              ]}
+              invalid={err("starts")}
             />
-            <input
-              className="text-input"
-              dir="ltr"
-              inputMode="numeric"
+            <TimePicker
+              anchor="stamp-start-time"
+              label="ساعت ورود"
               value={d.startTime}
-              onChange={(e) => set("startTime", e.target.value)}
-              placeholder="۰۸:۰۰"
-              aria-label="ساعت ورود"
-              aria-invalid={err("starts")}
+              onChange={(v) => set("startTime", v)}
+              presets={presets}
+              invalid={err("starts")}
             />
           </fieldset>
           <fieldset className="pt-field pt-stamp">
             <legend className="field-label">پایان اقامت (تخلیه)</legend>
-            <input
-              className="text-input"
-              dir="ltr"
-              inputMode="numeric"
-              value={d.endDate}
-              onChange={(e) => set("endDate", e.target.value)}
-              placeholder="۱۴۰۵/۰۸/۱۲"
-              aria-label="تاریخ تخلیه"
-              aria-invalid={err("ends")}
+            <JalaliDatePicker
+              anchor="stamp-end-date"
+              label="تاریخ تخلیه"
+              value={d.endDate || null}
+              onChange={(v) => set("endDate", v ?? "")}
+              rangeFrom={d.startDate || null}
+              quick={
+                d.startDate
+                  ? [0, 1, 2].map((n) => ({
+                      label: n === 0 ? "همان روز" : `${faDigits(n)} شبانه‌روز`,
+                      value: addDays(d.startDate, n),
+                    }))
+                  : []
+              }
+              invalid={err("ends")}
             />
-            <input
-              className="text-input"
-              dir="ltr"
-              inputMode="numeric"
+            <TimePicker
+              anchor="stamp-end-time"
+              label="ساعت تخلیه"
               value={d.endTime}
-              onChange={(e) => set("endTime", e.target.value)}
-              placeholder="۲۰:۰۰"
-              aria-label="ساعت تخلیه"
-              aria-invalid={err("ends")}
+              onChange={(v) => set("endTime", v)}
+              presets={presets}
+              invalid={err("ends")}
             />
           </fieldset>
         </div>
@@ -249,7 +319,7 @@ function OfflineVerify() {
 
         {touched && !ok ? (
           <p className="field-error" role="alert">
-            همهٔ مشخصات لازم است؛ تاریخ را به شکل ۱۴۰۵/۰۸/۱۰ یا «۱۰ آبان ۱۴۰۵» و ساعت را به شکل ۰۸:۰۰ وارد کنید.
+            همهٔ مشخصات لازم است؛ تاریخ و ساعت ورود و تخلیه را از تقویم و ساعت، مطابق برگهٔ چاپی برگزینید.
           </p>
         ) : null}
         {check.data ? (

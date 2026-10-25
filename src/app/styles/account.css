@@ -31,14 +31,81 @@
   .account-flow[data-step="phone"] {
     animation: account-step-in var(--base) var(--ease) both;
   }
+  /* ‎align-content/items: start‎ ⇒ دو فیلد کنار هم هم‌تراز می‌مانند حتی اگر یکی متن راهنما/خطای بلندتر
+     داشته باشد (کش آمدن ردیف‌ها، برچسب و ورودی را از هم دور می‌کرد). */
   .acc-field {
     display: grid;
+    align-content: start;
     min-width: 0;
   }
   .acc-row {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
     gap: 14px;
+  }
+
+  /* ── گاوصندوق مدرک هویتی (ویرایش مشخصات): نمای پوشانده، بی‌نیاز از ورود دوباره ── */
+  .id-vault__card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 8px 8px 8px 12px;
+    border: 1px dashed color-mix(in oklab, var(--color-brand) 45%, var(--color-border));
+    border-radius: 12px;
+    background: color-mix(in oklab, var(--color-brand) 6%, var(--color-raised));
+  }
+  .id-vault__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--color-brand-tint);
+    color: var(--color-brand);
+  }
+  .id-vault__body {
+    display: grid;
+    flex: 1;
+    gap: 2px;
+    min-width: 0;
+  }
+  .id-vault__value {
+    justify-self: start;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.08em;
+  }
+  .id-vault__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--color-free-fg);
+    font-size: 0.6875rem;
+    font-weight: 700;
+  }
+  .id-vault__change {
+    flex: none;
+  }
+  .id-vault__cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .id-vault .field-help {
+    margin-top: 6px;
   }
   .account-flow .field-label {
     margin-bottom: 8px;
@@ -450,6 +517,7 @@
   /* ── انتخاب‌گر قابل جست‌وجو (جایگزین select بومی؛ منوی شناور ۱۸px، اسکرول‌بار کپسولی ۵px) ── */
   .combo {
     display: grid;
+    align-content: start;
     min-width: 0;
   }
   .combo__control {
