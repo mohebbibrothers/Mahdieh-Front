@@ -291,7 +291,7 @@ test.describe("P-07 پرتال زائر", () => {
     const journal = page.locator("#history .pt-journal");
     await expect(journal).toContainText("دفتر دل‌نوشته پس از نخستین زیارت گشوده می‌شود");
     await expect(journal.locator(".pt-journal__count")).toContainText("روز تا زیارت");
-    await expect(journal.locator(".pt-journal__steps li")).toHaveCount(3);
+    await expect(journal.locator(".pt-trail__step")).toHaveCount(3);
     await journal.getByRole("button", { name: "مشاهدهٔ سفر پیش‌رو" }).click();
     await expect(page).toHaveURL(/code=M-1405-0011/);
     expect(await horizontalOverflow(page)).toBeNull();

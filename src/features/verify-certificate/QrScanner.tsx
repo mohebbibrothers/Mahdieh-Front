@@ -10,40 +10,115 @@ type DetectorCtor = {
   new (o: { formats: string[] }): Detector;
   getSupportedFormats?: () => Promise<string[]>;
 };
-type Decode = (src: HTMLVideoElement | ImageBitmap) => Promise<string | null>;
+type Source = HTMLVideoElement | ImageBitmap | HTMLImageElement;
+type Decode = (src: Source) => Promise<string | null>;
+type Decoder = { frame: Decode; still: Decode };
 type Status = "starting" | "scanning" | "found" | "denied" | "nocamera" | "insecure" | "error";
 
-const FRAME_MS = 125; // ≈ ۸ فریم در ثانیه — باتری و گرمای گوشی
-const MAX_SIDE = 640; // کوچک‌سازی پیش از ‎jsQR‎
+const FRAME_MS = 110; // ≈ ۹ فریم در ثانیه — باتری و گرمای گوشی
 
-/** رمزگشای QR: بومی اگر باشد، وگرنه ‎jsQR‎ (بارگذاری تنبل، فقط وقتی دوربین/عکس لازم شد). */
-async function createDecoder(): Promise<Decode> {
+/** یک «برش» از منبع: کسری از مرکز (۱ = کل تصویر) با بزرگ‌ترین ضلع ‎max‎ پیکسل. */
+type Crop = { frac: number; max: number };
+/** فریم دوربین: نوبتی مرکز کادر با وضوح بالا (QR دور/کوچک) و کل فریم (QR نزدیک/کج). */
+const FRAME_CROPS: Crop[] = [
+  { frac: 0.72, max: 760 },
+  { frac: 1, max: 900 },
+];
+/** عکس گالری: از درشت به ریز — QR کوچکِ گوشهٔ عکس گوشی هم با وضوح کافی خوانده شود. */
+const STILL_CROPS: Crop[] = [
+  { frac: 1, max: 1400 },
+  { frac: 1, max: 900 },
+  { frac: 0.6, max: 1200 },
+  { frac: 1, max: 520 },
+  { frac: 0.4, max: 900 },
+];
+
+const sizeOf = (src: Source) =>
+  src instanceof HTMLVideoElement
+    ? [src.videoWidth, src.videoHeight]
+    : src instanceof HTMLImageElement
+      ? [src.naturalWidth, src.naturalHeight]
+      : [src.width, src.height];
+
+/**
+ * رمزگشای QR دولایه: ‎BarcodeDetector‎ بومی (سریع، سخت‌افزاری) و ‎jsQR‎ (بارگذاری تنبل) روی چند برش و
+ * مقیاس. ‎jsQR‎ تصویر را خودش به سیاه/سفید تطبیقی می‌برد و هر دو حالت معمولی/وارونه را می‌آزماید.
+ */
+async function createDecoder(): Promise<Decoder> {
+  let native: Detector | null = null;
   const Native = (window as unknown as { BarcodeDetector?: DetectorCtor }).BarcodeDetector;
   if (Native) {
     try {
       const formats = (await Native.getSupportedFormats?.()) ?? ["qr_code"];
-      if (formats.includes("qr_code")) {
-        const det = new Native({ formats: ["qr_code"] });
-        return async (src) => (await det.detect(src))[0]?.rawValue ?? null;
-      }
+      if (formats.includes("qr_code")) native = new Native({ formats: ["qr_code"] });
     } catch {
-      /* پشتیبانی ناقص ⇒ jsQR */
+      native = null; // پشتیبانی ناقص ⇒ فقط jsQR
     }
   }
   const { default: jsQR } = await import("jsqr");
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
-  return async (src) => {
-    const w = src instanceof HTMLVideoElement ? src.videoWidth : src.width;
-    const h = src instanceof HTMLVideoElement ? src.videoHeight : src.height;
+
+  const viaNative = async (src: Source) => {
+    if (!native) return null;
+    try {
+      return (await native.detect(src))[0]?.rawValue ?? null;
+    } catch {
+      return null;
+    }
+  };
+  const viaJsQR = (src: Source, { frac, max }: Crop) => {
+    const [w = 0, h = 0] = sizeOf(src);
     if (!ctx || !w || !h) return null;
-    const k = Math.min(1, MAX_SIDE / Math.max(w, h));
-    canvas.width = Math.round(w * k);
-    canvas.height = Math.round(h * k);
-    ctx.drawImage(src, 0, 0, canvas.width, canvas.height);
+    const sw = Math.round(frac === 1 ? w : Math.min(w, h) * frac);
+    const sh = Math.round(frac === 1 ? h : Math.min(w, h) * frac);
+    const k = Math.min(1, max / Math.max(sw, sh));
+    canvas.width = Math.max(1, Math.round(sw * k));
+    canvas.height = Math.max(1, Math.round(sh * k));
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(src, (w - sw) / 2, (h - sh) / 2, sw, sh, 0, 0, canvas.width, canvas.height);
     const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
     return jsQR(img.data, img.width, img.height, { inversionAttempts: "attemptBoth" })?.data ?? null;
   };
+
+  let tick = 0;
+  return {
+    frame: async (src) => {
+      const found = await viaNative(src);
+      if (found) return found;
+      tick = (tick + 1) % FRAME_CROPS.length;
+      return viaJsQR(src, FRAME_CROPS[tick]!);
+    },
+    still: async (src) => {
+      const found = await viaNative(src);
+      if (found) return found;
+      for (const crop of STILL_CROPS) {
+        const text = viaJsQR(src, crop);
+        if (text) return text;
+        await new Promise((r) => setTimeout(r, 0)); // رابط کاربری روان بماند
+      }
+      return null;
+    },
+  };
+}
+
+/** بارگذاری عکس: ‎createImageBitmap‎ (با چرخش EXIF)؛ اگر نشد (مثلاً HEIC در برخی مرورگرها) ⇒ ‎<img>‎. */
+async function loadImage(file: File): Promise<{ src: ImageBitmap | HTMLImageElement; done: () => void }> {
+  try {
+    const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+    return { src: bitmap, done: () => bitmap.close() };
+  } catch {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.src = url;
+    try {
+      await img.decode();
+    } catch (e) {
+      URL.revokeObjectURL(url);
+      throw e;
+    }
+    return { src: img, done: () => URL.revokeObjectURL(url) };
+  }
 }
 
 const MESSAGES: Record<Exclude<Status, "starting" | "scanning" | "found">, { title: string; body: string }> = {
@@ -70,12 +145,20 @@ const MESSAGES: Record<Exclude<Status, "starting" | "scanning" | "found">, { tit
  * دستگاه پشتیبانی کند)، و انتخاب عکس QR از گالری. فقط QRهایی پذیرفته می‌شوند که پیوند گواهی مهدیه باشند.
  * با بسته‌شدن پنجره یا تعویض زبانه، جریان دوربین فوراً قطع می‌شود (چراغ دوربین خاموش).
  */
-export function QrScanner({ onDetect, onPaste }: { onDetect: (text: string) => void; onPaste: () => void }) {
+export function QrScanner({
+  onDetect,
+  onPaste,
+  checking = false,
+}: {
+  onDetect: (text: string) => void;
+  onPaste: () => void;
+  checking?: boolean;
+}) {
   const hintId = useId();
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const timerRef = useRef<number | null>(null);
-  const decoderRef = useRef<Promise<Decode> | null>(null);
+  const decoderRef = useRef<Promise<Decoder> | null>(null);
   const onDetectRef = useRef(onDetect);
   const [status, setStatus] = useState<Status>("starting");
   const [attempt, setAttempt] = useState(0);
@@ -124,7 +207,7 @@ export function QrScanner({ onDetect, onPaste }: { onDetect: (text: string) => v
       if (cancelled || !video || !streamRef.current) return;
       if (video.readyState >= 2) {
         try {
-          if (acceptRef.current(await (await decoder())(video))) return;
+          if (acceptRef.current(await (await decoder()).frame(video))) return;
         } catch {
           /* فریم ناقص — فریم بعد */
         }
@@ -137,13 +220,22 @@ export function QrScanner({ onDetect, onPaste }: { onDetect: (text: string) => v
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: false,
-          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
+          video: { facingMode: { ideal: "environment" }, width: { ideal: 1920 }, height: { ideal: 1080 } },
         });
         if (cancelled) return stream.getTracks().forEach((t) => t.stop());
         streamRef.current = stream;
         const track = stream.getVideoTracks()[0];
-        const caps = (track?.getCapabilities?.() ?? {}) as MediaTrackCapabilities & { torch?: boolean };
+        const caps = (track?.getCapabilities?.() ?? {}) as MediaTrackCapabilities & {
+          torch?: boolean;
+          focusMode?: string[];
+        };
         setTorch(caps.torch ? false : null);
+        // فوکوس خودکار پیوسته (اندروید): QR نزدیک کاغذ تار نماند
+        if (caps.focusMode?.includes("continuous")) {
+          void track
+            ?.applyConstraints({ advanced: [{ focusMode: "continuous" } as MediaTrackConstraintSet] })
+            .catch(() => undefined);
+        }
         setMirror(track?.getSettings().facingMode === "user");
         const video = videoRef.current;
         if (!video) return;
@@ -194,9 +286,13 @@ export function QrScanner({ onDetect, onPaste }: { onDetect: (text: string) => v
     if (!file) return;
     setFileBusy(true);
     try {
-      const bitmap = await createImageBitmap(file);
-      const text = await (await decoder())(bitmap);
-      bitmap.close();
+      const image = await loadImage(file);
+      let text: string | null;
+      try {
+        text = await (await decoder()).still(image.src);
+      } finally {
+        image.done();
+      }
       if (!text) setStatusMessage("در این عکس QR خوانا پیدا نشد. عکس واضح‌تر و نزدیک‌تری انتخاب کنید.");
       else if (!acceptRef.current(text)) setStatusMessage("این QR متعلق به گواهی اقامت مهدیه نیست.");
     } catch {
@@ -269,7 +365,9 @@ export function QrScanner({ onDetect, onPaste }: { onDetect: (text: string) => v
 
       <p className="qr-scan__hint" id={hintId} role="status" data-tone={foreign || statusMessage ? "warn" : undefined}>
         {status === "found"
-          ? "QR گواهی خوانده شد؛ در حال بررسی امضا…"
+          ? checking
+            ? "QR گواهی خوانده شد؛ در حال بررسی امضا روی سرور مهدیه…"
+            : "QR گواهی خوانده شد؛ نتیجهٔ بررسی را پایین ببینید."
           : statusMessage
             ? statusMessage
             : foreign
@@ -287,7 +385,7 @@ export function QrScanner({ onDetect, onPaste }: { onDetect: (text: string) => v
             <Icon name="scan" size={16} /> اسکن گواهی دیگر
           </button>
         ) : null}
-        <label className={cx("btn btn-ghost btn-sm qr-scan__file", fileBusy && "is-busy")}>
+        <label className={cx("btn btn-secondary btn-sm qr-scan__file", fileBusy && "is-busy")}>
           <Icon name="image" size={16} />
           {fileBusy ? "در حال خواندن عکس…" : "انتخاب عکس QR"}
           <input

@@ -1600,6 +1600,169 @@
     gap: 8px;
     justify-items: start;
   }
+  /* عنوانِ گروه ریزامتیازها: ‎legend‎ شناور ⇒ عضو عادی شبکه (نه چسبیده به لبهٔ بالای کادر) */
+  .feedback-form__subs-title {
+    float: inline-start;
+    grid-column: 1 / -1;
+    width: 100%;
+    padding: 0;
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+  .feedback-form__subs-title span,
+  .feedback-form__note .field-label span {
+    color: var(--color-text-muted);
+    font-weight: 500;
+  }
+  .feedback-form__note {
+    display: grid;
+    gap: 8px;
+  }
+  .feedback-form__note textarea {
+    min-height: 112px;
+    resize: vertical;
+    line-height: 1.9;
+  }
+  .feedback-form__note textarea::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.85;
+  }
+  .feedback-form__count {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    text-align: end;
+  }
+  .feedback-form__count[data-low] {
+    color: var(--color-warn-fg);
+  }
+  .feedback-form__need {
+    flex: 1 1 100%;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    text-align: center;
+  }
+
+  /* پس از ثبت — مُهر دفتر، قدردانی و بازتاب دل‌نوشته */
+  .fb-done {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    padding: 6px 0 2px;
+    text-align: center;
+  }
+  .fb-done__seal {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: linear-gradient(160deg, var(--color-brand), color-mix(in oklab, var(--color-brand) 70%, #000));
+    color: var(--color-on-brand);
+    box-shadow: 0 10px 28px -10px color-mix(in oklab, var(--color-brand) 70%, transparent);
+  }
+  .fb-done__seal::after {
+    content: "";
+    position: absolute;
+    inset: -6px;
+    border: 1.5px dashed color-mix(in oklab, var(--color-gold) 70%, transparent);
+    border-radius: 50%;
+  }
+  .fb-done[data-fresh] .fb-done__seal {
+    animation: fb-seal 0.7s var(--ease) both;
+  }
+  .fb-done[data-fresh] .fb-done__seal::after {
+    animation: fb-ring 14s linear infinite;
+  }
+  @keyframes fb-seal {
+    from {
+      opacity: 0;
+      transform: scale(0.6) rotate(-14deg);
+    }
+    60% {
+      transform: scale(1.06) rotate(3deg);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes fb-ring {
+    to {
+      rotate: 360deg;
+    }
+  }
+  .fb-done__title {
+    margin: 6px 0 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    text-wrap: balance;
+  }
+  .fb-done__lead {
+    max-width: 44ch;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    line-height: 1.95;
+    text-wrap: pretty;
+  }
+  .fb-done__card {
+    display: grid;
+    gap: 12px;
+    width: 100%;
+    margin: 8px 0 0;
+    padding: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    background: var(--color-canvas);
+    text-align: start;
+  }
+  .fb-done__rating {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    font-size: 0.8125rem;
+    font-weight: 650;
+  }
+  .fb-done__stars {
+    display: inline-flex;
+    gap: 2px;
+    color: var(--color-gold);
+  }
+  .fb-done__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-inline-start: auto;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--color-brand) 14%, transparent);
+    color: var(--color-text);
+    font-size: 0.75rem;
+  }
+  .fb-done__quote {
+    position: relative;
+    margin: 0;
+    padding-block: 2px;
+    padding-inline-start: 14px;
+    border-inline-start: 3px solid color-mix(in oklab, var(--color-gold) 75%, transparent);
+  }
+  .fb-done__quote p {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 2;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fb-done[data-fresh] .fb-done__seal,
+    .fb-done[data-fresh] .fb-done__seal::after {
+      animation: none;
+    }
+  }
 
   /* بی‌انتخاب: رزروها و میان‌بُرها */
   .res-list {
@@ -1934,6 +2097,22 @@
     }
     .feedback-form__subs {
       grid-template-columns: minmax(0, 1fr);
+      gap: 4px;
+      padding: 12px 14px;
+    }
+    /* موبایل: برچسب و ستاره‌ها در یک ردیف ⇒ نصف ارتفاع */
+    .feedback-form__subs .stars {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 8px;
+    }
+    .feedback-form__subs .stars legend {
+      float: inline-start;
+      margin: 0;
+      padding: 0;
+    }
+    .feedback-form__subs .stars__item {
+      min-width: 30px;
     }
     .stay-timeline {
       padding: 18px;

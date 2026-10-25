@@ -362,6 +362,8 @@
     color: var(--pt-em-ink);
   }
   .pt-guest__form {
+    display: grid;
+    min-width: 0;
     padding: clamp(16px, 2vw, 22px);
     border: 1px solid var(--pt-line);
     border-radius: 16px;
@@ -1332,6 +1334,10 @@
     color: var(--color-text-muted);
     font-size: 12px;
   }
+  .pt-soft--wait {
+    background: var(--pt-em-soft);
+    color: var(--pt-em-ink);
+  }
   .pt-soft--warn {
     background: var(--color-warn-bg);
     color: var(--color-warn-fg);
@@ -1489,14 +1495,15 @@
     display: inline-flex;
     align-items: center;
     gap: 12px;
-    padding: 8px 16px 8px 8px;
+    max-width: 100%;
+    padding: 7px 18px 7px 7px;
     border: 1px solid var(--pt-em-line);
     border-radius: 999px;
     background: var(--pt-em-soft);
-    font-size: 13px;
   }
   .pt-journal__count strong {
     display: grid;
+    flex: none;
     place-items: center;
     min-width: 44px;
     height: 44px;
@@ -1508,83 +1515,188 @@
     font-weight: 800;
     font-variant-numeric: tabular-nums;
   }
-  .pt-journal__count span {
-    color: var(--color-text);
-    font-weight: 600;
+  .pt-journal__count > span {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
   }
-  .pt-journal__steps {
+  .pt-journal__count b {
+    color: var(--color-text);
+    font-size: 13.5px;
+    font-weight: 800;
+  }
+  .pt-journal__count small {
+    color: var(--color-text-muted);
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  /* ── مسیر سه‌گام (اقامت ← تخلیه ← دفتر) ──
+   * افقی: سه ستون برابر، گره‌ها وسط ستون؛ ریل از مرکز گره نخست تا مرکز گره آخر (۱/۶ تا ۵/۶ عرض) و
+   * پیشرفت ‎--p‎ (۰، ½، ۱) با گذار نرم روی آن پر می‌شود. عمودی (کانتینر تنگ): ریل از مرکز گره‌ها پایین می‌رود.
+   * چیدمان با Container Query ⇒ به عرض خود کارت حساس است، نه پهنای صفحه (لپ‌تاپ، تبلت، گوشی). */
+  .pt-journal__body {
+    container: pt-journal / inline-size;
+    min-width: 0;
+  }
+  .pt-trail {
+    --node: 36px;
+    --p: 0;
+    position: relative;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
     width: 100%;
-    margin: 4px 0 2px;
+    margin: 6px 0 4px;
     padding: 0;
     list-style: none;
   }
-  .pt-journal__steps li {
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    min-width: 0;
+  .pt-trail[data-stage="1"] {
+    --p: 0.5;
   }
-  .pt-journal__steps li:not(:last-child)::after {
+  .pt-trail[data-stage="2"] {
+    --p: 1;
+  }
+  .pt-trail::before,
+  .pt-trail::after {
     content: "";
     position: absolute;
-    inset-block-start: 14px;
-    inset-inline: 36px -6px;
-    height: 2px;
-    border-radius: 2px;
-    background: repeating-linear-gradient(to left, var(--pt-line) 0 6px, transparent 6px 10px);
-    z-index: 0;
+    inset-block-start: calc(var(--node) / 2 - 1.5px);
+    inset-inline-start: calc(100% / 6);
+    height: 3px;
+    border-radius: 3px;
   }
-  .pt-journal__steps li[data-state="done"]::after {
-    background: var(--pt-em);
+  .pt-trail::before {
+    width: calc(100% * 2 / 3);
+    background: repeating-linear-gradient(
+      to left,
+      color-mix(in oklab, var(--pt-line) 100%, var(--color-text) 12%) 0 7px,
+      transparent 7px 12px
+    );
   }
-  .pt-journal__dot {
+  .pt-trail::after {
+    width: calc(100% * 2 / 3 * var(--p));
+    background: linear-gradient(to left, var(--pt-em), color-mix(in oklab, var(--pt-em) 70%, var(--color-gold)));
+    box-shadow: 0 0 12px -2px color-mix(in oklab, var(--pt-em) 70%, transparent);
+    transition: width 900ms var(--ease);
+  }
+  @starting-style {
+    .pt-trail::after {
+      width: 0;
+    }
+  }
+  .pt-trail__step {
     position: relative;
     z-index: 1;
     display: grid;
-    flex: none;
+    justify-items: center;
+    align-content: start;
+    gap: 8px;
+    min-width: 0;
+    padding-inline: 6px;
+    text-align: center;
+  }
+  .pt-trail__node {
+    display: grid;
     place-items: center;
-    width: 30px;
-    height: 30px;
-    border: 2px solid var(--pt-line);
+    width: var(--node);
+    height: var(--node);
+    border: 2px dashed color-mix(in oklab, var(--pt-line) 100%, var(--color-text) 18%);
     border-radius: 50%;
     background: var(--color-surface);
     color: var(--color-text-muted);
+    transition:
+      background-color var(--base) var(--ease),
+      border-color var(--base) var(--ease),
+      color var(--base) var(--ease);
   }
-  .pt-journal__steps li[data-state="current"] .pt-journal__dot {
-    border-color: var(--pt-em);
-    color: var(--pt-em);
-    box-shadow: 0 0 0 5px var(--pt-em-soft);
-  }
-  .pt-journal__steps li[data-state="done"] .pt-journal__dot {
-    border-color: var(--pt-em);
+  .pt-trail__step[data-state="done"] .pt-trail__node {
+    border: 2px solid var(--pt-em);
     background: var(--pt-em);
     color: var(--color-on-brand);
   }
-  .pt-journal__steps li > span:last-child {
+  .pt-trail__step[data-state="current"] .pt-trail__node {
+    border: 2px solid var(--pt-em);
+    color: var(--pt-em-ink);
+    background: color-mix(in oklab, var(--pt-em) 12%, var(--color-surface));
+    animation: pt-trail-pulse 2.4s var(--ease) infinite;
+  }
+  @keyframes pt-trail-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 color-mix(in oklab, var(--pt-em) 45%, transparent);
+    }
+    60% {
+      box-shadow: 0 0 0 9px transparent;
+    }
+  }
+  .pt-trail__text {
     display: grid;
     gap: 2px;
     min-width: 0;
-    padding-top: 4px;
-    background: var(--color-surface);
-    position: relative;
-    z-index: 1;
-    padding-inline-end: 6px;
   }
-  .pt-journal__steps b {
+  .pt-trail__text b {
+    color: var(--color-text);
     font-size: 13px;
+    font-weight: 800;
   }
-  .pt-journal__steps small {
+  .pt-trail__step[data-state="next"] .pt-trail__text b {
+    color: var(--color-text-muted);
+  }
+  .pt-trail__text small {
     color: var(--color-text-muted);
     font-size: 11.5px;
-    line-height: 1.7;
+    line-height: 1.75;
+    text-wrap: balance;
+  }
+  /* کانتینر تنگ ⇒ مسیر عمودی: گره در ستون آغاز، متن کنارش؛ ریل از مرکز گره نخست تا آخر */
+  @container pt-journal (max-width: 520px) {
+    .pt-trail {
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+    .pt-trail::before,
+    .pt-trail::after {
+      inset-block-start: calc(var(--node) / 2);
+      inset-inline-start: calc(var(--node) / 2 - 1.5px);
+      width: 3px;
+    }
+    .pt-trail::before {
+      height: calc(100% - var(--node));
+      background: repeating-linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--pt-line) 100%, var(--color-text) 12%) 0 7px,
+        transparent 7px 12px
+      );
+    }
+    .pt-trail::after {
+      height: calc((100% - var(--node)) * var(--p));
+      background: linear-gradient(to bottom, var(--pt-em), color-mix(in oklab, var(--pt-em) 70%, var(--color-gold)));
+      transition: height 900ms var(--ease);
+    }
+    @starting-style {
+      .pt-trail::after {
+        height: 0;
+      }
+    }
+    .pt-trail__step {
+      grid-template-columns: var(--node) minmax(0, 1fr);
+      justify-items: start;
+      align-items: center;
+      gap: 12px;
+      padding-inline: 0;
+      text-align: start;
+    }
+    .pt-journal__count {
+      border-radius: 18px;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
-    .pt-journal__book {
+    .pt-journal__book,
+    .pt-trail__step[data-state="current"] .pt-trail__node {
       animation: none;
+    }
+    .pt-trail::after {
+      transition: none;
     }
   }
   @media (max-width: 760px) {
@@ -1596,23 +1708,6 @@
     }
     .pt-journal__book {
       width: 96px;
-    }
-    .pt-journal__steps {
-      grid-template-columns: 1fr;
-      gap: 12px;
-    }
-    .pt-journal__steps li:not(:last-child)::after {
-      inset-block: 34px -10px;
-      inset-inline: 14px auto;
-      width: 2px;
-      height: auto;
-      background: repeating-linear-gradient(to bottom, var(--pt-line) 0 6px, transparent 6px 10px);
-    }
-    .pt-journal__steps li[data-state="done"]::after {
-      background: var(--pt-em);
-    }
-    .pt-journal__count {
-      border-radius: 18px;
     }
   }
 
@@ -2289,6 +2384,16 @@
     .pt-deck {
       padding: 24px 16px;
     }
+    /* مهمان: کارتِ میانی تخت ⇒ فقط دو لایه (عرشه + کارت فرم)، نه سه قاب تو در تو در عرض گوشی */
+    .pt-guest {
+      gap: 18px;
+      padding: 0;
+      border: 0;
+      background: none;
+    }
+    .pt-guest__form {
+      padding: 18px 16px;
+    }
     .pt-deck__actions {
       flex-direction: column;
       align-items: stretch;
@@ -2424,9 +2529,15 @@
       display: grid;
       gap: 12px;
     }
+    /* کارت فشرده: سرِ کارت = کد + وضعیت · بدنه = واحد، بازه و نفرات · پا = ارزیابی */
     .pt-table tbody tr {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) auto;
+      grid-template-areas:
+        "code   status"
+        "unit   unit"
+        "range  guests"
+        "fb     fb";
       overflow: hidden;
       border: 1px solid var(--pt-line);
       border-radius: 18px;
@@ -2438,8 +2549,9 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 6px;
+      min-width: 0;
       padding: 12px 16px;
-      border-bottom: 1px dashed var(--pt-line);
+      border-bottom: 0;
       text-align: start;
     }
     .pt-table td::before {
@@ -2448,19 +2560,53 @@
       font-size: 11.5px;
       font-weight: 600;
     }
-    .pt-table td:first-child,
-    .pt-table td:last-child {
-      grid-column: 1 / -1;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
+    .pt-table td:nth-child(1) {
+      grid-area: code;
+    }
+    .pt-table td:nth-child(2) {
+      grid-area: unit;
+      border-top: 1px dashed var(--pt-line);
+    }
+    .pt-table td:nth-child(3) {
+      grid-area: range;
+      padding-top: 0;
+    }
+    .pt-table td:nth-child(4) {
+      grid-area: guests;
+      padding-top: 0;
+      align-items: flex-end;
+      text-align: end;
+      white-space: nowrap;
+    }
+    .pt-table td:nth-child(5) {
+      grid-area: status;
+      justify-content: center;
+      align-items: flex-end;
+    }
+    /* سرِ کارت: کد و وضعیت خودشان گویا هستند ⇒ برچسب فقط برای صفحه‌خوان */
+    .pt-table td:nth-child(1)::before,
+    .pt-table td:nth-child(5)::before {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+    .pt-table td:nth-child(1),
+    .pt-table td:nth-child(5) {
+      position: relative;
       background: var(--pt-ground);
     }
     .pt-table td:last-child {
-      border-bottom: 0;
-    }
-    .pt-table td:nth-child(2) {
-      grid-column: 1 / -1;
+      grid-area: fb;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px dashed var(--pt-line);
+      background: var(--pt-ground);
     }
     .pt-cell2 {
       align-items: flex-start;
@@ -2526,12 +2672,6 @@
     }
     .pt-quota {
       white-space: normal;
-    }
-    .pt-table tbody tr {
-      grid-template-columns: 1fr;
-    }
-    .pt-table td {
-      grid-column: 1 / -1;
     }
     .pt-amenities {
       padding: 14px;

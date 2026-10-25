@@ -137,6 +137,23 @@ export const feedbackStateSchema = z.object({
   rating_labels: z.record(z.string(), z.string()),
   subscores: z._default(z.array(z.object({ field: z.string(), label: z.string() })), []),
   comment_max_length: z.number(),
+  /** خلاصهٔ همان سفر (برای زیرعنوان پنجره) — سرور همیشه می‌فرستد؛ نسخه‌های قدیمی ⇒ ‎null‎ */
+  reservation: z.nullish(
+    z.object({
+      code: z.string(),
+      unit_title: z.optional(z.string()),
+      date_jalali: z.optional(z.string()),
+      duration_label: z.optional(z.string()),
+    }),
+  ),
+  /** پاسخ ثبت‌شده (فقط ‎state=submitted‎) — بازتاب دل‌نوشتهٔ زائر */
+  submitted: z.nullish(
+    z.object({
+      rating: z.number(),
+      would_recommend: z.nullish(z.boolean()),
+      comment: z.nullish(z.string()),
+    }),
+  ),
 });
 export type FeedbackState = z.infer<typeof feedbackStateSchema>;
 

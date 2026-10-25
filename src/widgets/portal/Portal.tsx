@@ -198,7 +198,7 @@ function GuestInvite() {
           </li>
         </ul>
       </div>
-      <div className="pt-guest__form account-flow account-flow--page">
+      <div className="pt-guest__form">
         <SignInForm
           variant="page"
           phoneLabel="شمارهٔ همراه ثبت‌شده در رزرو"

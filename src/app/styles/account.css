@@ -169,6 +169,10 @@
     font-size: 0.875rem;
     line-height: 1.95;
   }
+  /* شماره هرگز وسطش نشکند («‎+98 919 268‎» / «‎4718‎») */
+  .account-lead bdi {
+    white-space: nowrap;
+  }
   .account-lead > .icon {
     flex: none;
     margin-top: 4px;
@@ -279,7 +283,7 @@
   .otp-field {
     position: relative;
     display: grid;
-    justify-content: center;
+    min-width: 0;
   }
   .otp-field__input {
     position: absolute;
@@ -294,15 +298,27 @@
     opacity: 0;
     cursor: text;
   }
+  /* خانه‌های سیال: تا ۵۴×۶۰ طراح، و در عرض تنگ (برگهٔ ۳۲۰ پیکسلی، کارت تو در تو) کوچک‌تر با همان
+   * نسبت — هرگز بیرون‌زدن از کارت. شمار خانه‌ها از ‎--otp-n‎ (پیش‌فرض ۵). */
   .otp-field__boxes {
-    display: flex;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(var(--otp-n, 5), minmax(0, 54px));
+    justify-content: center;
+    gap: clamp(6px, 2.6vw, 12px);
+  }
+  .otp-field__boxes[data-n="4"] {
+    --otp-n: 4;
+  }
+  .otp-field__boxes[data-n="6"] {
+    --otp-n: 6;
   }
   .otp-field__box {
     display: grid;
     place-items: center;
-    width: 54px;
-    height: 60px;
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    aspect-ratio: 54 / 60;
     border: 2px solid var(--color-border-strong);
     border-radius: 12px;
     background: var(--color-canvas);

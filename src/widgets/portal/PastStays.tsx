@@ -245,7 +245,7 @@ function FeedbackView({ cell, onFeedback }: { cell: FeedbackCell; onFeedback: (t
       const token = feedbackToken(cell.url);
       return token ? (
         <button type="button" className="btn btn-secondary btn-sm pt-fb-btn" onClick={() => onFeedback(token)}>
-          <Icon name="pencil" size={14} /> ثبت نظر و دل‌نوشته
+          <Icon name="feather" size={14} /> ثبت نظر و دل‌نوشته
         </button>
       ) : (
         <span className="pt-soft">—</span>
@@ -269,8 +269,14 @@ function FeedbackView({ cell, onFeedback }: { cell: FeedbackCell; onFeedback: (t
           <Icon name="alert" size={14} /> عدم حضور ثبت شد
         </span>
       );
+    case "awaiting":
+      return (
+        <span className="pt-soft pt-soft--wait">
+          <Icon name="hourglass" size={14} /> پس از ثبت تخلیه گشوده می‌شود
+        </span>
+      );
     case "closed":
-      return <span className="pt-soft">مهلت نظرسنجی گذشته</span>;
+      return <span className="pt-soft">مهلت دل‌نوشته (۳۰ روز) گذشته</span>;
     case "none":
       return <span className="pt-soft">—</span>;
   }
@@ -281,21 +287,33 @@ function JournalTeaser({ r, onOpen }: { r: Reservation; onOpen: (code: string) =
   const now = useNow().getTime();
   const start = Date.parse(r.start);
   const end = Date.parse(r.end);
-  const staying = r.status === "checked_in" || (now >= start && now < end);
+  // پایان زمان رزرو بی ثبت تخلیه ⇒ مرحلهٔ «دفتر»؛ ورود ثبت‌شده یا درون بازه ⇒ «اقامت»
+  const over = now >= end;
+  const staying = !over && (r.status === "checked_in" || now >= start);
   const days = daysUntil(r.start, now);
-  const stage = staying ? 1 : now >= end ? 2 : 0;
+  const stage = over ? 2 : staying ? 1 : 0;
+  const checkout = `${formatDayLabel(day(r.end))}، ساعت ${formatClock(r.end)}`;
   const steps = [
-    { icon: "prayer" as const, title: "زیارت و اقامت", when: formatDayLabel(day(r.start)) },
-    { icon: "luggage" as const, title: "تخلیه", when: `${formatDayLabel(day(r.end))}، ساعت ${formatClock(r.end)}` },
-    { icon: "feather" as const, title: "ثبت دل‌نوشته", when: "همان روز، با پیوند پیامکی و همین‌جا" },
+    {
+      icon: "prayer" as const,
+      title: "زیارت و اقامت",
+      when: `${formatDayLabel(day(r.start))}، ساعت ${formatClock(r.start)}`,
+    },
+    { icon: "luggage" as const, title: "تخلیه و تحویل کلید", when: checkout },
+    { icon: "feather" as const, title: "گشایش دفتر دل‌نوشته", when: "پس از تخلیه · پیامک و همین صفحه" },
   ];
+  const unit = (
+    <b>
+      {r.unit_title} <bdi className="latin">{r.unit_code}</bdi>
+    </b>
+  );
   return (
-    <article className="pt-journal" aria-labelledby="pt-journal-title">
+    <article className="pt-journal" aria-labelledby="pt-journal-title" data-stage={stage}>
       <div className="pt-journal__art" aria-hidden="true">
         <div className="pt-journal__book">
           <span className="pt-journal__ribbon" />
           <span className="pt-journal__seal">
-            <Icon name="lock" size={16} />
+            <Icon name={stage === 2 ? "sparkle" : "lock"} size={16} />
           </span>
           <Icon name="feather" size={28} />
           <span className="pt-journal__lines">
@@ -309,49 +327,99 @@ function JournalTeaser({ r, onOpen }: { r: Reservation; onOpen: (code: string) =
         <span className="pt-journal__eyebrow">
           <Icon name="sparkle" size={14} /> دفتر دل‌نوشتهٔ شما
         </span>
-        <h3 id="pt-journal-title">دفتر دل‌نوشته پس از نخستین زیارت گشوده می‌شود</h3>
+        <h3 id="pt-journal-title">
+          {stage === 2
+            ? "سفرتان به پایان رسید؛ دفتر دل‌نوشته در آستانهٔ گشایش است"
+            : staying
+              ? "مهمان مهدیه هستید؛ دفتر دل‌نوشته پس از تخلیه گشوده می‌شود"
+              : "دفتر دل‌نوشته پس از نخستین زیارت گشوده می‌شود"}
+        </h3>
         <p className="pt-journal__lead">
-          نخستین سفر شما به{" "}
-          <b>
-            {r.unit_title} <bdi className="latin">{r.unit_code}</bdi>
-          </b>{" "}
-          در راه است؛ پس از تخلیه، سابقهٔ آن و امکان ارزیابی خادمان و نوشتن حال‌وهوای زیارت همین‌جا باز می‌شود.
+          {stage === 2 ? (
+            <>
+              اقامت شما در {unit} به پایان رسیده است. به‌محض ثبت تخلیه از سوی پذیرش، این سفر به سابقه می‌پیوندد و
+              می‌توانید خادمان را ارزیابی کنید و حال‌وهوای زیارتتان را بنویسید.
+            </>
+          ) : staying ? (
+            <>
+              هم‌اکنون در {unit} اقامت دارید. پس از تخلیه، سابقهٔ این سفر همین‌جا ثبت می‌شود و می‌توانید خادمان را
+              ارزیابی کنید و حال‌وهوای زیارتتان را بنویسید.
+            </>
+          ) : (
+            <>
+              نخستین سفر شما به {unit} در راه است؛ پس از تخلیه، سابقهٔ آن و امکان ارزیابی خادمان و نوشتن حال‌وهوای زیارت
+              همین‌جا باز می‌شود.
+            </>
+          )}
         </p>
         <div className="pt-journal__count" role="status">
-          {staying ? (
+          {stage === 2 ? (
+            <>
+              <strong>
+                <Icon name="feather" size={20} />
+              </strong>
+              <span>
+                <b>زیارتتان قبول باشد</b>
+                <small>دفتر با ثبت تخلیه در پذیرش گشوده می‌شود</small>
+              </span>
+            </>
+          ) : staying ? (
             <>
               <strong>
                 <Icon name="prayer" size={20} />
               </strong>
-              <span>در حال اقامت؛ قبول باشد. دفتر پس از تخلیه گشوده می‌شود.</span>
+              <span>
+                <b>زیارتتان قبول؛ خوش آمدید</b>
+                <small>گشایش دفتر پس از تخلیه · {checkout}</small>
+              </span>
             </>
           ) : days <= 1 ? (
             <>
               <strong>{days <= 0 ? "امروز" : "فردا"}</strong>
-              <span>روز تشرّف · تحویل کلید از ساعت {formatClock(r.start)}</span>
+              <span>
+                <b>روز تشرّف</b>
+                <small>تحویل کلید از ساعت {formatClock(r.start)}</small>
+              </span>
             </>
           ) : (
             <>
               <strong>{faDigits(days)}</strong>
-              <span>روز تا زیارت · {formatDayLabel(day(r.start))}</span>
+              <span>
+                <b>روز تا زیارت</b>
+                <small>{formatDayLabel(day(r.start))}</small>
+              </span>
             </>
           )}
         </div>
-        <ol className="pt-journal__steps">
-          {steps.map((st, i) => (
-            <li key={st.title} data-state={i < stage ? "done" : i === stage ? "current" : "next"}>
-              <span className="pt-journal__dot">
-                <Icon name={i < stage ? "check" : st.icon} size={14} />
-              </span>
-              <span>
-                <b>{st.title}</b>
-                <small>{st.when}</small>
-              </span>
-            </li>
-          ))}
+        <ol className="pt-trail" data-stage={stage} aria-label="مسیر تا گشایش دفتر دل‌نوشته">
+          {steps.map((st, i) => {
+            const state = i < stage ? "done" : i === stage ? "current" : "next";
+            return (
+              <li
+                key={st.title}
+                data-state={state}
+                aria-current={state === "current" ? "step" : undefined}
+                className="pt-trail__step"
+              >
+                <span className="pt-trail__node" aria-hidden="true">
+                  <Icon name={state === "done" ? "check" : st.icon} size={16} />
+                </span>
+                <span className="pt-trail__text">
+                  <b>
+                    {st.title}
+                    <span className="sr-only">
+                      {state === "done" ? " — انجام شد" : state === "current" ? " — مرحلهٔ کنونی" : ""}
+                    </span>
+                  </b>
+                  <small>{st.when}</small>
+                </span>
+              </li>
+            );
+          })}
         </ol>
         <button type="button" className="btn btn-secondary" onClick={() => onOpen(r.code)}>
-          <Icon name="ticket" size={18} /> مشاهدهٔ سفر پیش‌رو
+          <Icon name="ticket" size={18} />{" "}
+          {staying ? "مشاهدهٔ اقامت جاری" : stage === 2 ? "جزئیات این سفر" : "مشاهدهٔ سفر پیش‌رو"}
         </button>
       </div>
     </article>

@@ -191,6 +191,7 @@ function VerifyCertificateDialog({
               submitToken(text);
             }}
             onPaste={() => setTab("paste")}
+            checking={mutation.isPending}
           />
         </div>
       ) : (
@@ -245,7 +246,8 @@ function VerifyCertificateDialog({
       {mutation.data ? <VerifyResult result={mutation.data} statusLabel={statusLabel} /> : null}
       {verifyOffline ? (
         <p className="verify-foot">
-          گواهی بدون اینترنت در دست دارید؟{" "}
+          <Icon name="wifi-off" size={16} />
+          <span>گواهی بدون اینترنت در دست دارید؟</span>
           <Link
             href={verifyOffline}
             className="text-link"
@@ -265,6 +267,11 @@ function VerifyCertificateDialog({
 }
 
 function VerifyResult({ result, statusLabel }: { result: Verification; statusLabel: (v: string | null) => string }) {
+  const box = useRef<HTMLDivElement>(null);
+  // نتیجه زیر منظره‌یاب می‌آید؛ در برگهٔ موبایل بیرون از دید است ⇒ نرم به دید آورده شود.
+  useEffect(() => {
+    box.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [result]);
   const tone = result.valid ? "success" : result.crypto_valid ? "warn" : "danger";
   const title = result.valid
     ? "گواهی معتبر است"
@@ -274,7 +281,7 @@ function VerifyResult({ result, statusLabel }: { result: Verification; statusLab
         ? "گواهی اصل است، اما رزرو دیگر فعال نیست"
         : "گواهی معتبر نیست";
   return (
-    <div className="verify-result" data-tone={tone} role="status">
+    <div ref={box} className="verify-result" data-tone={tone} role="status">
       <Icon name={result.valid ? "shield-check" : "info"} size={22} />
       <div>
         <strong>{title}</strong>

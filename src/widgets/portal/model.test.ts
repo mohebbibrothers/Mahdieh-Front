@@ -117,6 +117,8 @@ describe("feedbackCell", () => {
     expect(feedbackCell(r({ status: "cancelled_by_guest", is_late_cancel: true })).kind).toBe("late"));
   it("لغو پذیرش ⇒ سهمیه بازگشت", () => expect(feedbackCell(r({ status: "cancelled_by_staff" })).kind).toBe("refunded"));
   it("پایان‌یافتهٔ بی‌پیوند (پنجره بسته)", () => expect(feedbackCell(r({ status: "completed" })).kind).toBe("closed"));
+  it("پایان زمان بی ثبت تخلیه ⇒ در انتظار گشایش", () =>
+    expect(feedbackCell(r({ status: "checked_in" })).kind).toBe("awaiting"));
 });
 
 describe("googleCalendarUrl", () => {

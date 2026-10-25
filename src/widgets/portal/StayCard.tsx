@@ -284,7 +284,7 @@ export function StayCard({
         ) : null}
         {fbToken ? (
           <button type="button" className="pt-act pt-act--ics" onClick={() => setFeedbackOpen(true)}>
-            <Icon name="star" size={18} /> ثبت نظر و دل‌نوشته
+            <Icon name="feather" size={18} /> ثبت نظر و دل‌نوشته
           </button>
         ) : null}
         {stopped || status === "completed" ? (

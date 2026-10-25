@@ -50,12 +50,27 @@
       transform: translateY(4px);
     }
   }
-  .verify-foot {
-    margin-top: 16px;
-    padding-top: 12px;
-    border-top: 1px dashed var(--color-border);
+  /* ردیف «بازرسی آفلاین»: کارتک آرام با آیکون؛ فاصله از بالا ثابت تا قاب فوکوس دکمه‌ها رویش نیفتد */
+  .app-dialog .verify-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    margin: 18px 0 0;
+    padding: 12px 14px;
+    border: 1px dashed color-mix(in oklab, var(--color-border) 80%, var(--color-brand));
+    border-radius: 14px;
+    background: color-mix(in oklab, var(--color-sunken) 70%, transparent);
     color: var(--color-text-muted);
     font-size: 0.8125rem;
+    line-height: 1.7;
+  }
+  .verify-foot > svg {
+    flex: none;
+    color: var(--color-brand);
+  }
+  .verify-foot .text-link {
+    font-weight: 700;
   }
 
   /* ── منظره‌یاب QR ── */
@@ -258,9 +273,13 @@
   .qr-scan__file {
     cursor: pointer;
   }
-  .qr-scan__file:focus-within {
+  /* فقط فوکوس صفحه‌کلید قاب می‌گیرد (پس از انتخاب عکس با ماوس، قاب سبز باقی نمی‌ماند) */
+  .qr-scan__file:has(:focus-visible) {
     outline: 2px solid var(--color-brand);
     outline-offset: 2px;
+  }
+  .qr-scan__actions {
+    padding-block: 2px;
   }
   .qr-scan__file.is-busy {
     opacity: 0.7;

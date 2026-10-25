@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useId, useRef, type ReactNode } from "react";
+import { useEffect, useId, useRef, useSyncExternalStore, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { Icon } from "./Icon";
 import { cx } from "@/shared/lib/cx";
 
@@ -8,7 +9,20 @@ import { cx } from "@/shared/lib/cx";
  * showModal() ⇒ لایهٔ بالا (top layer)، بی‌اثر شدن (inert) بقیهٔ صفحه، تلهٔ فوکوس، Esc و
  * بازگرداندن فوکوس به دکمهٔ بازکننده — بی‌نیاز از کتابخانه و بدون style درون‌خطی (سازگار با CSP).
  * کلیک روی پس‌زمینه می‌بندد؛ در موبایل «برگهٔ پایینی» با دستگیره. ورود با @starting-style در CSS.
+ *
+ * پنجره با ‎createPortal‎ مستقیم زیر ‎<body>‎ ساخته می‌شود: لایهٔ بالایی فقط «جای» نمایش را عوض
+ * می‌کند، نه وراثت CSS را؛ پنجره‌ای که درون کارت پرتال یا پانوشت ساخته شود، قاعده‌های آن‌جا (مثلاً
+ * ‎.pt-verify__online p { margin: 0 }‎، رنگ و اندازهٔ قلم پانوشت) را به ارث می‌برد. رویدادهای React
+ * همچنان در درخت مؤلفه‌ها بالا می‌روند.
  */
+const noop = () => () => {};
+const useClient = () =>
+  useSyncExternalStore(
+    noop,
+    () => true,
+    () => false,
+  );
+
 export function AppDialog({
   isOpen,
   onOpenChange,
@@ -34,14 +48,17 @@ export function AppDialog({
   const titleId = useId();
   const subId = useId();
 
+  const client = useClient();
+
   useEffect(() => {
     const d = ref.current;
     if (!d) return;
     if (isOpen && !d.open) d.showModal();
     else if (!isOpen && d.open) d.close();
-  }, [isOpen]);
+  }, [isOpen, client]);
 
-  return (
+  if (!client) return null;
+  return createPortal(
     <dialog
       ref={ref}
       className={cx("app-dialog", `app-dialog--${size}`)}
@@ -81,6 +98,7 @@ export function AppDialog({
           {actions ? <footer className="app-dialog__actions">{actions}</footer> : null}
         </div>
       ) : null}
-    </dialog>
+    </dialog>,
+    document.body,
   );
 }

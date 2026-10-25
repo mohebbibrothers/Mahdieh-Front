@@ -130,12 +130,27 @@
     cursor: pointer;
     transition: background-color var(--fast) var(--ease);
   }
+  .picker-cal__titles {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+  }
   .picker-cal__title {
+    padding-inline: 12px;
     font-size: 0.9375rem;
     font-weight: 800;
+    letter-spacing: -0.005em;
   }
-  .picker-cal__title .icon {
-    color: var(--color-text-subtle);
+  .picker-cal__title--year {
+    color: var(--color-brand-ink);
+  }
+  .picker-cal__nav:focus-visible,
+  .picker-cal__title:focus-visible,
+  .picker-cal__months button:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
   }
   .picker-cal__nav:hover,
   .picker-cal__title:hover {
@@ -235,9 +250,10 @@
   .picker-cal__months button,
   .picker-clock__grid button {
     min-height: 42px;
-    border: 1px solid transparent;
+    border: 1px solid color-mix(in oklab, var(--color-text) 7%, transparent);
     border-radius: 12px;
-    background: var(--color-sunken);
+    /* هم‌رنگِ لایهٔ پنجره با کمی روشنی — در پوستهٔ تیره «حفره» نمی‌شود */
+    background: color-mix(in oklab, var(--color-text) 4%, transparent);
     color: var(--color-text);
     font: inherit;
     font-size: 0.875rem;
@@ -255,6 +271,28 @@
   .picker-clock__grid button[aria-pressed="true"] {
     background: var(--color-brand);
     color: var(--color-on-brand);
+  }
+  /* اکنونِ واقعی (ماه/سال امروز) — حلقهٔ طلایی آرام؛ برگزیده همچنان پُر برند */
+  .picker-cal__months button[data-current]:not([aria-pressed="true"]) {
+    box-shadow: inset 0 0 0 1.5px var(--color-gold);
+  }
+  .picker-cal__months button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .picker-cal__years button {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }
+  /* جابه‌جایی نماها: ورود نرم با کمی بزرگ‌نمایی (روزها ⇄ ماه‌ها ⇄ سال‌ها) */
+  .picker-cal__view {
+    animation: picker-view-in 200ms var(--ease) both;
+  }
+  @keyframes picker-view-in {
+    from {
+      opacity: 0;
+      transform: scale(0.97);
+    }
   }
   .picker-cal__foot {
     display: flex;

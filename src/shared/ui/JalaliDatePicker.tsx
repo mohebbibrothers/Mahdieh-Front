@@ -1,5 +1,5 @@
 "use client";
-import { useState, type KeyboardEvent } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { cx } from "@/shared/lib/cx";
 import { faDigits, formatFullDate, tehranToday } from "@/shared/lib/fa";
 import { addDaysIso, addMonths, monthGrid, toJalali } from "@/shared/lib/jalali";
@@ -103,7 +103,29 @@ function Calendar({
     const { jy, jm } = toJalali(initial);
     return { jy, jm };
   });
-  const [mode, setMode] = useState<"days" | "months">("days");
+  const [mode, setMode] = useState<"days" | "months" | "years">("days");
+  // صفحهٔ سال‌ها: ۱۲ سال (۳×۴) که سال نما در ردیف دوم می‌نشیند ⇒ گذشته و آینده هر دو در دسترس
+  const [yearPage, setYearPage] = useState(() => toJalali(initial).jy - 4);
+  const todayYear = toJalali(today).jy;
+  const minYear = rangeFrom ? toJalali(rangeFrom).jy : null;
+  // تعویض نما ⇒ فوکوس روی گزینهٔ برگزیدهٔ نمای تازه (دکمهٔ عنوانِ کلیک‌شده از DOM رفته است)
+  const root = useRef<HTMLDivElement>(null);
+  const firstMode = useRef(true);
+  useEffect(() => {
+    if (firstMode.current) {
+      firstMode.current = false;
+      return;
+    }
+    requestAnimationFrame(() =>
+      root.current
+        ?.querySelector<HTMLButtonElement>(".picker-cal__view [data-autofocus]:not(:disabled)")
+        ?.focus({ preventScroll: true }),
+    );
+  }, [mode]);
+  const openYears = () => {
+    setYearPage(view.jy - 4);
+    setMode("years");
+  };
   const cells = monthGrid(view.jy, view.jm);
   const rangeEnd = rangeFrom ? (hover ?? value) : null;
 
@@ -140,58 +162,148 @@ function Calendar({
     }
   };
 
+  /** پیمایش صفحه‌کلید در شبکهٔ ۳ستونی ماه/سال (راست‌به‌چپ: ← بعدی، → قبلی، ↓↑ یک ردیف). */
+  const onTileKey = (e: KeyboardEvent<HTMLDivElement>) => {
+    const map: Record<string, number> = { ArrowLeft: 1, ArrowRight: -1, ArrowDown: 3, ArrowUp: -3 };
+    const tiles = [...e.currentTarget.querySelectorAll<HTMLButtonElement>("button:not(:disabled)")];
+    const i = tiles.indexOf(document.activeElement as HTMLButtonElement);
+    if (i < 0) return;
+    let n: number;
+    if (e.key in map) n = i + (map[e.key] ?? 0);
+    else if (e.key === "Home") n = 0;
+    else if (e.key === "End") n = tiles.length - 1;
+    else return;
+    e.preventDefault();
+    tiles[Math.max(0, Math.min(tiles.length - 1, n))]?.focus();
+  };
+
   const title = `${JALALI_MONTH_NAMES[view.jm - 1]} ${faDigits(view.jy)}`;
+  const years = Array.from({ length: 12 }, (_, k) => yearPage + k);
+  const step = (dir: 1 | -1) => {
+    if (mode === "days") stepMonth(dir);
+    else if (mode === "months") setView((v) => ({ ...v, jy: v.jy + dir }));
+    else setYearPage((y) => y + dir * 12);
+  };
+  const navLabel = (dir: 1 | -1) =>
+    mode === "days"
+      ? dir < 0
+        ? "ماه قبل"
+        : "ماه بعد"
+      : mode === "months"
+        ? dir < 0
+          ? "سال قبل"
+          : "سال بعد"
+        : dir < 0
+          ? "دوازده سال قبل"
+          : "دوازده سال بعد";
 
   return (
-    <div className="picker-cal">
+    <div className="picker-cal" data-mode={mode} ref={root}>
       <div className="picker-cal__head">
-        <button
-          type="button"
-          className="picker-cal__nav"
-          aria-label={mode === "days" ? "ماه قبل" : "سال قبل"}
-          onClick={() => (mode === "days" ? stepMonth(-1) : setView((v) => ({ ...v, jy: v.jy - 1 })))}
-        >
+        <button type="button" className="picker-cal__nav" aria-label={navLabel(-1)} onClick={() => step(-1)}>
           <Icon name="chevron-right" size={18} />
         </button>
-        <button
-          type="button"
-          className="picker-cal__title"
-          aria-live="polite"
-          aria-label={mode === "days" ? `${title} — انتخاب ماه و سال` : `سال ${faDigits(view.jy)} — بازگشت به روزها`}
-          onClick={() => setMode((m) => (m === "days" ? "months" : "days"))}
-        >
-          {mode === "days" ? title : faDigits(view.jy)}
-          <Icon name="chevron-down" size={14} />
-        </button>
-        <button
-          type="button"
-          className="picker-cal__nav"
-          aria-label={mode === "days" ? "ماه بعد" : "سال بعد"}
-          onClick={() => (mode === "days" ? stepMonth(1) : setView((v) => ({ ...v, jy: v.jy + 1 })))}
-        >
+        <div className="picker-cal__titles" aria-live="polite">
+          {mode === "days" ? (
+            <>
+              <button
+                type="button"
+                className="picker-cal__title"
+                aria-label={`${JALALI_MONTH_NAMES[view.jm - 1]} — انتخاب ماه`}
+                onClick={() => setMode("months")}
+              >
+                {JALALI_MONTH_NAMES[view.jm - 1]}
+              </button>
+              <button
+                type="button"
+                className="picker-cal__title picker-cal__title--year"
+                aria-label={`سال ${faDigits(view.jy)} — انتخاب سال`}
+                onClick={openYears}
+              >
+                {faDigits(view.jy)}
+              </button>
+            </>
+          ) : mode === "months" ? (
+            <button
+              type="button"
+              className="picker-cal__title picker-cal__title--year"
+              aria-label={`سال ${faDigits(view.jy)} — انتخاب سال`}
+              onClick={openYears}
+            >
+              {faDigits(view.jy)}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="picker-cal__title"
+              aria-label={`سال‌های ${faDigits(years[0]!)} تا ${faDigits(years[11]!)} — بازگشت به روزها`}
+              onClick={() => setMode("days")}
+            >
+              <bdi>
+                {faDigits(years[0]!)} – {faDigits(years[11]!)}
+              </bdi>
+            </button>
+          )}
+        </div>
+        <button type="button" className="picker-cal__nav" aria-label={navLabel(1)} onClick={() => step(1)}>
           <Icon name="chevron-left" size={18} />
         </button>
       </div>
 
-      {mode === "months" ? (
-        <div className="picker-cal__months" role="group" aria-label={`ماه‌های سال ${faDigits(view.jy)}`}>
-          {JALALI_MONTH_NAMES.map((m, i) => (
+      {mode === "years" ? (
+        <div
+          key={`y${yearPage}`}
+          className="picker-cal__months picker-cal__years picker-cal__view"
+          role="group"
+          aria-label="انتخاب سال"
+          onKeyDown={onTileKey}
+        >
+          {years.map((y) => (
             <button
-              key={m}
+              key={y}
               type="button"
-              aria-pressed={view.jm === i + 1}
-              data-autofocus={view.jm === i + 1 || undefined}
+              aria-pressed={view.jy === y}
+              data-autofocus={view.jy === y || undefined}
+              data-current={y === todayYear || undefined}
+              disabled={minYear !== null && y < minYear}
               onClick={() => {
-                setView((v) => ({ ...v, jm: i + 1 }));
-                setMode("days");
+                setView((v) => ({ ...v, jy: y }));
+                setMode("months");
               }}
             >
-              {m}
+              {faDigits(y)}
             </button>
           ))}
         </div>
+      ) : mode === "months" ? (
+        <div
+          key={`m${view.jy}`}
+          className="picker-cal__months picker-cal__view"
+          role="group"
+          aria-label={`ماه‌های سال ${faDigits(view.jy)}`}
+          onKeyDown={onTileKey}
+        >
+          {JALALI_MONTH_NAMES.map((m, i) => {
+            const t = toJalali(today);
+            return (
+              <button
+                key={m}
+                type="button"
+                aria-pressed={view.jm === i + 1}
+                data-autofocus={view.jm === i + 1 || undefined}
+                data-current={(t.jy === view.jy && t.jm === i + 1) || undefined}
+                onClick={() => {
+                  setView((v) => ({ ...v, jm: i + 1 }));
+                  setMode("days");
+                }}
+              >
+                {m}
+              </button>
+            );
+          })}
+        </div>
       ) : (
-        <div className="picker-cal__grid" role="grid" aria-label={title} onKeyDown={onGridKey}>
+        <div className="picker-cal__grid picker-cal__view" role="grid" aria-label={title} onKeyDown={onGridKey}>
           <div role="row" className="picker-cal__week">
             {WEEK.map((w, i) => (
               <span key={w} role="columnheader" aria-label={WEEK_FULL[i]} data-friday={i === 6 || undefined}>

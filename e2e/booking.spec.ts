@@ -285,28 +285,38 @@ test.describe("P-05 تکمیل و صدور رزرو", () => {
     await page.goto(`/booking/?code=${done.code}`);
     await expect(page.getByText("اقامت شما به پایان رسید · زیارت قبول")).toBeVisible();
     await expect(page.locator('a[href*="/feedback/"]')).toHaveCount(0);
-    await page.getByRole("button", { name: /نظرسنجی پس از اقامت/ }).click();
-    const dialog = page.getByRole("dialog", { name: "نظرسنجی پس از اقامت" });
-    const submit = dialog.getByRole("button", { name: /ثبت نظر/ });
+    await page.getByRole("button", { name: /ثبت نظر و دل‌نوشته/ }).click();
+    const dialog = page.getByRole("dialog", { name: "دفتر دل‌نوشتهٔ زیارت" });
+    // خلاصهٔ سفر از پاسخ سرور در زیرعنوان
+    await expect(dialog).toContainText("سوئیت طبقهٔ اول");
+    const submit = dialog.getByRole("button", { name: /ثبت در دفتر دل‌نوشته/ });
     await expect(submit).toBeDisabled();
+    await expect(dialog.getByText("برای ثبت، امتیاز کلی را انتخاب کنید.")).toBeVisible();
     await dialog
-      .getByRole("group", { name: /امتیاز کلی اقامت/ })
+      .getByRole("group", { name: /امتیاز کلی/ })
       .locator(".stars__item")
       .nth(4)
       .click();
     await expect(dialog.locator("output")).toHaveText("عالی");
+    await expect(dialog.getByText("برای ثبت، امتیاز کلی را انتخاب کنید.")).toHaveCount(0);
     await dialog.getByRole("group", { name: "پاکیزگی" }).locator(".stars__item").nth(3).click();
     await dialog.getByRole("button", { name: /بله/ }).click();
     await dialog.getByRole("textbox").fill("خادمان بسیار مهربان بودند.");
+    await expect(dialog.getByText(/^۲۶ از ۱۲۰۰ نویسه$/)).toBeVisible();
     await submit.click();
-    await expect(dialog).toBeHidden();
+    // پنجره نمی‌بندد: مُهر «ثبت شد» و بازتاب دل‌نوشتهٔ زائر از پاسخ سرور
+    const thanks = dialog.locator(".fb-done");
+    await expect(thanks).toContainText("دل‌نوشتهٔ شما در دفتر مهدیه ثبت شد");
+    await expect(thanks).toContainText("خادمان بسیار مهربان بودند.");
+    await expect(thanks).toContainText("پیشنهاد به دیگران");
     expect(body).toMatchObject({
       rating: 5,
       would_recommend: true,
       comment: "خادمان بسیار مهربان بودند.",
       scores: { cleanliness: 4 },
     });
-    await expect(page.getByRole("status").filter({ hasText: "سپاس از نظرتان" })).toBeVisible();
+    await dialog.getByRole("button", { name: "بستن" }).last().click();
+    await expect(dialog).toBeHidden();
   });
 
   test("پیوند QR گواهی (‎/?verify=‎): پنجرهٔ استعلام خودکار باز و پارامتر پاک می‌شود", async ({ page, api }) => {

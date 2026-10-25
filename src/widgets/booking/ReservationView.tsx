@@ -95,7 +95,7 @@ function Banner({ r, fresh }: { r: Reservation; fresh: boolean }) {
               tone: "ok",
               icon: "star",
               title: "اقامت شما به پایان رسید · زیارت قبول",
-              text: "پیوند نظرسنجی رضایت برایتان پیامک شده است.",
+              text: "پیوند دفتر دل‌نوشته (ارزیابی اقامت) برایتان پیامک شده است.",
             }
           : fresh
             ? {
@@ -329,7 +329,7 @@ export function ReservationView({ code, policies }: { code: string; policies: Po
           ) : null}
           {fbToken ? (
             <button type="button" className="btn btn-secondary" onClick={() => setFeedbackOpen(true)}>
-              <Icon name="star" size={18} /> نظرسنجی پس از اقامت
+              <Icon name="feather" size={18} /> ثبت نظر و دل‌نوشته
             </button>
           ) : null}
           {CANCELLED.has(status) || status === "completed" ? (

@@ -6,7 +6,6 @@ import { feedbackStateQuery, rk, submitFeedback, type FeedbackState } from "@/sh
 import { faDigits } from "@/shared/lib/fa";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon } from "@/shared/ui/Icon";
-import { toast } from "@/shared/ui/toast";
 
 const SCALE = [1, 2, 3, 4, 5] as const;
 
@@ -50,8 +49,8 @@ function Stars({
   );
 }
 
-function Form({ token, state, onDone }: { token: string; state: FeedbackState; onDone: () => void }) {
-  const id = useId();
+/** وضعیت فرم در سطح پنجره ⇒ دکمهٔ ثبت در پای ثابت پنجره (در موبایل همیشه در دسترس). */
+function useFeedbackForm(token: string) {
   const qc = useQueryClient();
   const [rating, setRating] = useState<number | null>(null);
   const [scores, setScores] = useState<Record<string, number | null>>({});
@@ -66,87 +65,139 @@ function Form({ token, state, onDone }: { token: string; state: FeedbackState; o
         scores,
       }),
     onSuccess: (s) => {
+      // پنجره بسته نمی‌شود: همان‌جا «ثبت شد» و بازتاب دل‌نوشته نشان داده می‌شود (لحظهٔ قدردانی)
       qc.setQueryData(feedbackStateQuery(token).queryKey, s);
       void qc.invalidateQueries({ queryKey: ["me", "reservation"] });
       void qc.invalidateQueries({ queryKey: ["me", "reservations"] }); // سابقهٔ پرتال: ستون «ارزیابی»
-      toast("سپاس از نظرتان؛ برای بهبود میزبانی زائران بعدی به کار می‌رود.", "success");
-      onDone();
     },
   });
+  return { rating, setRating, scores, setScores, recommend, setRecommend, comment, setComment, send };
+}
+type FormModel = ReturnType<typeof useFeedbackForm>;
 
+function Form({ formId, state, f }: { formId: string; state: FeedbackState; f: FormModel }) {
+  const max = state.comment_max_length;
+  const left = max - f.comment.length;
   return (
     <form
-      id={`${id}-form`}
+      id={formId}
       className="feedback-form"
       onSubmit={(e) => {
         e.preventDefault();
-        if (rating) send.mutate();
+        if (f.rating && !f.send.isPending) f.send.mutate();
       }}
     >
       <Stars
-        name={`${id}-r`}
-        label="امتیاز کلی اقامت *"
-        value={rating}
-        onChange={setRating}
+        name={`${formId}-r`}
+        label="امتیاز کلی این زیارت و اقامت *"
+        value={f.rating}
+        onChange={f.setRating}
         labels={state.rating_labels}
       />
-      <div className="feedback-form__subs">
-        {state.subscores.map((s) => (
-          <Stars
-            key={s.field}
-            name={`${id}-${s.field}`}
-            label={s.label}
-            size="sm"
-            value={scores[s.field] ?? null}
-            onChange={(v) => setScores((cur) => ({ ...cur, [s.field]: v }))}
-            labels={state.rating_labels}
-          />
-        ))}
-      </div>
+      {state.subscores.length ? (
+        <fieldset className="feedback-form__subs">
+          <legend className="feedback-form__subs-title">
+            ریزامتیازها <span>(اختیاری)</span>
+          </legend>
+          {state.subscores.map((s) => (
+            <Stars
+              key={s.field}
+              name={`${formId}-${s.field}`}
+              label={s.label}
+              size="sm"
+              value={f.scores[s.field] ?? null}
+              onChange={(v) => f.setScores((cur) => ({ ...cur, [s.field]: v }))}
+              labels={state.rating_labels}
+            />
+          ))}
+        </fieldset>
+      ) : null}
       <fieldset className="feedback-form__rec">
         <legend className="field-label">مهدیه را به زائران دیگر پیشنهاد می‌کنید؟</legend>
         <div className="mini-seg">
           <button
             type="button"
-            aria-pressed={recommend === true}
-            onClick={() => setRecommend(recommend === true ? null : true)}
+            aria-pressed={f.recommend === true}
+            onClick={() => f.setRecommend(f.recommend === true ? null : true)}
           >
             بله، حتماً
           </button>
           <button
             type="button"
-            aria-pressed={recommend === false}
-            onClick={() => setRecommend(recommend === false ? null : false)}
+            aria-pressed={f.recommend === false}
+            onClick={() => f.setRecommend(f.recommend === false ? null : false)}
           >
             خیر
           </button>
         </div>
       </fieldset>
-      <label className="field-label" htmlFor={`${id}-c`}>
-        چه چیزی خوب بود و چه چیزی را می‌شد بهتر کرد؟ (اختیاری)
-      </label>
-      <textarea
-        id={`${id}-c`}
-        className="text-input"
-        rows={3}
-        maxLength={state.comment_max_length}
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-      />
-      {send.error ? (
+      <div className="feedback-form__note">
+        <label className="field-label" htmlFor={`${formId}-c`}>
+          دل‌نوشتهٔ شما <span>(اختیاری)</span>
+        </label>
+        <textarea
+          id={`${formId}-c`}
+          className="text-input"
+          rows={4}
+          maxLength={max}
+          placeholder="چه چیزی دلتان را شاد کرد و چه چیزی را می‌شد بهتر کرد؟ هر کلمه‌تان مستقیم به دست مدیر مهدیه می‌رسد."
+          aria-describedby={`${formId}-cc`}
+          value={f.comment}
+          onChange={(e) => f.setComment(e.target.value)}
+        />
+        <p id={`${formId}-cc`} className="feedback-form__count" data-low={left < 60 ? "" : undefined}>
+          {faDigits(f.comment.length)} از {faDigits(max)} نویسه
+        </p>
+      </div>
+      {f.send.error ? (
         <p className="field-error" role="alert">
-          {send.error instanceof ApiError ? send.error.message : "ثبت نظر ممکن نشد؛ دوباره تلاش کنید."}
+          {f.send.error instanceof ApiError ? f.send.error.message : "ثبت دل‌نوشته ممکن نشد؛ دوباره تلاش کنید."}
         </p>
       ) : null}
-      <button
-        type="submit"
-        className="btn btn-primary btn-lg"
-        disabled={!rating || send.isPending}
-        aria-busy={send.isPending || undefined}
-      >
-        <Icon name="star" size={18} /> {send.isPending ? "در حال ثبت…" : "ثبت نظر"}
-      </button>
     </form>
+  );
+}
+
+/** پس از ثبت — بازتاب آنچه زائر نوشته (از پاسخ سرور) و قدردانی. */
+function Done({ state, fresh }: { state: FeedbackState; fresh: boolean }) {
+  const sub = state.submitted;
+  return (
+    <div className="fb-done" role="status" data-fresh={fresh ? "" : undefined}>
+      <span className="fb-done__seal" aria-hidden="true">
+        <Icon name="feather" size={26} />
+      </span>
+      <h3 className="fb-done__title">
+        {fresh ? "دل‌نوشتهٔ شما در دفتر مهدیه ثبت شد" : "دل‌نوشتهٔ این سفر پیش‌تر ثبت شده است"}
+      </h3>
+      <p className="fb-done__lead">
+        سپاس از همراهی‌تان؛ نظر شما مستقیم به مدیر مهدیه می‌رسد و برای میزبانی بهتر زائران بعدی به کار می‌رود. زیارتتان
+        قبول.
+      </p>
+      {sub ? (
+        <figure className="fb-done__card">
+          <div className="fb-done__rating">
+            <span className="fb-done__stars" aria-hidden="true">
+              {SCALE.map((n) => (
+                <Icon key={n} name={n <= sub.rating ? "star-fill" : "star"} size={18} />
+              ))}
+            </span>
+            <span>
+              {faDigits(sub.rating)} از ۵ · {state.rating_labels[String(sub.rating)]}
+            </span>
+            {sub.would_recommend ? (
+              <span className="fb-done__chip">
+                <Icon name="heart-hand" size={14} /> پیشنهاد به دیگران
+              </span>
+            ) : null}
+          </div>
+          {sub.comment ? (
+            <blockquote className="fb-done__quote">
+              <p>{sub.comment}</p>
+            </blockquote>
+          ) : null}
+        </figure>
+      ) : null}
+    </div>
   );
 }
 
@@ -161,55 +212,74 @@ export function FeedbackDialog({
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const formId = useId();
   const state = useQuery({ ...feedbackStateQuery(token), enabled: isOpen });
   const qc = useQueryClient();
+  const f = useFeedbackForm(token);
   const s = state.data;
+  const trip = s?.reservation;
+  const close = () => {
+    void qc.invalidateQueries({ queryKey: rk.reservation(code) });
+    onOpenChange(false);
+  };
   return (
     <AppDialog
       isOpen={isOpen}
       onOpenChange={onOpenChange}
-      title="نظرسنجی پس از اقامت"
+      title="دفتر دل‌نوشتهٔ زیارت"
       subtitle={
         <>
-          کمتر از یک دقیقه — رزرو{" "}
+          {trip?.unit_title ? `${trip.unit_title} · ` : null}
+          {trip?.date_jalali ? <bdi>{faDigits(trip.date_jalali)}</bdi> : "کمتر از یک دقیقه"}
+          {" · رزرو "}
           <bdi className="latin" dir="ltr">
             {code}
           </bdi>
         </>
       }
       size="md"
+      actions={
+        s?.state === "open" ? (
+          <>
+            <button
+              type="submit"
+              form={formId}
+              className="btn btn-primary btn-lg"
+              disabled={!f.rating || f.send.isPending}
+              aria-busy={f.send.isPending || undefined}
+            >
+              <Icon name="feather" size={18} /> {f.send.isPending ? "در حال ثبت…" : "ثبت در دفتر دل‌نوشته"}
+            </button>
+            {!f.rating ? <p className="feedback-form__need">برای ثبت، امتیاز کلی را انتخاب کنید.</p> : null}
+          </>
+        ) : s ? (
+          <button type="button" className="btn btn-secondary btn-lg" onClick={close}>
+            بستن
+          </button>
+        ) : undefined
+      }
     >
       {state.isPending ? (
         <div className="verdict verdict--pending" role="status">
-          <span className="spinner" aria-hidden="true" /> در حال بارگذاری فرم…
+          <span className="spinner" aria-hidden="true" /> در حال گشودن دفتر…
         </div>
       ) : !s ? (
         <p className="field-error" role="alert">
-          {state.error instanceof ApiError ? state.error.message : "فرم نظرسنجی بارگذاری نشد."}
+          {state.error instanceof ApiError ? state.error.message : "دفتر دل‌نوشته بارگذاری نشد."}
         </p>
       ) : s.state === "open" ? (
-        <Form token={token} state={s} onDone={() => onOpenChange(false)} />
+        <Form formId={formId} state={s} f={f} />
+      ) : s.state === "submitted" ? (
+        <Done state={s} fresh={f.send.isSuccess} />
       ) : (
-        <div className={`verdict ${s.state === "submitted" ? "verdict--ok" : "verdict--warn"}`} role="status">
-          <Icon name={s.state === "submitted" ? "check" : "lock"} size={18} />
+        <div className="verdict verdict--warn" role="status">
+          <Icon name="lock" size={18} />
           <p>
-            <strong>{s.state === "submitted" ? "نظر شما ثبت شده است؛ سپاسگزاریم." : "این نظرسنجی بسته است."}</strong>
+            <strong>دفتر دل‌نوشتهٔ این سفر بسته است.</strong>
             {s.reason ? <span>{s.reason}</span> : null}
           </p>
         </div>
       )}
-      {s && s.state !== "open" ? (
-        <button
-          type="button"
-          className="btn btn-secondary"
-          onClick={() => {
-            void qc.invalidateQueries({ queryKey: rk.reservation(code) });
-            onOpenChange(false);
-          }}
-        >
-          بستن
-        </button>
-      ) : null}
     </AppDialog>
   );
 }

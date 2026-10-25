@@ -154,13 +154,15 @@ export type FeedbackCell =
   | { kind: "late" }
   | { kind: "noshow" }
   | { kind: "closed" }
+  | { kind: "awaiting" }
   | { kind: "none" };
 
 /** ستون «ارزیابی» بر پایهٔ وضعیت (وقتی نه امتیازی هست نه پیوند نظرسنجی). */
-const AFTER_STAY: Record<ReservationStatus, "refunded" | "noshow" | "closed" | "none"> = {
+const AFTER_STAY: Record<ReservationStatus, "refunded" | "noshow" | "closed" | "awaiting" | "none"> = {
   hold: "none",
   confirmed: "none",
-  checked_in: "none",
+  // اقامت تمام شده ولی پذیرش هنوز تخلیه را ثبت نکرده ⇒ دفتر «در آستانهٔ گشایش»، نه «—» گنگ
+  checked_in: "awaiting",
   completed: "closed",
   cancelled_by_guest: "refunded",
   cancelled_by_staff: "refunded",

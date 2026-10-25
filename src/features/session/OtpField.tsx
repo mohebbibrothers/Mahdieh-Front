@@ -56,7 +56,7 @@ export function OtpField({
           if (next.length === length && next !== value) onComplete(next);
         }}
       />
-      <div className="otp-field__boxes" dir="ltr" aria-hidden="true">
+      <div className="otp-field__boxes" dir="ltr" aria-hidden="true" data-n={length}>
         {Array.from({ length }, (_, i) => (
           <span
             key={i}
