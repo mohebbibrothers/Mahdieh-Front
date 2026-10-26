@@ -289,6 +289,7 @@ function TripForm({
             onChange={(cells) => set({ cells })}
             format={durationLabel}
             labelId="ut-stay"
+            className="stepper--wide"
             incLabel="نیم‌روز بیشتر"
             decLabel="نیم‌روز کمتر"
           />

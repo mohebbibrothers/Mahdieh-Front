@@ -165,8 +165,11 @@ function FloorGuide({
           </ol>
         )}
         <p className="ufg__foot">
-          <Icon name="mouse-pointer" size={14} /> روی کد هر واحد بزنید؛ معرفی کوتاهش باز می‌شود.
-          {dated ? " نشان «آزاد» یعنی کل بازهٔ سفرتان در آن واحد آزاد است." : ""}
+          <Icon name="mouse-pointer" size={14} />
+          <span>
+            روی کد هر واحد بزنید؛ معرفی کوتاهش باز می‌شود.
+            {dated ? " نشان «آزاد» یعنی کل بازهٔ سفرتان در آن واحد آزاد است." : ""}
+          </span>
         </p>
       </div>
     </section>

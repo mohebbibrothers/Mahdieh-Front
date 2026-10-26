@@ -160,8 +160,8 @@ export function CompareDialog({
       title="مقایسهٔ واحدها"
       subtitle="ردیف‌هایی که نشانهٔ طلایی دارند، میان واحدها متفاوت‌اند."
       actions={
-        <button type="button" className="btn btn-ghost" onClick={() => onOpenChange(false)}>
-          بازگشت به واحدها
+        <button type="button" className="btn btn-ghost ucmp__back" onClick={() => onOpenChange(false)}>
+          <Icon name="arrow-right" size={18} /> بازگشت به واحدها
         </button>
       }
     >
