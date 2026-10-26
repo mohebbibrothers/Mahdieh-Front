@@ -7,6 +7,7 @@ import { bookingHref } from "@/features/booking-draft/store";
 import { BookingContinue } from "@/features/session/BookingContinue";
 import { fetchQuote, meQuery } from "@/shared/api/queries";
 import type { Alternative } from "@/shared/api/schemas";
+import { unitPageHref } from "@/shared/config/destinations";
 import { faDigits, formatMoment, guestsLabel } from "@/shared/lib/fa";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon } from "@/shared/ui/Icon";
@@ -180,6 +181,7 @@ function Body({
   const { me, free, quote } = useQuickQuote(unit, trip, availability);
   const mix = composition(unit);
 
+  const unitPage = unitPageHref(unit.code, trip);
   return (
     <div className="uqv">
       <figure className="uqv__visual" data-tone={unit.code === "B2" || unit.code === "B3" ? "cool" : undefined}>
@@ -224,6 +226,17 @@ function Body({
           </span>
         </li>
       </ul>
+
+      {unitPage ? (
+        <a className="uqv__more" href={unitPage}>
+          <Icon name="plan" size={18} />
+          <span>
+            <strong>صفحهٔ کامل این واحد</strong>
+            <small>نمای فضا و پلان، امکانات، مسیر دسترسی و زمان‌های هفته</small>
+          </span>
+          <Icon name="arrow-left" size={16} />
+        </a>
+      ) : null}
 
       <section className="uqv__section uqv__avail" data-tone={copy.tone} aria-labelledby="uqv-time">
         <h3 id="uqv-time">برای سفر شما</h3>

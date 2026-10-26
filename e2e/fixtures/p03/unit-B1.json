@@ -1,0 +1,58 @@
+{
+  "id": "01a1788c-9c5a-76fd-ba14-a5c21e5b19cd",
+  "code": "B1",
+  "title": "اتاق بزرگ طبقهٔ اول",
+  "unit_type": "large_room",
+  "type_label": "اتاق بزرگ",
+  "floor_number": 1,
+  "capacity_adults": 6,
+  "capacity_children": 2,
+  "capacity_total": 8,
+  "cleaning_buffer_minutes": null,
+  "features": [
+    {
+      "code": "wifi",
+      "title": "اینترنت بی‌سیم",
+      "icon": "📶",
+      "is_highlight": true,
+      "note": ""
+    },
+    {
+      "code": "prayer",
+      "title": "سجاده و مهر",
+      "icon": "🕌",
+      "is_highlight": true,
+      "note": ""
+    },
+    {
+      "code": "fridge",
+      "title": "یخچال",
+      "icon": "🧊",
+      "is_highlight": false,
+      "note": ""
+    },
+    {
+      "code": "heating",
+      "title": "گرمایش و سرمایش",
+      "icon": "🌡",
+      "is_highlight": false,
+      "note": ""
+    },
+    {
+      "code": "laundry",
+      "title": "رختشویخانه",
+      "icon": "🧺",
+      "is_highlight": false,
+      "note": ""
+    },
+    {
+      "code": "locker",
+      "title": "صندوق امانات",
+      "icon": "🔐",
+      "is_highlight": false,
+      "note": ""
+    }
+  ],
+  "cover": null,
+  "photos": []
+}

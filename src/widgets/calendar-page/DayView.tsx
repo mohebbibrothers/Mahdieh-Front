@@ -3,6 +3,7 @@ import { useEffect, useRef, type KeyboardEvent } from "react";
 import type { UnitTimeline } from "@/entities/slot/timeline";
 import { floorLabel } from "@/entities/unit/unit";
 import type { Calendar, CalendarCell, Occasion } from "@/shared/api/schemas";
+import { unitPageHref } from "@/shared/config/destinations";
 import { faDigits, formatDayMonth, formatFullDate, formatWeekday } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
 import { periodHours, selectionMap } from "./Matrix";
@@ -161,7 +162,12 @@ export function DayView({
               <div className="cp-daycard__head">
                 <p className="cp-daycard__title">
                   <bdi className="latin cp-unit__badge">{u.code}</bdi>
-                  <span className="cp-unit__name">{u.title}</span>
+                  <a
+                    className="cp-unit__name"
+                    href={unitPageHref(u.code, { day: null, period: "day", cells: 4, guests }) ?? undefined}
+                  >
+                    {u.title}
+                  </a>
                 </p>
                 <small className="cp-daycard__meta">
                   {floorLabel(u.floor)} · ظرفیت: {faDigits(u.capacity)} نفر

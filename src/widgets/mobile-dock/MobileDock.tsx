@@ -14,10 +14,14 @@ const SPY = ["availability"] as const;
  * زبانهٔ فعال با اسکرول جابه‌جا می‌شود: «خانه» همیشه صفحهٔ جاری است (‎aria-current=page‎)،
  * و «زمان‌های آزاد» وقتی بخشش زیر چشم است ‎aria-current=location‎ می‌گیرد.
  */
-export function MobileDock({ page = "home" }: { page?: "home" | "booking" | "portal" | "calendar" | "units" }) {
+export function MobileDock({
+  page = "home",
+}: {
+  page?: "home" | "booking" | "portal" | "calendar" | "units" | "unit";
+}) {
   const spied = useActiveSection(SPY, "home");
   const onHome = page === "home";
-  const onUnits = page === "units";
+  const onUnits = page === "units" || page === "unit";
   const section = onHome ? spied : null;
   return (
     <>
@@ -43,9 +47,14 @@ export function MobileDock({ page = "home" }: { page?: "home" | "booking" | "por
           <span>خانه</span>
         </a>
         {onUnits ? (
-          // طرح P-02: «واحدها» زبانهٔ جاری است و «زمان سفر» پنجرهٔ شرایط سفر همین صفحه را باز می‌کند.
+          // طرح P-02/P-03: «واحدها» زبانهٔ جاری است و «زمان سفر» پنجرهٔ شرایط سفر همین صفحه را باز می‌کند
+          // (در صفحهٔ یک واحد، «واحدها» به فهرست همهٔ واحدها برمی‌گردد).
           <>
-            <a href="#unit-results" aria-current="page" data-active="">
+            <a
+              href={page === "unit" ? destHref("units") : "#unit-results"}
+              aria-current={page === "units" ? "page" : "location"}
+              data-active=""
+            >
               <Icon name="building" size={22} />
               <span>واحدها</span>
             </a>

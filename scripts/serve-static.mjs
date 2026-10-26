@@ -117,6 +117,15 @@ function proxy(req, res) {
   req.pipe(upstream);
 }
 
+/** هم‌ارز الگوهای پویای جنگو (بی نگهبان: «پیدا نشد» را خود صفحه از پاسخ ۴۰۴ API نشان می‌دهد). */
+const dynamicRoutes = Object.entries(routesFile.dynamic ?? {}).map(([pattern, file]) => [
+  new RegExp(`^${pattern.replace(/\[[a-z_]+\]/g, "[A-Za-z0-9_-]{1,32}")}$`),
+  file,
+]);
+function matchDynamic(pathname) {
+  return dynamicRoutes.find(([re]) => re.test(pathname))?.[1];
+}
+
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url ?? "/", "http://local");
@@ -129,7 +138,7 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(200, { "content-type": "application/json" });
       return res.end(JSON.stringify({ status: "ok", front: info.release }));
     }
-    const page = routesFile.routes[url.pathname];
+    const page = routesFile.routes[url.pathname] ?? matchDynamic(url.pathname);
     if (page) return await sendPage(res, page);
     if (await sendAsset(req, res, decodeURIComponent(url.pathname.slice(1)))) return;
     return await sendPage(res, routesFile.not_found, 404);

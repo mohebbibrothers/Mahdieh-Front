@@ -97,8 +97,8 @@ test.describe("P-02 واحدهای اقامتی", () => {
     await expect(dlg).toContainText("A1");
     await dlg.getByRole("button", { name: /افزودن به مقایسه/ }).click();
     await expect(page.locator(".ucmp-tray")).toContainText("A1");
-    // هیچ پیوندی به صفحهٔ قدیمی ‎/units/<code>/‎ (P-03 هنوز ساخته نشده)
-    expect(await page.locator('a[href^="/units/"]:not([href="/units/"]):not([href^="/units/?"])').count()).toBe(0);
+    // P-03: پیوند «صفحهٔ کامل این واحد» به ‎/units/A1/‎ (بی سفر ⇒ بی پرس‌وجو)
+    await expect(dlg.getByRole("link", { name: /صفحهٔ کامل این واحد/ })).toHaveAttribute("href", "/units/A1/");
   });
 
   test("گوشی: نوار ابزار چسبان، برگهٔ فیلتر، سفر ۵ نفره و درخواست درست — بی‌سرریز", async ({ page, api }) => {

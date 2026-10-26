@@ -1,6 +1,7 @@
 "use client";
 import type { ReactNode } from "react";
 import { featureIcon } from "@/entities/unit/unit";
+import { unitPageHref, type TripQuery } from "@/shared/config/destinations";
 import { cx } from "@/shared/lib/cx";
 import { faDigits, guestsLabel } from "@/shared/lib/fa";
 import { AppDialog } from "@/shared/ui/Dialog";
@@ -73,6 +74,7 @@ export function CompareDialog({
   onRemove,
   onChoose,
   chooseLabel,
+  trip,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
@@ -81,6 +83,8 @@ export function CompareDialog({
   onRemove: (code: string) => void;
   onChoose: (u: CatalogUnit) => void;
   chooseLabel: (u: CatalogUnit) => string;
+  /** شرایط سفر جاری — همراه پیوند صفحهٔ کامل هر واحد */
+  trip?: TripQuery;
 }) {
   const feats = compareFeatures(units);
   const same = (vals: Array<string | number | boolean>) => vals.every((v) => v === vals[0]);
@@ -184,7 +188,11 @@ export function CompareDialog({
                   </button>
                 ) : null}
               </div>
-              <strong>{u.title}</strong>
+              <strong>
+                <a className="ucmp__title" href={unitPageHref(u.code, trip) ?? undefined}>
+                  {u.title}
+                </a>
+              </strong>
               <button type="button" className="btn btn-primary btn-sm ucmp__choose" onClick={() => onChoose(u)}>
                 {chooseLabel(u)}
               </button>

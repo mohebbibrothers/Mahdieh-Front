@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import type { UnitTimeline } from "@/entities/slot/timeline";
 import type { Quote } from "@/shared/api/schemas";
+import { unitPageHref } from "@/shared/config/destinations";
 import { cx } from "@/shared/lib/cx";
 import { durationLabel, faDigits, formatClock, formatDayMonth, formatWeekday, guestsLabel } from "@/shared/lib/fa";
 import { Icon, type IconName } from "@/shared/ui/Icon";
@@ -136,7 +137,9 @@ export function SelectionDrawer({
           </span>
           <div className="cp-drawer__details">
             <p className="cp-drawer__title" id={`${id}-t`}>
-              <span>{unit?.title ?? selection.unit}</span>
+              <a className="cp-drawer__unit" href={unitPageHref(selection.unit, { ...selection, guests }) ?? undefined}>
+                {unit?.title ?? selection.unit}
+              </a>
               <span className="cp-drawer__pill">{durationLabel(selection.cells)}</span>
             </p>
             {start && end ? (

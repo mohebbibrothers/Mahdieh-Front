@@ -495,6 +495,7 @@ function UnitsBody({ now }: { now: number }) {
         onRemove={(c) => set({ compare: s.compare.filter((x) => x !== c) })}
         onChoose={onChoose}
         chooseLabel={chooseLabel}
+        trip={trip}
       />
       <PresetsDialog
         open={presetsOpen}

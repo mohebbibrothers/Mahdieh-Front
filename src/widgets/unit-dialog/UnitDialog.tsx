@@ -1,6 +1,5 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import Link from "next/link";
 import { cellAt, evaluate, nearestFit, STATUS_ICON, STATUS_LABEL } from "@/entities/slot/timeline";
 import { featureIcon, floorLabel, unitPlan } from "@/entities/unit/unit";
 import { bookingHref, draftStore } from "@/features/booking-draft/store";
@@ -48,7 +47,9 @@ export function UnitDialog() {
       : undefined;
 
   const signedIn = Boolean(me.data);
-  const unitPage = code ? unitPageHref(code) : null;
+  const unitPage = code
+    ? unitPageHref(code, { day: draft.day, period: draft.period, cells: draft.cells, guests: draft.guests })
+    : null;
   const quote = useQuery({
     queryKey: ["quote", code, first?.start, last?.end, draft.guests],
     queryFn: () =>
@@ -320,9 +321,9 @@ export function UnitDialog() {
         {code && (unitPage ?? destHref("unitsCompare")) ? (
           <nav className="unit-detail__more" aria-label="ادامهٔ بررسی واحدها">
             {unitPage ? (
-              <Link className="btn btn-secondary" href={unitPage}>
+              <a className="btn btn-secondary" href={unitPage}>
                 صفحهٔ کامل این واحد <Icon name="arrow-left" size={18} />
-              </Link>
+              </a>
             ) : null}
             <PageLink to="unitsCompare" query={{ cmp: code }} className="btn btn-secondary">
               مقایسه با سایر واحدها <Icon name="building" size={18} />

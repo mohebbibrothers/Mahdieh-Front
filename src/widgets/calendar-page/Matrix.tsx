@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react"
 import type { Period, UnitTimeline } from "@/entities/slot/timeline";
 import { floorLabel, unitTypeIcon } from "@/entities/unit/unit";
 import type { Calendar, CalendarCell, Occasion } from "@/shared/api/schemas";
+import { unitPageHref } from "@/shared/config/destinations";
 import { cx } from "@/shared/lib/cx";
 import { faDigits, formatDayMonth, formatWeekday } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
@@ -217,7 +218,12 @@ export function Matrix(p: MatrixProps) {
                         {floorLabel(u.floor)}
                       </small>
                     </span>
-                    <span className="cp-unit__name">{u.title}</span>
+                    <a
+                      className="cp-unit__name"
+                      href={unitPageHref(u.code, { day: null, period: "day", cells: 4, guests: p.guests }) ?? undefined}
+                    >
+                      {u.title}
+                    </a>
                     <small>ظرفیت: {faDigits(u.capacity)} نفر</small>
                     {p.guests > u.capacity ? (
                       <small className="cp-unit__warn">

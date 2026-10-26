@@ -64,6 +64,11 @@ describe("نقشهٔ مقصدها", () => {
     expect(destHref("reservation", { code: "M-1405-0142" })).toBe("/portal/?code=M-1405-0142");
     expect(destHref("verifyOffline")).toBe("/portal/#verify");
     expect(unitPageHref("B 2")).toBe("/units/B%202/");
+    expect(unitPageHref("A1", { day: "2026-10-29", period: "night", cells: 2, guests: 5 })).toBe(
+      "/units/A1/?day=2026-10-29&period=night&cells=2&guests=5",
+    );
+    expect(unitPageHref("A1", { day: null, period: "day", cells: 4, guests: 4 })).toBe("/units/A1/");
+    expect(unitPageHref("B1", { day: null, period: "day", cells: 4, guests: 7 })).toBe("/units/B1/?guests=7");
     // جنگو فقط مسیر دقیق ‎routes.json‎ (با اسلش پایانی) را به فرانت می‌دهد.
     for (const key of KEYS) expect(destHref(key), key).toMatch(/^\/[a-z][a-z/-]*\/(?:[?#]|$)/);
   });

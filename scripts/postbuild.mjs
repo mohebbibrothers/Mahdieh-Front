@@ -85,6 +85,9 @@ async function main() {
 
   const files = await walk(OUT);
   const routes = {};
+  /** قالب‌های مسیر پویا ⇒ الگوی جنگو (یک قالب مشترک برای همهٔ واحدها؛ بک‌اند نگهبان ۴۰۴ دارد). */
+  const DYNAMIC = { "units/_/index.html": "/units/[code]/" };
+  const dynamic = {};
   const manifest = {};
   const problems = [];
   let compressed = 0;
@@ -100,7 +103,9 @@ async function main() {
       await mkdir(path.dirname(dest), { recursive: true });
       await writeFile(dest, html);
       // ‎404.html‎ و ‎_not-found‎ صفحهٔ خطای فرانت‌اند، نه مسیر عمومی.
-      if (!rel.startsWith("_not-found") && rel !== "404.html" && !rel.startsWith(`404${path.sep}`)) {
+      const posix = rel.split(path.sep).join("/");
+      if (DYNAMIC[posix]) dynamic[DYNAMIC[posix]] = posix;
+      else if (!rel.startsWith("_not-found") && rel !== "404.html" && !rel.startsWith(`404${path.sep}`)) {
         routes[routeOf(rel)] = rel.split(path.sep).join("/");
       }
       manifest[`pages/${rel.split(path.sep).join("/")}`] = createHash("sha256").update(html).digest("hex");
@@ -134,6 +139,12 @@ async function main() {
 
   if (problems.length) fail(`نقض CSP در HTML:\n  - ${problems.join("\n  - ")}`);
   if (!routes["/"]) fail("مسیر / در خروجی نیست.");
+  for (const [rel, pattern] of Object.entries(DYNAMIC)) {
+    if (!dynamic[pattern]) fail(`قالب مسیر پویای ${pattern} (${rel}) ساخته نشد.`);
+  }
+  for (const route of Object.keys(routes)) {
+    if (route.includes("/_/")) fail(`قالب پویا به‌اشتباه مسیر عمومی شد: ${route}`);
+  }
   try {
     await stat(path.join(DIST, "pages", "404.html"));
   } catch {
@@ -148,7 +159,7 @@ async function main() {
   const pkg = JSON.parse(await readFile(path.join(ROOT, "package.json"), "utf8"));
   const nextPkg = JSON.parse(await readFile(path.join(ROOT, "node_modules", "next", "package.json"), "utf8"));
 
-  const routesJson = `${JSON.stringify({ version: 1, nonce_placeholder: NONCE, not_found: "404.html", routes }, null, 2)}\n`;
+  const routesJson = `${JSON.stringify({ version: 1, nonce_placeholder: NONCE, not_found: "404.html", routes, dynamic }, null, 2)}\n`;
   await writeFile(path.join(DIST, "routes.json"), routesJson);
   manifest["routes.json"] = createHash("sha256").update(routesJson).digest("hex");
   await writeFile(
@@ -171,7 +182,7 @@ async function main() {
 
   const pages = Object.keys(routes).length;
   console.log(
-    `\u2714 postbuild: ${release} · ${pages} مسیر · ${Object.keys(manifest).length} فایل · ${compressed} فشرده‌شده ⇒ ${path.relative(ROOT, DIST)}`,
+    `\u2714 postbuild: ${release} · ${pages} مسیر + ${Object.keys(dynamic).length} الگوی پویا · ${Object.keys(manifest).length} فایل · ${compressed} فشرده‌شده ⇒ ${path.relative(ROOT, DIST)}`,
   );
 }
 

@@ -3,6 +3,8 @@ import planB2 from "@/shared/assets/plan-B2.svg";
 import planB3 from "@/shared/assets/plan-B3.svg";
 import planRoom from "@/shared/assets/plan-room.svg";
 import planSuite from "@/shared/assets/plan-suite.svg";
+import plan2dRoom from "@/shared/assets/plan2d-room.svg";
+import plan2dSuite from "@/shared/assets/plan2d-suite.svg";
 import type { IconName } from "@/shared/ui/Icon";
 
 /** نگاشت کد امکانات بک‌اند ⇒ آیکون طراح (کد ناشناخته ⇒ آیکون عمومی، نه خطا). */
@@ -32,6 +34,9 @@ const UNIT_PLANS: Record<string, Asset> = { A2: planA2 as Asset, B2: planB2 as A
 /** پلان مفهومی واحد (نه نقشهٔ واقعی): ویژهٔ کد اگر طراح کشیده باشد، وگرنه بر اساس نوع. */
 export const unitPlan = (type: string, code?: string): string =>
   (code ? UNIT_PLANS[code.toUpperCase()] : undefined)?.src ?? ((type === "suite" ? planSuite : planRoom) as Asset).src;
+
+/** پلان شماتیک دوبعدی طراح (بی‌مقیاس؛ نه نقشهٔ واقعی) — بر اساس نوع واحد. */
+export const unitPlan2d = (type: string): string => ((type === "suite" ? plan2dSuite : plan2dRoom) as Asset).src;
 
 const FLOOR_NAMES = ["همکف", "اول", "دوم", "سوم", "چهارم"];
 export const floorLabel = (n: number) => `طبقهٔ ${FLOOR_NAMES[n] ?? n}`;

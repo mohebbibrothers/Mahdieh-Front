@@ -1,0 +1,86 @@
+{
+  "id": "01a1788c-9c4d-7d04-9cc3-b03f5a1e12dd",
+  "code": "A1",
+  "title": "سوئیت طبقهٔ اول",
+  "unit_type": "suite",
+  "type_label": "سوئیت",
+  "floor_number": 1,
+  "capacity_adults": 4,
+  "capacity_children": 2,
+  "capacity_total": 6,
+  "cleaning_buffer_minutes": null,
+  "features": [
+    {
+      "code": "wifi",
+      "title": "اینترنت بی‌سیم",
+      "icon": "📶",
+      "is_highlight": true,
+      "note": ""
+    },
+    {
+      "code": "private-bath",
+      "title": "سرویس بهداشتی اختصاصی",
+      "icon": "🚿",
+      "is_highlight": true,
+      "note": ""
+    },
+    {
+      "code": "kitchen",
+      "title": "آشپزخانهٔ مشترک",
+      "icon": "🍲",
+      "is_highlight": true,
+      "note": ""
+    },
+    {
+      "code": "prayer",
+      "title": "سجاده و مهر",
+      "icon": "🕌",
+      "is_highlight": true,
+      "note": ""
+    },
+    {
+      "code": "parking",
+      "title": "پارکینگ",
+      "icon": "🚗",
+      "is_highlight": false,
+      "note": ""
+    },
+    {
+      "code": "elevator",
+      "title": "آسانسور",
+      "icon": "🛗",
+      "is_highlight": false,
+      "note": ""
+    },
+    {
+      "code": "fridge",
+      "title": "یخچال",
+      "icon": "🧊",
+      "is_highlight": false,
+      "note": ""
+    },
+    {
+      "code": "heating",
+      "title": "گرمایش و سرمایش",
+      "icon": "🌡",
+      "is_highlight": false,
+      "note": ""
+    },
+    {
+      "code": "laundry",
+      "title": "رختشویخانه",
+      "icon": "🧺",
+      "is_highlight": false,
+      "note": ""
+    },
+    {
+      "code": "locker",
+      "title": "صندوق امانات",
+      "icon": "🔐",
+      "is_highlight": false,
+      "note": ""
+    }
+  ],
+  "cover": null,
+  "photos": []
+}

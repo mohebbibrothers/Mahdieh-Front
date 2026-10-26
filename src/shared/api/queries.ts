@@ -12,6 +12,7 @@ import {
   reservationListSchema,
   sessionStateSchema,
   standingSchema,
+  unitDetailSchema,
   verificationSchema,
   type SessionState,
 } from "./schemas";
@@ -24,6 +25,7 @@ export const qk = {
   config: ["config"] as const,
   meta: ["meta"] as const,
   property: ["property"] as const,
+  unit: (code: string) => ["unit", code] as const,
   calendar: (days: number) => ["calendar", days] as const,
   /** بازهٔ دلخواه صفحهٔ تقویم (P-04) — زیر همان پیشوند ‎["calendar"]‎ تا هر ابطال تقویم آن را هم تازه کند. */
   calendarRange: (from: string, days: number) => ["calendar", "range", from, days] as const,
@@ -48,6 +50,19 @@ export const configQuery = queryOptions({
   queryFn: ({ signal }) => unwrap(api.GET("/api/v1/config", { signal }), (d) => configSchema.parse(d)),
   staleTime: 60_000,
 });
+
+/**
+ * جزئیات یک واحد فعال (P-03). ۴۰۴ سرور (کد ناموجود/واحد غیرفعال) قطعی است ⇒ بی‌تلاش دوباره؛
+ * ظاهر «پیدا نشد» را صفحه از همین خطا می‌سازد.
+ */
+export const unitQuery = (code: string) =>
+  queryOptions({
+    queryKey: qk.unit(code),
+    queryFn: ({ signal }) =>
+      unwrap(api.GET("/api/v1/units/{code}", { params: { path: { code } }, signal }), (d) => unitDetailSchema.parse(d)),
+    staleTime: 60_000,
+    retry: retryTransient,
+  });
 
 export const metaQuery = queryOptions({
   queryKey: qk.meta,

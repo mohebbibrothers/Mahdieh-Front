@@ -30,7 +30,7 @@ export type PageInfo = {
 
 export const PAGES: Record<PageId, PageInfo> = {
   "P-02": { title: "واحدهای اقامتی", path: "/units/", ready: true },
-  "P-03": { title: "جزئیات واحد", path: "/units/{code}/", ready: false },
+  "P-03": { title: "جزئیات واحد", path: "/units/{code}/", ready: true },
   "P-04": { title: "تقویم موجودی", path: "/calendar/", ready: true },
   "P-05": { title: "تکمیل و صدور رزرو", path: "/booking/", ready: true },
   "P-07": { title: "پرتال زائر و پیگیری", path: "/portal/", ready: true },
@@ -105,10 +105,21 @@ export function reservationHref(code: string): Route {
   return destHref("reservation", { code }) ?? build(PAGES["P-05"], undefined, { code });
 }
 
-/** صفحهٔ اختصاصی یک واحد (P-03)؛ تا آن زمان ‎null‎ (جزئیات در پنجرهٔ همین صفحه باز می‌شود). */
-export function unitPageHref(code: string): Route | null {
+/** شرایط سفری که همراه پیوند واحد می‌رود (همان قرارداد پرس‌وجوی P-02/P-04/P-05). */
+export type TripQuery = { day: string | null; period: "day" | "night"; cells: number; guests: number };
+
+/**
+ * صفحهٔ اختصاصی یک واحد (P-03) — با شرایط سفر جاری (اگر هست) تا همان بازه در صفحهٔ واحد سنجیده شود؛
+ * صفحه آماده نباشد ⇒ ‎null‎ (جزئیات در پنجرهٔ همان صفحه).
+ */
+export function unitPageHref(code: string, trip?: TripQuery): Route | null {
   const page = PAGES["P-03"];
-  return page.ready ? build(page, undefined, undefined, code) : null;
+  if (!page.ready) return null;
+  const query: Record<string, string> = {};
+  if (trip?.day) Object.assign(query, { day: trip.day, period: trip.period });
+  if (trip && (trip.day || trip.cells !== 4)) query.cells = String(trip.cells);
+  if (trip && (trip.day || trip.guests !== 4)) query.guests = String(trip.guests);
+  return build(page, undefined, query, code);
 }
 
 /** صفحه‌های ساخته‌نشده و قصدهای منتظرشان — برای گزارش و آزمون. */

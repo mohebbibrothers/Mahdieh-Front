@@ -82,6 +82,22 @@ const unit = z.object({
 }) satisfies z.ZodMiniType<S["Unit"]>;
 export type Unit = z.infer<typeof unit>;
 
+const unitPhoto = z.object({
+  id: z.int(),
+  url: z.nullable(z.string()),
+  alt_text: z._default(z.string(), ""),
+  is_cover: z._default(z.boolean(), false),
+  sort_order: z._default(z.int(), 0),
+}) satisfies z.ZodMiniType<S["UnitPhoto"]>;
+export type UnitPhoto = z.infer<typeof unitPhoto>;
+
+/** جزئیات یک واحد (P-03): همان کارت + همهٔ تصاویر ثبت‌شده در پنل به ترتیب نمایش. */
+export const unitDetailSchema = z.object({
+  ...unit.shape,
+  photos: z._default(z.array(unitPhoto), []),
+}) satisfies z.ZodMiniType<S["UnitDetail"]>;
+export type UnitDetail = z.infer<typeof unitDetailSchema>;
+
 export const propertySchema = z.array(
   z.object({
     number: z.int(),
