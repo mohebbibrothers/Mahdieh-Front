@@ -41,7 +41,7 @@ export function AppDialog({
   badge?: ReactNode;
   children: ReactNode;
   actions?: ReactNode;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
   closeLabel?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);

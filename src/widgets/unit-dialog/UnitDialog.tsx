@@ -32,7 +32,8 @@ export function UnitDialog() {
   const me = useQuery(meQuery);
   const code = draft.openUnit;
   const row = timeline?.units.find((u) => u.code === code);
-  const unit = property.data?.flatMap((f) => f.units).find((u) => u.code === code);
+  const floor = property.data?.find((f) => f.units.some((u) => u.code === code));
+  const unit = floor?.units.find((u) => u.code === code);
   const days = timeline?.days.slice(0, 7) ?? [];
 
   const q = draft.day ? { day: draft.day, period: draft.period, cells: draft.cells, guests: draft.guests } : null;
@@ -133,7 +134,12 @@ export function UnitDialog() {
       <div className="unit-detail">
         <div className="unit-detail__visual">
           {unit ? (
-            <img src={unitPlan(unit.unit_type)} alt={`طرح مفهومی ${unit.type_label}`} width={400} height={300} />
+            <img
+              src={unitPlan(unit.unit_type, unit.code)}
+              alt={`طرح مفهومی ${unit.type_label}`}
+              width={400}
+              height={300}
+            />
           ) : (
             <div className="skeleton skeleton--block" />
           )}
@@ -301,6 +307,15 @@ export function UnitDialog() {
           </section>
         ) : null}
 
+        {floor?.accessibility_notes ? (
+          <section className="unit-detail__section" aria-labelledby="ud-access">
+            <h3 id="ud-access">دسترسی {floor.title}</h3>
+            <p className="inline-note">
+              <Icon name="stairs" size={16} /> {floor.accessibility_notes}
+            </p>
+          </section>
+        ) : null}
+
         {/* پیوندهای میان‌صفحه‌ای طراح (P-03 / P-02): تا ساخت آن صفحه‌ها خودکار پنهان‌اند. */}
         {code && (unitPage ?? destHref("unitsCompare")) ? (
           <nav className="unit-detail__more" aria-label="ادامهٔ بررسی واحدها">
@@ -309,7 +324,7 @@ export function UnitDialog() {
                 صفحهٔ کامل این واحد <Icon name="arrow-left" size={18} />
               </Link>
             ) : null}
-            <PageLink to="unitsCompare" className="btn btn-secondary">
+            <PageLink to="unitsCompare" query={{ cmp: code }} className="btn btn-secondary">
               مقایسه با سایر واحدها <Icon name="building" size={18} />
             </PageLink>
           </nav>

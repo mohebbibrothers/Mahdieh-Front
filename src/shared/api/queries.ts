@@ -27,7 +27,8 @@ export const qk = {
   calendar: (days: number) => ["calendar", days] as const,
   /** بازهٔ دلخواه صفحهٔ تقویم (P-04) — زیر همان پیشوند ‎["calendar"]‎ تا هر ابطال تقویم آن را هم تازه کند. */
   calendarRange: (from: string, days: number) => ["calendar", "range", from, days] as const,
-  windows: (guests: number, minCells: number) => ["calendar", "windows", guests, minCells] as const,
+  windows: (guests: number, minCells: number, from?: string, period?: string) =>
+    ["calendar", "windows", guests, minCells, from ?? "", period ?? ""] as const,
   occasions: (from: string, to: string) => ["occasions", from, to] as const,
   help: ["help"] as const,
   session: ["session"] as const,
@@ -90,12 +91,18 @@ export const calendarRangeQuery = (from: string, days: number) =>
   });
 
 /** کشف بازه: نخستین ران آزاد هر واحد در کل افق رزرو (برای همسفران و کوتاه‌ترین مدت داده‌شده). */
-export const windowsQuery = (guests: number, minCells: number) =>
+export const windowsQuery = (guests: number, minCells: number, after?: { from: string; period: "day" | "night" }) =>
   queryOptions({
-    queryKey: qk.windows(guests, minCells),
+    queryKey: qk.windows(guests, minCells, after?.from, after?.period),
     queryFn: ({ signal }) =>
-      unwrap(api.GET("/api/v1/calendar/windows", { params: { query: { guests, min_cells: minCells } }, signal }), (d) =>
-        calendarWindowsSchema.parse(d),
+      unwrap(
+        api.GET("/api/v1/calendar/windows", {
+          params: {
+            query: { guests, min_cells: minCells, ...(after ? { from: after.from, period: after.period } : {}) },
+          },
+          signal,
+        }),
+        (d) => calendarWindowsSchema.parse(d),
       ),
     staleTime: 30_000,
     refetchInterval: 120_000,

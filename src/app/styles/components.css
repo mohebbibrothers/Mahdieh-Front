@@ -456,6 +456,9 @@
   .app-dialog--lg {
     width: min(720px, calc(100% - 48px));
   }
+  .app-dialog--xl {
+    width: min(950px, calc(100% - 48px));
+  }
   .app-dialog__inner {
     display: flex;
     flex-direction: column;
@@ -521,7 +524,8 @@
   @media (max-width: 620px) {
     .app-dialog,
     .app-dialog--sm,
-    .app-dialog--lg {
+    .app-dialog--lg,
+    .app-dialog--xl {
       width: 100%;
       max-height: 92dvh;
       margin: auto 0 0;

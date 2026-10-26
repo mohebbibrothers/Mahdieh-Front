@@ -3,7 +3,29 @@
   .rail-controls {
     display: flex;
     flex: none;
+    align-items: center;
     gap: 8px;
+  }
+  .rail-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    margin-inline-end: 6px;
+    padding-inline: 4px;
+    color: var(--color-brand-ink);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: gap var(--fast) var(--ease);
+  }
+  .rail-all-foot {
+    display: none;
+  }
+  .rail-all:hover {
+    gap: 10px;
+    text-decoration: underline;
+    text-underline-offset: 6px;
   }
   .unit-rail {
     display: grid;
@@ -248,6 +270,15 @@
     }
   }
   @media (max-width: 620px) {
+    .rail-all {
+      display: none;
+    }
+    .rail-all-foot {
+      display: flex;
+      width: 100%;
+      min-height: 46px;
+      margin-top: 8px;
+    }
     .unit-rail {
       grid-auto-columns: 86%;
       gap: 14px;

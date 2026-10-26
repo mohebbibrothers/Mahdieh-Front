@@ -2535,6 +2535,7 @@ export type components = {
              * @description کد کوتاه برای مکالمهٔ تلفنی و تابلو؛ مثل A1
              */
             code: string;
+            readonly cover: components["schemas"]["UnitCover"] | null;
             readonly features: components["schemas"]["UnitFeature"][];
             readonly floor_number: number;
             /**
@@ -2554,7 +2555,17 @@ export type components = {
              */
             unit_type: "suite" | "large_room";
         };
-        /** @description نمای کامل واحد — با تصاویر و یادداشت عمومی. */
+        /** @description تصویر شاخص کارت واحد (عکس واقعی بارگذاری‌شده در پنل). */
+        UnitCover: {
+            alt_text: string;
+            url: string;
+        };
+        /**
+         * @description نمای کامل واحد — با همهٔ تصاویر.
+         *
+         *     ``notes`` («یادداشت کارکنان») عمداً اینجا نیست: یادداشت داخلی است و نباید در API عمومی
+         *     منتشر شود (طراحی P-02/P-03 هم صراحتاً آن را نمایش نمی‌دهد).
+         */
         UnitDetail: {
             /** ظرفیت بزرگسال */
             capacity_adults?: number;
@@ -2571,6 +2582,7 @@ export type components = {
              * @description کد کوتاه برای مکالمهٔ تلفنی و تابلو؛ مثل A1
              */
             code: string;
+            readonly cover: components["schemas"]["UnitCover"] | null;
             readonly features: components["schemas"]["UnitFeature"][];
             readonly floor_number: number;
             /**
@@ -2579,8 +2591,6 @@ export type components = {
              * @description شناسهٔ UUIDv7 — مرتب با زمان و غیرقابل‌حدس
              */
             readonly id: string;
-            /** یادداشت کارکنان */
-            notes?: string;
             readonly photos: components["schemas"]["UnitPhoto"][];
             /** عنوان */
             title: string;
@@ -2593,7 +2603,7 @@ export type components = {
              */
             unit_type: "suite" | "large_room";
         };
-        /** @description نمایش یک امکان واحد. */
+        /** @description نمایش یک امکان واحد — با یادداشت ویژهٔ همان واحد (مثلاً «داخل واحد»). */
         UnitFeature: {
             /** کد */
             code: string;
@@ -2601,6 +2611,8 @@ export type components = {
             icon?: string;
             /** امکان شاخص */
             is_highlight?: boolean;
+            /** @description یادداشت عمومی این امکان برای همین واحد؛ رشتهٔ تهی یعنی ندارد */
+            readonly note: string;
             /** عنوان */
             title: string;
         };
@@ -4038,10 +4050,14 @@ export interface operations {
     calendar_windows_retrieve: {
         parameters: {
             query?: {
+                /** @description زودترین روز آغاز دلخواه (YYYY-MM-DD، از امروز تا افق)؛ بی‌آن جست‌وجو از نخستین زمان مجاز آغاز می‌شود */
+                from?: string;
                 /** @description تعداد همسفران (۱ تا 60)؛ پیش‌فرض ۱ */
                 guests?: number;
                 /** @description کوتاه‌ترین ران پذیرفتنی (نیم‌روز)؛ پیش‌فرض کف سیاست */
                 min_cells?: number;
+                /** @description نیم‌روز آغاز همراه با from؛ پیش‌فرض day */
+                period?: "day" | "night";
             };
             header?: {
                 /** @description ETag پاسخ قبلی؛ بی‌تغییر ⇒ ۳۰۴ بدون بدنه */

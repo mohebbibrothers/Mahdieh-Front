@@ -8,6 +8,7 @@ import { useAvailability } from "@/features/booking-draft/use-availability";
 import { propertyQuery } from "@/shared/api/queries";
 import { faCount, faDigits, formatDayLabel } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
+import { PageLink } from "@/shared/ui/PageLink";
 
 export function UnitRail() {
   const property = useQuery(propertyQuery);
@@ -43,6 +44,10 @@ export function UnitRail() {
           </p>
         </div>
         <div className="rail-controls">
+          {/* پیوند به کاتالوگ کامل P-02؛ تا آماده‌نبودن آن صفحه خودکار پنهان است. */}
+          <PageLink to="unitsCompare" className="rail-all">
+            همهٔ واحدها و مقایسه <Icon name="arrow-left" size={16} />
+          </PageLink>
           <button type="button" className="icon-button" onClick={() => scroll(-1)} aria-label="واحد قبلی">
             <Icon name="arrow-right" size={18} />
           </button>
@@ -66,7 +71,7 @@ export function UnitRail() {
                 <li key={u.code} className="unit-card">
                   <div className="unit-card__visual">
                     <img
-                      src={unitPlan(u.unit_type)}
+                      src={unitPlan(u.unit_type, u.code)}
                       alt={`طرح مفهومی ${u.type_label}`}
                       loading="lazy"
                       decoding="async"
@@ -155,6 +160,10 @@ export function UnitRail() {
               </li>
             ))}
       </ul>
+      {/* گوشی: همان پیوند زیر ریل و تمام‌عرض (کنار عنوان جا نمی‌شود) */}
+      <PageLink to="unitsCompare" className="btn btn-secondary rail-all-foot">
+        همهٔ واحدها و مقایسه <Icon name="arrow-left" size={18} />
+      </PageLink>
     </section>
   );
 }

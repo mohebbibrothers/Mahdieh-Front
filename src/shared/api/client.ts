@@ -67,3 +67,11 @@ export async function unwrap<T>(
   if (!response.ok || error !== undefined) throw toApiError(response.status, error);
   return parse(data);
 }
+
+/** ثانیه‌های انتظار پیش از تلاش دوباره (‎429/503‎ با ‎retry_after‎ سرور؛ سقف ده دقیقه)؛ خطای دیگر ⇒ ‎null‎. */
+export function retryAfter(e: unknown): number | null {
+  if (!(e instanceof ApiError) || (e.status !== 429 && e.status !== 503)) return null;
+  const body = e.body as { retry_after?: unknown } | null;
+  const n = typeof body?.retry_after === "number" ? body.retry_after : Number(body?.retry_after);
+  return Number.isFinite(n) && n > 0 ? Math.min(600, Math.ceil(n)) : e.status === 503 ? 30 : 60;
+}

@@ -10,7 +10,7 @@ const cells = (page: Page) => page.locator(".cell:visible");
  * تکهٔ htmx قدیمیِ ‎/calendar/grid/‎ ممنوع می‌ماند.
  */
 const LEGACY =
-  /^(?:https?:\/\/[^/]+)?\/(?:board|book|calendar\/grid|demo|feedback|help|login|logout|my|profile|units|verify|django-admin)(?:[/?#]|$)/;
+  /^(?:https?:\/\/[^/]+)?\/(?:board|book|calendar\/grid|demo|feedback|help|login|logout|my|profile|units\/[\w-]+|verify|django-admin)(?:[/?#]|$)/;
 
 /** تا پایان ورود پلکانی کارت‌های فهرست (اندازه‌گیری وسط حرکت ۱۰px خطا دارد). */
 async function settleListCards(page: Page) {

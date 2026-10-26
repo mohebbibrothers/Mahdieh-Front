@@ -1,27 +1,16 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
 import { AccountTrigger } from "@/features/session/AccountButton";
 import { meQuery, occasionsQuery, reservationsQuery, standingQuery } from "@/shared/api/queries";
 import { destHref, reservationHref } from "@/shared/config/destinations";
 import { addDays, formatDayLabel, formatMoment, tehranToday } from "@/shared/lib/fa";
+import { useOnline } from "@/shared/lib/use-online";
 import { Icon } from "@/shared/ui/Icon";
 
 /** اتصال قطع ⇒ اطلاع محترمانه؛ دادهٔ آخر (کش TanStack Query) نمایش می‌ماند. */
 export function OfflineBanner() {
-  const online = useSyncExternalStore(
-    (l) => {
-      window.addEventListener("online", l);
-      window.addEventListener("offline", l);
-      return () => {
-        window.removeEventListener("online", l);
-        window.removeEventListener("offline", l);
-      };
-    },
-    () => navigator.onLine,
-    () => true,
-  );
+  const online = useOnline();
   if (online) return null;
   return (
     <div className="status-banner" role="status">

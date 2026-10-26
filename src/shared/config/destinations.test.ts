@@ -12,7 +12,7 @@ import {
 
 /** همان الگوی آزمون نگهبان e2e: قالب‌های قدیمی جنگو (apps/web، apps/core) و پیشخوان مدیریت. */
 const LEGACY =
-  /^(?:https?:\/\/[^/]+)?\/(?:board|book|calendar|demo|feedback|help|login|logout|my|profile|units|verify|django-admin)(?:[/?#]|$)/;
+  /^(?:https?:\/\/[^/]+)?\/(?:board|book|calendar|demo|feedback|help|login|logout|my|profile|units\/[\w-]+|verify|django-admin)(?:[/?#]|$)/;
 const KEYS = Object.keys(DEST) as DestKey[];
 const IDS = Object.keys(PAGES) as PageId[];
 const snapshot = structuredClone(PAGES);

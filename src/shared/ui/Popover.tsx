@@ -11,7 +11,8 @@ export type PopoverAnchor =
   | "stamp-start-time"
   | "stamp-end-date"
   | "stamp-end-time"
-  | "calendar-from";
+  | "calendar-from"
+  | "trip-arrival";
 
 /** پاپ‌اورهای جست‌وجوی سریع زیر کل فیلد (پس از متن راهنما) باز می‌شوند، نه زیر خود دکمه. */
 const FIELD_ANCHORED = new Set<PopoverAnchor>(["arrival", "duration"]);

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { buildTimeline, type UnitTimeline } from "@/entities/slot/timeline";
 import { bookingHref } from "@/features/booking-draft/store";
 import { openAccount } from "@/features/session/account-store";
-import { ApiError } from "@/shared/api/client";
+import { ApiError, retryAfter } from "@/shared/api/client";
 import { readPolicies, type Policies } from "@/shared/api/policies";
 import {
   calendarRangeQuery,
@@ -22,6 +22,7 @@ import type { Calendar, CalendarCell, CalendarWindows, Floor, Occasion } from "@
 import { destHref } from "@/shared/config/destinations";
 import { addDays, faDigits, formatClock, formatDayMonth, tehranToday } from "@/shared/lib/fa";
 import { useClock, useHydratedNow } from "@/shared/lib/use-clock";
+import { useDebounced } from "@/shared/lib/use-debounced";
 import { Icon } from "@/shared/ui/Icon";
 import { SHRINE_SVG } from "@/shared/ui/shrine.generated";
 import { Discovery } from "./Discovery";
@@ -52,12 +53,6 @@ import { pageStore, usePageState } from "./use-page-state";
 /* ── ابزارهای کوچک ──────────────────────────────────────────────────────── */
 
 /** ثانیه‌های انتظار پیشنهادی سرور: ۴۲۹ ⇒ ‎body.retry_after‎؛ ۵۰۳ ⇒ همان یا ۳۰ ثانیه. */
-function retryAfter(e: unknown): number | null {
-  if (!(e instanceof ApiError) || (e.status !== 429 && e.status !== 503)) return null;
-  const body = e.body as { retry_after?: unknown } | null;
-  const n = typeof body?.retry_after === "number" ? body.retry_after : Number(body?.retry_after);
-  return Number.isFinite(n) && n > 0 ? Math.min(600, Math.ceil(n)) : e.status === 503 ? 30 : 60;
-}
 
 /** ادغام دو پاسخ تقویم (بازهٔ نمایش + بازهٔ انتخاب بیرون از آن) بی تکرار روز. */
 function mergeCalendars(a: Calendar | undefined, b: Calendar | undefined): Calendar | undefined {
@@ -65,21 +60,6 @@ function mergeCalendars(a: Calendar | undefined, b: Calendar | undefined): Calen
   const seen = new Set(a.days.map((d) => d.day));
   const days = [...a.days, ...b.days.filter((d) => !seen.has(d.day))].sort((x, y) => x.day.localeCompare(y.day));
   return { ...a, days };
-}
-
-/**
- * مقدار با تأخیر. مقایسه محتوایی است (کلید JSON)، نه با هویت شیء: شیءِ تازهٔ هر رندر نباید زمان‌سنج را
- * از نو بچیند یا پس از رسیدن، رندر بی‌پایان بسازد.
- */
-function useDebounced<T>(value: T, ms: number): T {
-  const key = JSON.stringify(value);
-  const [v, setV] = useState<{ key: string; value: T }>({ key, value });
-  useEffect(() => {
-    if (key === v.key) return;
-    const t = setTimeout(() => setV({ key, value: JSON.parse(key) as T }), ms);
-    return () => clearTimeout(t);
-  }, [key, ms, v.key]);
-  return v.value;
 }
 
 const scrollToId = (id: string) =>

@@ -57,7 +57,13 @@ const unitFeature = z.object({
   title: z.string(),
   icon: z.exactOptional(z.string()),
   is_highlight: z.exactOptional(z.boolean()),
+  /** یادداشت ویژهٔ همین واحد («داخل واحد»)؛ بک‌اند قدیمی‌تر ⇒ تهی */
+  note: z._default(z.string(), ""),
 }) satisfies z.ZodMiniType<S["UnitFeature"]>;
+export type UnitFeature = z.infer<typeof unitFeature>;
+
+const unitCover = z.object({ url: z.string(), alt_text: z.string() }) satisfies z.ZodMiniType<S["UnitCover"]>;
+export type UnitCover = z.infer<typeof unitCover>;
 
 const unit = z.object({
   id: z.string(),
@@ -71,6 +77,8 @@ const unit = z.object({
   capacity_total: z.int(),
   cleaning_buffer_minutes: z.exactOptional(z.nullable(z.int())),
   features: z.array(unitFeature),
+  /** عکس واقعی شاخص (پنل مدیریت)؛ ‎null‎ ⇒ پلان مفهومی طراح */
+  cover: z._default(z.nullable(unitCover), null),
 }) satisfies z.ZodMiniType<S["Unit"]>;
 export type Unit = z.infer<typeof unit>;
 

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AccountTrigger } from "@/features/session/AccountButton";
 import { destHref } from "@/shared/config/destinations";
 import { SITE } from "@/shared/config/site";
+import { requestUnitsTrip } from "@/shared/lib/page-events";
 import { useActiveSection } from "@/shared/lib/use-active-section";
 import { Icon } from "@/shared/ui/Icon";
 
@@ -13,9 +14,10 @@ const SPY = ["availability"] as const;
  * زبانهٔ فعال با اسکرول جابه‌جا می‌شود: «خانه» همیشه صفحهٔ جاری است (‎aria-current=page‎)،
  * و «زمان‌های آزاد» وقتی بخشش زیر چشم است ‎aria-current=location‎ می‌گیرد.
  */
-export function MobileDock({ page = "home" }: { page?: "home" | "booking" | "portal" | "calendar" }) {
+export function MobileDock({ page = "home" }: { page?: "home" | "booking" | "portal" | "calendar" | "units" }) {
   const spied = useActiveSection(SPY, "home");
   const onHome = page === "home";
+  const onUnits = page === "units";
   const section = onHome ? spied : null;
   return (
     <>
@@ -40,21 +42,37 @@ export function MobileDock({ page = "home" }: { page?: "home" | "booking" | "por
           <Icon name="home" size={22} />
           <span>خانه</span>
         </a>
-        <a
-          href={onHome ? "#availability" : destHref("calendar")}
-          aria-current={page === "calendar" ? "page" : section === "availability" ? "location" : undefined}
-          data-active={section === "availability" || undefined}
-        >
-          <Icon name="calendar" size={22} />
-          <span>زمان‌های آزاد</span>
-        </a>
-        <Link
-          href={destHref("portal") ?? destHref("bookingNav") ?? "/"}
-          aria-current={page === "portal" ? "page" : undefined}
-        >
-          <Icon name="ticket" size={22} />
-          <span>رزروهای من</span>
-        </Link>
+        {onUnits ? (
+          // طرح P-02: «واحدها» زبانهٔ جاری است و «زمان سفر» پنجرهٔ شرایط سفر همین صفحه را باز می‌کند.
+          <>
+            <a href="#unit-results" aria-current="page" data-active="">
+              <Icon name="building" size={22} />
+              <span>واحدها</span>
+            </a>
+            <button type="button" onClick={requestUnitsTrip} aria-haspopup="dialog">
+              <Icon name="calendar" size={22} />
+              <span>زمان سفر</span>
+            </button>
+          </>
+        ) : (
+          <>
+            <a
+              href={onHome ? "#availability" : destHref("calendar")}
+              aria-current={page === "calendar" ? "page" : section === "availability" ? "location" : undefined}
+              data-active={section === "availability" || undefined}
+            >
+              <Icon name="calendar" size={22} />
+              <span>زمان‌های آزاد</span>
+            </a>
+            <Link
+              href={destHref("portal") ?? destHref("bookingNav") ?? "/"}
+              aria-current={page === "portal" ? "page" : undefined}
+            >
+              <Icon name="ticket" size={22} />
+              <span>رزروهای من</span>
+            </Link>
+          </>
+        )}
         <AccountTrigger>
           <Icon name="user" size={22} />
           <span>حساب</span>
