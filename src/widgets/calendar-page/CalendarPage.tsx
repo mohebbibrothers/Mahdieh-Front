@@ -34,6 +34,7 @@ import {
   clickCell,
   evaluateSelection,
   occasionChips,
+  occasionsByDay,
   rangeStats,
   shiftRange,
   slotState,
@@ -171,7 +172,7 @@ function CalendarBody({ now }: { now: number }) {
   const stats: RangeStats | null = timeline ? rangeStats(units, days, clock) : null;
   const occ = occasions.data ?? [];
   const chips = occasionChips(days, occ);
-  const peakDays = new Set(occ.filter((o) => o.is_peak).map((o) => o.date_gregorian));
+  const occDays = occasionsByDay(occ);
   const startHour = cal.data?.lattice.grid_start_hour ?? 8;
   const cellHours = cal.data?.lattice.cell_hours ?? 12;
   const maxGuests = Math.max(1, ...(timeline?.units.map((u) => u.capacity) ?? [8]));
@@ -388,12 +389,16 @@ function CalendarBody({ now }: { now: number }) {
           units={timeline?.units ?? []}
           chips={chips}
           onPrev={() => set({ from: shiftRange(from, -s.days, today, policies.horizonDays, s.days) })}
-          onToday={() => set({ from: null })}
+          onToday={() => {
+            set({ from: null });
+            setActiveDay(null);
+          }}
           onNext={() => set({ from: shiftRange(from, s.days, today, policies.horizonDays, s.days) })}
           onDays={(d) => set({ days: d })}
           onUnit={(u) => set({ unit: u, floor: 0 })}
           onFloor={(f) => set({ floor: f, unit: "" })}
           onView={(v) => set({ view: v })}
+          day={activeDay}
           onJump={(d) => showDay(d)}
           onChip={onChip}
         />
@@ -446,7 +451,7 @@ function CalendarBody({ now }: { now: number }) {
                   clock={clock}
                   selection={sel}
                   guests={s.guests}
-                  peakDays={peakDays}
+                  occDays={occDays}
                   today={today}
                   startHour={startHour}
                   cellHours={cellHours}
@@ -464,7 +469,7 @@ function CalendarBody({ now }: { now: number }) {
                   clock={clock}
                   selection={sel}
                   guests={s.guests}
-                  peakDays={peakDays}
+                  occDays={occDays}
                   today={today}
                   startHour={startHour}
                   cellHours={cellHours}

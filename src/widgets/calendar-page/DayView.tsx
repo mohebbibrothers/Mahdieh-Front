@@ -2,7 +2,7 @@
 import { useEffect, useRef, type KeyboardEvent } from "react";
 import type { UnitTimeline } from "@/entities/slot/timeline";
 import { floorLabel } from "@/entities/unit/unit";
-import type { Calendar, CalendarCell } from "@/shared/api/schemas";
+import type { Calendar, CalendarCell, Occasion } from "@/shared/api/schemas";
 import { faDigits, formatDayMonth, formatFullDate, formatWeekday } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
 import { periodHours, selectionMap } from "./Matrix";
@@ -12,6 +12,7 @@ import {
   SLOT_REASON,
   cellsOfDay,
   dayFree,
+  dayMark,
   slotState,
   type Clock,
   type Selection,
@@ -32,7 +33,7 @@ export function DayView({
   clock,
   selection,
   guests,
-  peakDays,
+  occDays,
   today,
   startHour,
   cellHours,
@@ -49,7 +50,7 @@ export function DayView({
   clock: Clock;
   selection: Selection | null;
   guests: number;
-  peakDays: Set<string>;
+  occDays: Map<string, Occasion[]>;
   today: string;
   startHour: number;
   cellHours: number;
@@ -91,7 +92,7 @@ export function DayView({
       <div className="cp-rail" ref={rail} role="tablist" aria-label="روزهای بازه" onKeyDown={onRailKey}>
         {days.map((d) => {
           const free = dayFree(units, d.day, clock).free;
-          const peak = peakDays.has(d.day) || d.demand_level === "peak";
+          const mark = dayMark(d, occDays.get(d.day));
           const on = d.day === current.day;
           return (
             <button
@@ -104,8 +105,10 @@ export function DayView({
               tabIndex={on ? 0 : -1}
               data-day={d.day}
               data-weekend={d.is_weekend || undefined}
-              data-peak={peak || undefined}
+              data-peak={mark.tag === "peak" || undefined}
+              data-occasion={mark.titles.length ? mark.tag : undefined}
               data-today={d.day === today || undefined}
+              title={mark.titles.join("، ") || undefined}
               className="cp-rail__day"
               onClick={() => onDay(d.day)}
             >
@@ -114,6 +117,11 @@ export function DayView({
               <span className="cp-rail__free" data-none={free === 0 || undefined}>
                 {free ? `${faDigits(free)} آزاد` : "تکمیل"}
               </span>
+              {mark.titles.length ? (
+                <span className="cp-rail__dot">
+                  <span className="sr-only">— {mark.titles.join("، ")}</span>
+                </span>
+              ) : null}
             </button>
           );
         })}
@@ -121,7 +129,18 @@ export function DayView({
 
       <div className="cp-daypanel" id="cp-daypanel" role="tabpanel" aria-labelledby={`cp-tab-${current.day}`}>
         <header className="cp-daypanel__head">
-          <h3>{formatFullDate(current.day)}</h3>
+          <div className="cp-daypanel__title">
+            <h3>{formatFullDate(current.day)}</h3>
+            {occDays.get(current.day)?.length ? (
+              <p className="cp-daypanel__occ">
+                <Icon name="star" size={14} />
+                {occDays
+                  .get(current.day)
+                  ?.map((o) => o.title + (o.is_holiday ? " (تعطیل رسمی)" : ""))
+                  .join("، ")}
+              </p>
+            ) : null}
+          </div>
           <DayStatus
             free={f.free}
             total={f.total}

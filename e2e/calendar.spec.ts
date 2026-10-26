@@ -203,6 +203,38 @@ test.describe("P-04 تقویم موجودی", () => {
     await expect(drawer(page)).toContainText("همهٔ نیم‌روزهای این بازه آزادند");
   });
 
+  test("میان‌بُرهای پرش: مقدار انتخاب‌گر همان روز می‌شود و میان‌بُرِ هم‌ارز پنهان است", async ({ page }) => {
+    await page.goto("/calendar/");
+    const field = page.locator(".cp-jump .picker-field").filter({ visible: true });
+    await expect(field).toContainText("۲۸ مهر");
+    await field.click();
+    const pop = page.locator("[popover]:popover-open").filter({ visible: true });
+    await expect(pop.getByRole("button", { name: "امروز", exact: true })).toHaveCount(0);
+    await pop.getByRole("button", { name: "آخر هفتهٔ پیش‌رو" }).click();
+    await expect(field).toContainText("پنجشنبه، ۳۰ مهر");
+    await field.click();
+    await expect(pop.getByRole("button", { name: "آخر هفتهٔ پیش‌رو" })).toHaveCount(0);
+    await pop.getByRole("button", { name: "هفتهٔ بعد" }).click();
+    await expect(field).toContainText("۵ آبان");
+  });
+
+  test("مناسبت‌ها: ترتیب زمانی، نشان تعطیل/تقریبی، برچسب سرستون و جزئیات قمری", async ({ page }) => {
+    await page.goto("/calendar/");
+    const chips = page.locator(".cp-occasions__chips > li");
+    // ترتیب زمانی: آخر هفتهٔ ۳۰ مهر (پنجشنبه) پیش از مناسبت ۱ آبان، سپس تعطیل ۴ آبان
+    await expect(chips.nth(0)).toContainText("آخر هفته ۳۰ مهر");
+    await expect(chips.nth(1)).toContainText("مناسبت نمونهٔ آزمون");
+    await expect(chips.nth(2)).toContainText("تعطیل رسمی نمونه");
+    const holiday = chips.filter({ hasText: "تعطیل رسمی نمونه" });
+    await expect(holiday.locator(".cp-chip__badge")).toHaveText(["تعطیل", "تقریبی"]);
+    await expect(page.locator('.cp-dh[data-day="2026-10-23"] .cp-tag--peak')).toHaveText("اوج");
+    await expect(page.locator('.cp-dh[data-day="2026-10-26"] .cp-tag--holiday')).toHaveText("تعطیل");
+    await holiday.getByRole("button").click();
+    const dialog = page.getByRole("dialog", { name: "تعطیل رسمی نمونه" });
+    await expect(dialog).toContainText("۱۵ جمادی‌الاول ۱۴۴۸");
+    await expect(dialog.getByRole("note")).toContainText("تاریخ تقریبی است");
+  });
+
   test("پیوند ویرایش P-05 همان انتخاب را بازمی‌سازد", async ({ page }) => {
     await page.goto("/calendar/?from=2026-10-23&pick=B2&day=2026-10-25&period=day&cells=4&guests=3");
     await expect(slot(page, "B2", "2026-10-25", "day")).toHaveAttribute("aria-pressed", "true");
@@ -253,7 +285,7 @@ test.describe("P-04 تقویم موجودی", () => {
     await slot(page, "A1", "2026-10-20", "night").click();
     await expect(drawer(page)).toHaveAttribute("data-tone", "danger");
     expect((await scan()).violations).toEqual([]);
-    await page.getByRole("button", { name: /راهنمای زمان‌های تحویل/ }).click();
+    await page.getByRole("button", { name: /راهنمای کامل زمان‌های تحویل/ }).click();
     await expect(page.getByRole("dialog", { name: /راهنمای زمان‌های تحویل/ })).toBeVisible();
     expect((await scan()).violations).toEqual([]);
   });

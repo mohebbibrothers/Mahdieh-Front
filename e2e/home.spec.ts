@@ -60,7 +60,7 @@ test.describe("P-01 صفحهٔ خانه", () => {
       "aria-label",
       /تعمیر و نگهداری، تعمیر سرمایش/,
     );
-    await expect(page.locator(".day-head__occasion")).toContainText("مناسبت نمونهٔ آزمون");
+    await expect(page.locator(".day-head__occasion").first()).toContainText("مناسبت نمونهٔ آزمون");
     expect(api.calls.some((c) => c === "GET /api/v1/occasions?from=2026-10-20&to=2026-11-03")).toBe(true);
   });
 

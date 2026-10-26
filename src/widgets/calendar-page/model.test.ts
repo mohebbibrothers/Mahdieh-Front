@@ -6,7 +6,9 @@ import {
   clampFrom,
   clickCell,
   evaluateSelection,
+  dayMark,
   occasionChips,
+  occasionsByDay,
   rangeStats,
   readState,
   slotState,
@@ -167,5 +169,29 @@ describe("occasionChips", () => {
     expect(chips.map((c) => c.kind)).toEqual(["occasion", "weekend"]);
     const weekend = chips[1];
     expect(weekend?.kind === "weekend" && weekend.days).toEqual(["2026-10-29", "2026-10-30"]);
+  });
+
+  it("به ترتیب زمان: آخر هفتهٔ زودتر پیش از مناسبت دیرتر می‌آید", () => {
+    const t = buildTimeline(calendar([]));
+    const chips = occasionChips(t.days, [
+      { id: "9", title: "شهادت", kind: "religious", date_gregorian: "2026-10-30", is_peak: false },
+    ]);
+    expect(chips.map((c) => c.kind)).toEqual(["weekend", "occasion"]);
+  });
+});
+
+describe("dayMark", () => {
+  const day = (d: string, weekend = false) => ({ day: d, is_weekend: weekend, demand_level: "normal" as const });
+  const occ = occasionsByDay([
+    { id: "a", title: "عرفه", kind: "religious", date_gregorian: "2026-10-27", is_peak: true },
+    { id: "b", title: "شهادت", kind: "religious", date_gregorian: "2026-10-28", is_peak: false, is_holiday: true },
+    { id: "c", title: "میلاد", kind: "religious", date_gregorian: "2026-10-29", is_peak: false },
+  ]);
+  it("اوج › تعطیل رسمی › پرتقاضا › آخر هفته", () => {
+    expect(dayMark(day("2026-10-27"), occ.get("2026-10-27")).tag).toBe("peak");
+    expect(dayMark(day("2026-10-28"), occ.get("2026-10-28")).tag).toBe("holiday");
+    expect(dayMark(day("2026-10-29", true), occ.get("2026-10-29"))).toEqual({ tag: "busy", titles: ["میلاد"] });
+    expect(dayMark(day("2026-10-30", true), undefined).tag).toBe("weekend");
+    expect(dayMark(day("2026-10-31"), undefined).tag).toBeNull();
   });
 });

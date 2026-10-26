@@ -267,12 +267,35 @@ export function alternatives(t: Timeline, s: Selection, guests: number, c: Clock
 export type Chip =
   { kind: "occasion"; key: string; day: string; occasion: Occasion } | { kind: "weekend"; key: string; days: string[] };
 
-/** نوار «مناسبت‌ها و ایام پرتقاضا»: مناسبت‌های بازه (اوج اول) + آخر هفته‌های پیوسته به‌صورت یک تراشه. */
+/** برچسب سرستون یک روز: اوج تقاضا › تعطیل رسمی/آخر هفته › مناسبت پرتقاضا. */
+export type DayMark = { tag: "peak" | "holiday" | "busy" | "weekend" | null; titles: string[] };
+
+/** مناسبت‌های هر روز (کلید: تاریخ میلادی) برای سرستون‌ها و نوار روزها. */
+export function occasionsByDay(occasions: Occasion[]): Map<string, Occasion[]> {
+  const out = new Map<string, Occasion[]>();
+  for (const o of occasions) out.set(o.date_gregorian, [...(out.get(o.date_gregorian) ?? []), o]);
+  return out;
+}
+
+export function dayMark(
+  day: Pick<Calendar["days"][number], "is_weekend" | "demand_level">,
+  occs: Occasion[] | undefined,
+): DayMark {
+  const list = occs ?? [];
+  const titles = list.map((o) => o.title);
+  if (day.demand_level === "peak" || list.some((o) => o.is_peak)) return { tag: "peak", titles };
+  if (list.some((o) => o.is_holiday)) return { tag: "holiday", titles };
+  if (list.length) return { tag: "busy", titles };
+  return { tag: day.is_weekend ? "weekend" : null, titles };
+}
+
+export const DAY_TAG_LABEL = { peak: "اوج", holiday: "تعطیل", busy: "پرتقاضا", weekend: "تعطیل" } as const;
+
+/** نوار «مناسبت‌ها و ایام پرتقاضا»: مناسبت‌ها و آخر هفته‌های پیوستهٔ بازه، به ترتیب زمان. */
 export function occasionChips(days: Calendar["days"], occasions: Occasion[]): Chip[] {
   const inRange = new Set(days.map((d) => d.day));
   const occ: Chip[] = occasions
     .filter((o) => inRange.has(o.date_gregorian))
-    .sort((a, b) => Number(b.is_peak) - Number(a.is_peak) || a.date_gregorian.localeCompare(b.date_gregorian))
     .map((o) => ({ kind: "occasion", key: `o-${o.id}`, day: o.date_gregorian, occasion: o }));
   const weekends: Chip[] = [];
   let run: string[] = [];
@@ -288,7 +311,9 @@ export function occasionChips(days: Calendar["days"], occasions: Occasion[]): Ch
     }
   }
   flush();
-  return [...occ, ...weekends];
+  const first = (c: Chip) => (c.kind === "occasion" ? c.day : (c.days[0] ?? ""));
+  // پایدار: در یک روز، مناسبت پیش از تراشهٔ آخر هفته می‌آید.
+  return [...occ, ...weekends].sort((a, b) => first(a).localeCompare(first(b)));
 }
 
 /* ── نشانی صفحه (قابل اشتراک و بازگشت) ─────────────────────────────── */

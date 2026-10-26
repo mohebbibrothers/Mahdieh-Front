@@ -7,6 +7,24 @@
     "date_jalali": "۱۴۰۵/۰۸/۰۱",
     "demand_level": "peak",
     "description": "روز پرتقاضای ساختگی برای آزمون",
-    "is_peak": true
+    "is_peak": true,
+    "is_holiday": false,
+    "hijri_date": "۱۲ جمادی‌الاول ۱۴۴۸",
+    "is_provisional": false,
+    "source": "manual"
+  },
+  {
+    "id": "0192f0a0-0000-7000-8000-000000000002",
+    "title": "تعطیل رسمی نمونه",
+    "kind": "religious",
+    "date_gregorian": "2026-10-26",
+    "date_jalali": "۱۴۰۵/۰۸/۰۴",
+    "demand_level": "high",
+    "description": "",
+    "is_peak": false,
+    "is_holiday": true,
+    "hijri_date": "۱۵ جمادی‌الاول ۱۴۴۸",
+    "is_provisional": true,
+    "source": "official"
   }
 ]

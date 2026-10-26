@@ -1696,13 +1696,22 @@ export type components = {
             demand_level?: "normal" | "high" | "peak";
             /** توضیح */
             description?: string;
+            /** تاریخ قمری */
+            hijri_date?: string;
             /**
              * شناسه
              * Format: uuid
              * @description شناسهٔ UUIDv7 — مرتب با زمان و غیرقابل‌حدس
              */
             readonly id: string;
+            /** تعطیل رسمی */
+            is_holiday?: boolean;
             readonly is_peak: boolean;
+            /**
+             * تاریخ تقریبی
+             * @description ماه قمری هنوز در تقویم رسمی نیامده؛ تاریخ برآورد نجومی است
+             */
+            is_provisional?: boolean;
             /**
              * نوع
              * @description * `holiday` - تعطیل رسمی
@@ -1712,6 +1721,13 @@ export type components = {
              * @enum {string}
              */
             kind: "holiday" | "religious" | "seasonal" | "custom";
+            /**
+             * منبع
+             * @description * `manual` - ورود دستی
+             *     * `official` - تقویم رسمی کشور
+             * @enum {string}
+             */
+            source?: "manual" | "official";
             /** عنوان */
             title: string;
         };

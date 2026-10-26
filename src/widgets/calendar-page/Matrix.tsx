@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import type { Period, UnitTimeline } from "@/entities/slot/timeline";
 import { floorLabel, unitTypeIcon } from "@/entities/unit/unit";
-import type { Calendar, CalendarCell } from "@/shared/api/schemas";
+import type { Calendar, CalendarCell, Occasion } from "@/shared/api/schemas";
 import { cx } from "@/shared/lib/cx";
 import { faDigits, formatDayMonth, formatWeekday } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
@@ -10,8 +10,10 @@ import {
   SLOT_ICON,
   SLOT_LABEL,
   SLOT_REASON,
+  DAY_TAG_LABEL,
   cellsOfDay,
   dayFree,
+  dayMark,
   slotState,
   startCell,
   type Clock,
@@ -52,7 +54,8 @@ export type MatrixProps = {
   clock: Clock;
   selection: Selection | null;
   guests: number;
-  peakDays: Set<string>;
+  /** مناسبت‌های رسمی/دستی هر روز (از ‎/occasions‎). */
+  occDays: Map<string, Occasion[]>;
   today: string;
   startHour: number;
   cellHours: number;
@@ -173,7 +176,7 @@ export function Matrix(p: MatrixProps) {
               </th>
               {p.days.map((d) => {
                 const f = dayFree(p.units, d.day, p.clock);
-                const peak = p.peakDays.has(d.day) || d.demand_level === "peak";
+                const mark = dayMark(d, p.occDays.get(d.day));
                 return (
                   <th
                     key={d.day}
@@ -181,18 +184,18 @@ export function Matrix(p: MatrixProps) {
                     className="cp-dh"
                     data-day={d.day}
                     data-weekend={d.is_weekend || undefined}
-                    data-peak={peak || undefined}
+                    data-peak={mark.tag === "peak" || undefined}
                     data-today={d.day === p.today || undefined}
+                    title={mark.titles.join("، ") || undefined}
                   >
                     <span className="cp-dh__wd">{formatWeekday(d.day)}</span>
                     <span className="cp-dh__date">{formatDayMonth(d.day)}</span>
                     <span className="cp-dh__tags">
                       {d.day === p.today ? <span className="cp-tag cp-tag--today">امروز</span> : null}
-                      {peak ? (
-                        <span className="cp-tag cp-tag--peak">اوج</span>
-                      ) : d.is_weekend ? (
-                        <span className="cp-tag cp-tag--weekend">تعطیل</span>
+                      {mark.tag ? (
+                        <span className={`cp-tag cp-tag--${mark.tag}`}>{DAY_TAG_LABEL[mark.tag]}</span>
                       ) : null}
+                      {mark.titles.length ? <span className="sr-only">— {mark.titles.join("، ")}</span> : null}
                     </span>
                     <span className="cp-dh__free" data-none={f.free === 0 || undefined}>
                       {f.free ? `${faDigits(f.free)} از ${faDigits(f.total)} آزاد` : "تکمیل"}
@@ -293,17 +296,23 @@ export function Matrix(p: MatrixProps) {
   );
 }
 
-type LegendItem = { state: string; label: string; symbol: string; icon: Parameters<typeof Icon>[0]["name"] };
+type LegendItem = {
+  state: string;
+  short: string;
+  label: string;
+  symbol: string;
+  icon: Parameters<typeof Icon>[0]["name"];
+};
 
 /** یک منبع برای راهنمای زیر تقویم و بخش «بی‌تکیه بر رنگ» پنجرهٔ راهنما (همان نماد و ظاهر خانهٔ جدول). */
 export const LEGEND_ITEMS: LegendItem[] = [
-  { state: "free", label: "آزاد (قابل رزرو)", symbol: "خورشید یا ماه", icon: "sun" },
-  { state: "occupied", label: "رزروشده", symbol: "قفل و هاشور", icon: SLOT_ICON.occupied },
-  { state: "buffer", label: "نظافت و آماده‌سازی", symbol: "جارو، کادر خط‌چین", icon: SLOT_ICON.buffer },
-  { state: "blocked", label: "تعمیرات", symbol: "آچار و هاشور خاکستری", icon: SLOT_ICON.blocked },
-  { state: "soon", label: "رزرو بسته (مهلت کوتاه)", symbol: "ساعت شنی", icon: SLOT_ICON.soon },
-  { state: "past", label: "گذشته", symbol: "ساعت، کم‌رنگ", icon: SLOT_ICON.past },
-  { state: "selected", label: "انتخاب شما", symbol: "تیک روی زمینهٔ پررنگ", icon: "check" },
+  { state: "free", short: "آزاد", label: "آزاد (قابل رزرو)", symbol: "خورشید یا ماه", icon: "sun" },
+  { state: "occupied", short: "رزروشده", label: "رزروشده", symbol: "قفل و هاشور", icon: SLOT_ICON.occupied },
+  { state: "buffer", short: "نظافت", label: "نظافت و آماده‌سازی", symbol: "جارو، کادر خط‌چین", icon: SLOT_ICON.buffer },
+  { state: "blocked", short: "تعمیرات", label: "تعمیرات", symbol: "آچار و هاشور خاکستری", icon: SLOT_ICON.blocked },
+  { state: "soon", short: "مهلت کوتاه", label: "رزرو بسته (مهلت کوتاه)", symbol: "ساعت شنی", icon: SLOT_ICON.soon },
+  { state: "past", short: "گذشته", label: "گذشته", symbol: "ساعت، کم‌رنگ", icon: SLOT_ICON.past },
+  { state: "selected", short: "انتخاب شما", label: "انتخاب شما", symbol: "تیک روی زمینهٔ پررنگ", icon: "check" },
 ];
 
 /** نمونهٔ کوچک یک وضعیت (همان ظاهر خانهٔ جدول). */
@@ -328,13 +337,17 @@ export function Legend({ onGuide }: { onGuide: () => void }) {
         {LEGEND_ITEMS.map((it) => (
           <li key={it.state}>
             <Swatch item={it} />
-            <span>{it.label}</span>
+            <span className="cp-legend__label">{it.label}</span>
+            <span className="cp-legend__short" aria-hidden="true">
+              {it.short}
+            </span>
           </li>
         ))}
       </ul>
       <button type="button" className="cp-legend__guide" onClick={onGuide}>
         <Icon name="info" size={18} />
-        راهنمای زمان‌های تحویل و مقررات شبکه
+        <span>راهنمای کامل</span>
+        <span className="cp-legend__gx"> زمان‌های تحویل و مقررات شبکه</span>
       </button>
     </div>
   );

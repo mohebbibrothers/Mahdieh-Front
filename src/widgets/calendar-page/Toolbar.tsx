@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import type { UnitTimeline } from "@/entities/slot/timeline";
 import { floorLabel } from "@/entities/unit/unit";
 import { faDigits, formatDayMonth, formatDayNumber, formatMonth } from "@/shared/lib/fa";
@@ -15,6 +16,9 @@ export function weekendLabel(days: string[]): string {
   const tail = months.size === 1 && days[0] ? ` ${formatMonth(days[0])}` : "";
   return `آخر هفته ${parts.join(" و ")}${tail}`;
 }
+
+/** بیش از این شمار تراشه، بقیه پشت «نمایش همه» می‌روند (بازهٔ ۳۱/۶۲ روزه). */
+const CHIP_LIMIT = 7;
 
 /** میان‌بُرهای پرش: امروز، نخستین پنجشنبهٔ پیش‌رو (آخر هفته) و یک هفته بعد. */
 function jumpShortcuts(today: string): QuickDay[] {
@@ -33,6 +37,7 @@ function jumpShortcuts(today: string): QuickDay[] {
  */
 export function Toolbar({
   from,
+  day,
   today,
   lastFrom,
   horizonLast,
@@ -53,6 +58,8 @@ export function Toolbar({
   onChip,
 }: {
   from: string;
+  /** روز فعال (پرش، کارت روز، مناسبت) — مقدار انتخاب‌گر تاریخ و مبنای حذف میان‌بُر هم‌ارز. */
+  day: string;
   today: string;
   lastFrom: string;
   horizonLast: string;
@@ -72,6 +79,7 @@ export function Toolbar({
   onJump: (day: string) => void;
   onChip: (c: Chip) => void;
 }) {
+  const [allChips, setAllChips] = useState(false);
   const floors = [...new Set(units.map((u) => u.floor))].sort((a, b) => a - b);
   return (
     <section className="cp-toolbar" aria-label="کنترل‌های تقویم و فیلترها">
@@ -170,8 +178,8 @@ export function Toolbar({
         <div className="cp-jump">
           <JalaliDatePicker
             anchor="calendar-from"
-            label="آغاز بازه"
-            value={from}
+            label="رفتن به تاریخ"
+            value={day}
             onChange={(d) => onJump(d ?? today)}
             min={today}
             max={horizonLast}
@@ -205,8 +213,8 @@ export function Toolbar({
           <p className="cp-occasions__label">
             <Icon name="star" size={18} /> مناسبت‌ها و ایام پرتقاضا:
           </p>
-          <ul className="cp-occasions__chips">
-            {chips.map((c) => (
+          <ul className="cp-occasions__chips" id="cp-occasion-chips">
+            {(allChips || chips.length <= CHIP_LIMIT ? chips : chips.slice(0, CHIP_LIMIT - 1)).map((c) => (
               <li key={c.key} data-peak={(c.kind === "occasion" && c.occasion.is_peak) || undefined}>
                 <button type="button" className="cp-chip" onClick={() => onChip(c)}>
                   {c.kind === "occasion" ? (
@@ -214,6 +222,10 @@ export function Toolbar({
                       <span className="cp-chip__dot" aria-hidden="true" />
                       {c.occasion.title} — {formatDayMonth(c.day)}
                       {c.occasion.is_peak ? " (اوج)" : ""}
+                      {c.occasion.is_holiday ? <span className="cp-chip__badge">تعطیل</span> : null}
+                      {c.occasion.is_provisional ? (
+                        <span className="cp-chip__badge cp-chip__badge--soft">تقریبی</span>
+                      ) : null}
                     </>
                   ) : (
                     <>
@@ -224,6 +236,20 @@ export function Toolbar({
                 </button>
               </li>
             ))}
+            {chips.length > CHIP_LIMIT ? (
+              <li>
+                <button
+                  type="button"
+                  className="cp-chip cp-chip--more"
+                  aria-expanded={allChips}
+                  aria-controls="cp-occasion-chips"
+                  onClick={() => setAllChips((v) => !v)}
+                >
+                  {allChips ? "نمایش کمتر" : `نمایش همه (${faDigits(chips.length)})`}
+                  <Icon name="chevron-down" size={14} />
+                </button>
+              </li>
+            ) : null}
           </ul>
         </div>
       ) : null}

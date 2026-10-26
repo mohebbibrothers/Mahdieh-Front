@@ -211,39 +211,41 @@ function OfflineVerify() {
           </label>
         </div>
 
-        <div className="pt-field" role="group" aria-labelledby={`${id}-unit`}>
-          <span className="field-label" id={`${id}-unit`}>
-            واحد اختصاص‌یافته {unit ? <small>(طبقهٔ {faDigits(unit.floor)} — خودکار)</small> : null}
-          </span>
-          <div className="pt-unit-pick" data-invalid={err("unit")}>
-            {units.map((u) => (
-              <button
-                key={u.code}
-                type="button"
-                aria-pressed={d.unit === u.code}
-                onClick={() => set("unit", u.code)}
-                title={u.title}
-              >
-                <bdi className="latin">{u.code}</bdi>
-              </button>
-            ))}
+        <div className="pt-offline__party">
+          <div className="pt-field" role="group" aria-labelledby={`${id}-unit`}>
+            <span className="field-label" id={`${id}-unit`}>
+              واحد اختصاص‌یافته {unit ? <small>(طبقهٔ {faDigits(unit.floor)} — خودکار)</small> : null}
+            </span>
+            <div className="pt-unit-pick" data-invalid={err("unit")}>
+              {units.map((u) => (
+                <button
+                  key={u.code}
+                  type="button"
+                  aria-pressed={d.unit === u.code}
+                  onClick={() => set("unit", u.code)}
+                  title={u.title}
+                >
+                  <bdi className="latin">{u.code}</bdi>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        <div className="pt-field">
-          <span className="field-label" id={`${id}-guests`}>
-            تعداد مهمانان
-          </span>
-          <Stepper
-            value={d.guests}
-            min={1}
-            max={unit?.capacity_total ?? 12}
-            onChange={(v) => set("guests", v)}
-            format={(v) => `${faDigits(v)} نفر`}
-            labelId={`${id}-guests`}
-            incLabel="افزودن یک نفر"
-            decLabel="کاستن یک نفر"
-          />
+          <div className="pt-field pt-guests">
+            <span className="field-label" id={`${id}-guests`}>
+              تعداد مهمانان
+            </span>
+            <Stepper
+              value={d.guests}
+              min={1}
+              max={unit?.capacity_total ?? 12}
+              onChange={(v) => set("guests", v)}
+              format={(v) => `${faDigits(v)} نفر`}
+              labelId={`${id}-guests`}
+              incLabel="افزودن یک نفر"
+              decLabel="کاستن یک نفر"
+            />
+          </div>
         </div>
 
         <div className="pt-offline__grid pt-offline__stamps">

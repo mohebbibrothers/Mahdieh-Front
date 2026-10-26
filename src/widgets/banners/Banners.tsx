@@ -91,7 +91,7 @@ export function OccasionBanner() {
   const occasions = useQuery(occasionsQuery(today, addDays(today, 14)));
   const next = occasions.data
     ?.filter((o) => o.date_gregorian >= today)
-    .sort((a, b) => Number(b.is_peak) - Number(a.is_peak) || a.date_gregorian.localeCompare(b.date_gregorian))[0];
+    .sort((a, b) => a.date_gregorian.localeCompare(b.date_gregorian) || Number(b.is_peak) - Number(a.is_peak))[0];
   if (!next) return null;
   const busy = next.is_peak || next.demand_level === "high" || next.demand_level === "peak";
   return (
@@ -102,6 +102,7 @@ export function OccasionBanner() {
       <div>
         <strong>
           {next.title} · {formatDayLabel(next.date_gregorian)}
+          {next.is_holiday ? " · تعطیل رسمی" : ""}
         </strong>
         <p>
           {next.description ||

@@ -116,6 +116,10 @@ export const occasionsSchema = z.array(
     demand_level: z.exactOptional(z.enum(["normal", "high", "peak"])),
     description: z.exactOptional(z.string()),
     is_peak: z.boolean(),
+    is_holiday: z.exactOptional(z.boolean()),
+    hijri_date: z.exactOptional(z.string()),
+    is_provisional: z.exactOptional(z.boolean()),
+    source: z.exactOptional(z.enum(["manual", "official"])),
   }) satisfies z.ZodMiniType<S["Occasion"]>,
 );
 export type Occasion = z.infer<typeof occasionsSchema>[number];

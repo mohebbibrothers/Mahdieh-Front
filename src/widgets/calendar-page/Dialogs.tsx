@@ -326,7 +326,17 @@ export function OccasionDialog({
       isOpen={Boolean(occasion)}
       onOpenChange={(o) => !o && onClose()}
       title={occasion?.title ?? ""}
-      subtitle={occasion ? `${KIND_LABEL[occasion.kind]} · ${formatFullDate(occasion.date_gregorian)}` : undefined}
+      subtitle={
+        occasion
+          ? [
+              occasion.is_holiday && occasion.kind !== "holiday" ? "تعطیل رسمی" : KIND_LABEL[occasion.kind],
+              formatFullDate(occasion.date_gregorian),
+              occasion.hijri_date,
+            ]
+              .filter(Boolean)
+              .join(" · ")
+          : undefined
+      }
       actions={
         <>
           <button type="button" className="btn btn-outline" onClick={onClose}>
@@ -353,6 +363,19 @@ export function OccasionDialog({
             <Icon name={level === "normal" ? "calendar" : "users"} size={16} /> {DEMAND_LABEL[level]}
           </p>
           {occasion.description ? <p className="cp-occ__desc">{occasion.description}</p> : null}
+          {occasion.is_provisional ? (
+            <p className="cp-occ__note" role="note">
+              <Icon name="info" size={16} />
+              <span>
+                تاریخ تقریبی است: ماه قمری آن هنوز در تقویم رسمی کشور اعلام نشده و با رؤیت هلال ممکن است یک روز جابه‌جا
+                شود. پس از اعلام رسمی، تقویم خودکار به‌روز می‌شود.
+              </span>
+            </p>
+          ) : occasion.source === "official" ? (
+            <p className="cp-occ__src">
+              <Icon name="check" size={14} /> برگرفته از تقویم رسمی کشور
+            </p>
+          ) : null}
           <div className="cp-occ__policy">
             <strong>میزبانی عادلانه در ایام پرتقاضا</strong>
             <p>
