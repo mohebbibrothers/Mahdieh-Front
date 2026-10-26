@@ -62,52 +62,12 @@
     border-color: var(--color-danger-fg);
   }
 
-  /* لنگرها روی خود دکمه (کلاس ‎anchor--*‎ را Popover می‌دهد) */
-  .anchor--stamp-start-date {
-    anchor-name: --mahdieh-ssd;
-  }
-  .anchor--stamp-start-time {
-    anchor-name: --mahdieh-sst;
-  }
-  .anchor--stamp-end-date {
-    anchor-name: --mahdieh-sed;
-  }
-  .anchor--stamp-end-time {
-    anchor-name: --mahdieh-set;
-  }
-  .popover--stamp-start-date {
-    position-anchor: --mahdieh-ssd;
-  }
-  .popover--stamp-start-time {
-    position-anchor: --mahdieh-sst;
-  }
-  .popover--stamp-end-date {
-    position-anchor: --mahdieh-sed;
-  }
-  .popover--stamp-end-time {
-    position-anchor: --mahdieh-set;
-  }
-  .anchor--calendar-from {
-    anchor-name: --mahdieh-cfrom;
-  }
-  .popover--calendar-from {
-    position-anchor: --mahdieh-cfrom;
-  }
   .picker-popover {
     width: min(340px, calc(100vw - 24px));
     padding: 14px;
   }
   .picker-popover--time {
     width: min(320px, calc(100vw - 24px));
-  }
-  @supports (position-area: bottom) {
-    .picker-popover {
-      position-area: bottom span-inline-end;
-      position-try-fallbacks:
-        flip-inline,
-        flip-block,
-        flip-block flip-inline;
-    }
   }
 
   /* ── تقویم ── */
@@ -303,9 +263,26 @@
   .picker-cal__foot {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 6px;
+    min-height: 45px;
     padding-top: 10px;
     border-top: 1px dashed var(--color-border);
+  }
+  .picker-cal__foot .picker-chip .icon {
+    color: var(--color-brand-ink);
+  }
+  .picker-cal__picked {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  .picker-cal__picked .icon {
+    color: var(--color-free-fg, var(--color-brand-ink));
   }
 
   /* ── تراشه‌ها (میان‌بُر تاریخ و ساعت‌های پرکاربرد) ── */
@@ -339,12 +316,6 @@
   .picker-chip:disabled {
     opacity: 0.45;
     cursor: not-allowed;
-  }
-  .picker-chip--ghost {
-    margin-inline-start: auto;
-    border-color: transparent;
-    background: transparent;
-    color: var(--color-text-muted);
   }
   .picker-chip small {
     color: var(--color-text-muted);
@@ -486,6 +457,225 @@
     }
     .picker-cal__row button {
       min-height: 44px;
+    }
+  }
+
+  /* ── فهرست انتخاب شناور (SelectMenu): پوسته + سرِ برگه + ردیف‌های غنی ── */
+  .picker__value {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .select-pop {
+    position: fixed;
+    inset: auto;
+    display: flex;
+    flex-direction: column;
+    max-height: 340px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: 18px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    box-shadow: var(--shadow-pop);
+  }
+  /* ‎display:flex‎ نویسنده بر ‎display:none‎ پیش‌فرض مرورگر برای پاپ‌اورِ بسته چیره می‌شود ⇒ صریح پنهان. */
+  .select-pop:not(:popover-open) {
+    display: none;
+  }
+  .select-pop:popover-open {
+    animation: combo-in var(--fast) var(--ease);
+  }
+  .select-pop[data-side="top"]:popover-open {
+    animation-name: combo-in-up;
+  }
+  .select-pop::backdrop {
+    background: transparent;
+  }
+  .select-pop__head {
+    display: none;
+  }
+  .select-pop__list {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 0;
+    padding: 6px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    list-style: none;
+    outline: none;
+  }
+  .select-opt {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) 20px;
+    align-items: center;
+    gap: 12px;
+    min-height: 48px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: background-color var(--fast) var(--ease);
+  }
+  .select-opt[data-active] {
+    background: var(--color-brand-tint);
+  }
+  .select-opt[aria-selected="true"] .select-opt__label {
+    color: var(--color-brand-ink);
+    font-weight: 700;
+  }
+  .select-opt[aria-disabled="true"] {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  .select-opt[data-group-end] {
+    position: relative;
+    margin-bottom: 9px;
+  }
+  .select-opt[data-group-end]::after {
+    content: "";
+    position: absolute;
+    inset-inline: 8px;
+    bottom: -5px;
+    height: 1px;
+    background: var(--color-border);
+  }
+  /* بی نشان/نماد ⇒ متن از ستون نخست آغاز می‌شود */
+  .select-opt:not(:has(> .select-code, > .select-opt__glyph)) {
+    grid-template-columns: minmax(0, 1fr) 20px;
+  }
+  .select-opt__text {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+    line-height: 1.6;
+  }
+  .select-opt__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .select-opt__text small {
+    overflow: hidden;
+    color: var(--color-text-muted);
+    font-size: 0.71875rem;
+    font-weight: 450;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .select-opt__check {
+    display: grid;
+    place-items: center;
+    color: var(--color-brand-ink);
+  }
+  .select-code,
+  .select-opt__glyph {
+    display: inline-grid;
+    flex: none;
+    place-items: center;
+    min-width: 40px;
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid var(--color-free-border, var(--color-border));
+    border-radius: 9px;
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+    font-size: 0.8125rem;
+    font-weight: 750;
+  }
+  .select-opt__glyph {
+    padding: 0;
+  }
+  .select-code--sm {
+    min-width: 0;
+    height: 24px;
+    padding: 0 6px;
+    border-radius: 7px;
+    font-size: 0.75rem;
+  }
+
+  /* گوشی: برگهٔ پایینی — دستگیره، عنوان و دکمهٔ بستن؛ پس‌زمینهٔ تیره؛ صفحهٔ زیرین ثابت. */
+  @media (max-width: 620px) {
+    .select-pop[data-sheet] {
+      inset: auto 0 0;
+      width: 100%;
+      max-width: none;
+      max-height: min(78dvh, calc(100dvh - 72px));
+      border-bottom: 0;
+      border-radius: 24px 24px 0 0;
+      padding-bottom: env(safe-area-inset-bottom);
+      animation: select-sheet-in 0.28s var(--ease-out, ease-out);
+    }
+    .select-pop[data-sheet]::backdrop {
+      background: var(--color-overlay);
+      animation: select-fade-in 0.2s ease-out;
+    }
+    .select-pop[data-sheet] .select-pop__head {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 18px 12px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .select-pop__grab {
+      position: absolute;
+      top: 7px;
+      inset-inline: 0;
+      width: 40px;
+      height: 4px;
+      margin-inline: auto;
+      border-radius: 999px;
+      background: var(--color-border-strong, var(--color-border));
+    }
+    .select-pop__head strong {
+      font-size: 1rem;
+      font-weight: 750;
+    }
+    .select-pop__close {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border: 1px solid var(--color-border);
+      border-radius: 50%;
+      background: var(--color-canvas);
+      color: var(--color-text-muted);
+      cursor: pointer;
+    }
+    .select-pop[data-sheet] .select-pop__list {
+      padding: 8px 10px 14px;
+    }
+    .select-pop[data-sheet] .select-opt {
+      min-height: 58px;
+      padding-inline: 12px;
+      font-size: 0.9375rem;
+    }
+    html:has(.select-pop[data-sheet]:popover-open) {
+      overflow: hidden;
+    }
+  }
+  @keyframes select-sheet-in {
+    from {
+      translate: 0 100%;
+    }
+  }
+  @keyframes select-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .select-pop,
+    .select-pop::backdrop {
+      animation: none !important;
     }
   }
 }

@@ -206,7 +206,7 @@ test.describe("P-04 تقویم موجودی", () => {
   test("پیوند ویرایش P-05 همان انتخاب را بازمی‌سازد", async ({ page }) => {
     await page.goto("/calendar/?from=2026-10-23&pick=B2&day=2026-10-25&period=day&cells=4&guests=3");
     await expect(slot(page, "B2", "2026-10-25", "day")).toHaveAttribute("aria-pressed", "true");
-    await expect(drawer(page)).toContainText("۲ شبانه‌روز");
+    await expect(drawer(page)).toContainText("دو شبانه‌روز");
     await expect(drawer(page).getByRole("link", { name: /ادامه و ثبت/ })).toHaveAttribute("href", /guests=3/);
   });
 

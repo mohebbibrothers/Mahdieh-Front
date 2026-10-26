@@ -72,11 +72,12 @@ export function addDays(isoDay: string, days: number): string {
 }
 
 /** «۴ نیم‌روز» ⇒ عبارت انسانی: ۱ ⇒ «یک نیم‌روز»، ۲ ⇒ «یک شبانه‌روز»، ۵ ⇒ «۲ شبانه‌روز و نیم». */
+/** مدت اقامت به حروف: «نیم‌روز»، «یک شبانه‌روز»، «دو شبانه‌روز و نیم»، «هفت شبانه‌روز». */
 export function durationLabel(cells: number): string {
   if (cells === 1) return "نیم‌روز";
   const days = Math.floor(cells / 2);
   const half = cells % 2 === 1;
-  const base = days === 1 ? "یک شبانه‌روز" : `${faDigits(days)} شبانه‌روز`;
+  const base = `${faCount(days)} شبانه‌روز`;
   return half ? `${base} و نیم` : base;
 }
 export const cellsLabel = (cells: number) => `${faDigits(cells)} نیم‌روز`;

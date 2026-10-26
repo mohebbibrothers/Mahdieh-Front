@@ -9,9 +9,6 @@ import { Stepper } from "@/shared/ui/Stepper";
 
 type UnitWindow = CalendarWindows["units"][number];
 
-/** گزینه‌های «کوتاه‌ترین اقامت»: نیم‌روز، یک، دو و سه شبانه‌روز (در سقف سیاست). */
-export const STAY_OPTIONS = [1, 2, 4, 6] as const;
-
 /**
  * «کشف سریع» طراح — نخستین بازهٔ پیوستهٔ آزاد هر واحد در کل افق رزرو، محاسبه‌شده در خود موتور
  * بک‌اند (‎/calendar/windows‎: مهلت پیش از ورود، افق، ظرفیت و سقف مدت). انتخاب هر کارت همان بازه را
@@ -25,6 +22,7 @@ export function Discovery({
   stay,
   maxGuests,
   maxCells,
+  minCells,
   selectedUnit,
   onGuests,
   onStay,
@@ -39,6 +37,7 @@ export function Discovery({
   stay: number;
   maxGuests: number;
   maxCells: number;
+  minCells: number;
   selectedUnit: string | null;
   onGuests: (n: number) => void;
   onStay: (n: number) => void;
@@ -47,7 +46,6 @@ export function Discovery({
   onRetry: () => void;
 }) {
   const id = useId();
-  const options = STAY_OPTIONS.filter((n) => n <= maxCells);
   const units = data?.units ?? [];
   return (
     <section className="cp-discovery" aria-labelledby={`${id}-t`} id="discovery">
@@ -82,20 +80,17 @@ export function Discovery({
             <span className="field-label" id={`${id}-s`}>
               کوتاه‌ترین اقامت
             </span>
-            <div className="cp-seg" role="radiogroup" aria-labelledby={`${id}-s`}>
-              {options.map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  role="radio"
-                  aria-checked={stay === n}
-                  className="cp-seg__btn"
-                  onClick={() => onStay(n)}
-                >
-                  {durationLabel(n)}
-                </button>
-              ))}
-            </div>
+            <Stepper
+              value={Math.min(Math.max(stay, minCells), maxCells)}
+              min={minCells}
+              max={maxCells}
+              onChange={onStay}
+              format={durationLabel}
+              labelId={`${id}-s`}
+              incLabel="افزودن نیم‌روز به کوتاه‌ترین اقامت"
+              decLabel="کاستن نیم‌روز از کوتاه‌ترین اقامت"
+              className="stepper--wide"
+            />
           </div>
         </div>
       </header>
@@ -184,7 +179,7 @@ function Card({
             </div>
             <div>
               <dt>بازهٔ پیوستهٔ آزاد</dt>
-              <dd>{w.open_ended ? "تا پایان افق آزاد" : w.stay_label}</dd>
+              <dd>{w.open_ended ? "تا پایان افق آزاد" : durationLabel(w.cells)}</dd>
             </div>
           </dl>
           <button type="button" className="cp-dcard__pick" aria-pressed={active} onClick={() => onPick(u)}>

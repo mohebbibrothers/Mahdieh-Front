@@ -788,18 +788,6 @@
   .picker__button .combo__toggle {
     pointer-events: none;
   }
-  .picker .combo__list {
-    max-height: 300px;
-  }
-  .picker__option > span {
-    display: grid;
-    padding-block: 6px;
-  }
-  .picker__option small {
-    color: var(--color-text-muted);
-    font-size: 0.6875rem;
-    font-weight: 450;
-  }
   .plate-field__top {
     display: flex;
     flex-wrap: wrap;
@@ -2292,5 +2280,41 @@
     margin-top: 14px;
     padding-top: 10px;
     line-height: 1.75;
+  }
+
+  /* «ساعت حضور» کنار «پلاک خودرو»: سه ردیف مشترک (برچسب | کنترل | راهنما) با subgrid ⇒ برچسب‌ها، دو
+     کادر ورودی و متن‌های راهنما دقیقاً هم‌تراز و هم‌ارتفاع، هرچقدر که سرِ پلاک (کلید نوع پلاک) بلندتر باشد. */
+  .acc-row--trio .picker__button.text-input {
+    min-height: 52px;
+  }
+  .acc-row--trio .plate {
+    max-width: none;
+  }
+  @media (min-width: 621px) {
+    .acc-row--trio {
+      grid-template-rows: auto auto auto;
+      column-gap: 20px;
+      row-gap: 0;
+    }
+    .acc-row--trio > *,
+    .acc-row--trio > * > .plate-field {
+      display: grid;
+      grid-row: span 3;
+      grid-template-rows: subgrid;
+      row-gap: 8px;
+      align-content: start;
+      min-width: 0;
+    }
+    .acc-row--trio .combo > .field-label {
+      align-self: center;
+      margin: 0;
+    }
+    .acc-row--trio .plate-field__top {
+      margin: 0;
+    }
+    .acc-row--trio .field-help,
+    .acc-row--trio .field-error {
+      margin: 0;
+    }
   }
 }

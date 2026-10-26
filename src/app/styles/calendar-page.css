@@ -1,6 +1,8 @@
 /* P-04 تقویم موجودی و کشف زمان‌های آزاد — اندازه‌ها از calendar.css طراح؛ رنگ‌ها از توکن‌های سایت. */
 @layer components {
-  .cp-main {
+  /* ‎.cp-keys‎ درون پنجرهٔ راهنماست (بیرون از ‎.cp-main‎، در body) ⇒ همان پالت را مستقیم می‌گیرد. */
+  .cp-main,
+  .cp-keys {
     --cp-sel-bg: #0d7066;
     --cp-sel-fg: #fff;
     --cp-sel-border: #084841;
@@ -16,7 +18,7 @@
   :root {
     --cp-dock: var(--dock-h, 0px);
   }
-  :root[data-theme="dark"] .cp-main {
+  :root[data-theme="dark"] :is(.cp-main, .cp-keys) {
     --cp-sel-bg: #14b8a6;
     --cp-sel-fg: #042f2e;
     --cp-sel-border: #5eead4;
@@ -28,7 +30,7 @@
     --cp-peak-border: #9a3412;
   }
   @media (prefers-color-scheme: dark) {
-    :root:not([data-theme]) .cp-main {
+    :root:not([data-theme]) :is(.cp-main, .cp-keys) {
       --cp-sel-bg: #14b8a6;
       --cp-sel-fg: #042f2e;
       --cp-sel-border: #5eead4;
@@ -763,6 +765,44 @@
     cursor: default;
     animation: none !important;
   }
+  .cp-slot--swatch-lg {
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 10px;
+  }
+  /* «بی‌تکیه بر رنگ» در پنجرهٔ راهنما: کارت‌های هم‌اندازهٔ نمونه + معنا + نشانهٔ غیررنگی */
+  .cp-keys {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(190px, 100%), 1fr));
+    gap: 8px;
+    margin: 10px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .cp-keys li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 56px;
+    padding: 8px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    background: var(--color-canvas);
+  }
+  .cp-keys li > span:last-child {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+    line-height: 1.5;
+  }
+  .cp-keys strong {
+    font-size: 0.8125rem;
+    font-weight: 700;
+  }
+  .cp-keys small {
+    color: var(--color-text-muted);
+    font-size: 0.71875rem;
+  }
 
   .cp-skeleton {
     display: grid;
@@ -924,12 +964,46 @@
     font-weight: 700;
   }
   .cp-daypanel__free {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     color: var(--color-free-fg);
     font-size: 0.8125rem;
     font-weight: 600;
   }
   .cp-daypanel__free[data-none] {
     color: var(--color-text-muted);
+  }
+  .cp-daypanel__status {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px 12px;
+  }
+  .cp-daypanel__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 12px;
+    border: 1px solid var(--color-free-border, var(--color-border));
+    border-radius: 999px;
+    background: var(--color-brand-tint);
+    color: var(--color-brand-ink);
+    font: inherit;
+    font-size: 0.78125rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      background-color var(--fast) var(--ease),
+      transform var(--fast) var(--ease);
+  }
+  .cp-daypanel__more:hover {
+    background: color-mix(in oklab, var(--color-brand) 16%, var(--color-surface));
+  }
+  .cp-daypanel__more:active {
+    transform: scale(0.98);
   }
   .cp-daycards {
     display: grid;
@@ -1094,6 +1168,9 @@
     margin: 0;
     color: var(--color-text-muted);
     font-size: 0.75rem;
+  }
+  .cp-discovery__controls .cp-field > .field-label {
+    text-align: center;
   }
   .cp-discovery__grid {
     display: grid;
@@ -1757,24 +1834,42 @@
       width: 100%;
       grid-template-columns: minmax(0, 1fr);
     }
-    .cp-discovery__controls .cp-seg {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
+    .cp-discovery__controls .stepper {
+      width: 100%;
     }
-    .cp-discovery__controls .cp-seg__btn {
-      padding-inline: 4px;
-      font-size: 0.75rem;
-    }
+    /* راهنما در تبلت/گوشی: شبکهٔ منظم «نمونه + برچسب» با ستون‌های هم‌عرض، نه ردیف شکستهٔ وسط‌چین */
     .cp-legend {
-      flex-direction: column;
-      align-items: stretch;
-      text-align: center;
+      display: grid;
+      gap: 12px;
+      padding: 14px 16px;
     }
     .cp-legend__items {
-      justify-content: center;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(132px, 100%), 1fr));
+      gap: 8px;
+    }
+    .cp-legend__items li {
+      gap: 10px;
+      min-height: 40px;
+      padding: 6px 10px;
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      background: var(--color-surface);
+      color: var(--color-text);
+      font-size: 0.75rem;
+      font-weight: 550;
+      line-height: 1.5;
+    }
+    .cp-legend__items .cp-slot--swatch {
+      flex: none;
+      min-width: 26px;
+      min-height: 26px;
     }
     .cp-legend__guide {
       justify-content: center;
+      width: 100%;
+      border: 1px dashed var(--color-free-border, var(--color-border));
+      background: var(--color-brand-tint);
     }
     /* کشو: جمع‌وجور و تاشونده */
     .cp-drawer__inner {
@@ -1870,6 +1965,36 @@
     .cp-main {
       --cp-unit-w: 118px;
       --cp-cell-w: 48px;
+    }
+    /* کشو در گوشی: هر شمارنده یک ردیف «برچسب ←→ شمارنده»، نه دو شمارندهٔ فشرده کنار هم */
+    .cp-drawer__controls {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 8px;
+    }
+    .cp-drawer__controls .cp-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 4px 4px 4px 0;
+    }
+    .cp-drawer__controls .cp-field > .field-label {
+      color: var(--color-text);
+      font-size: 0.8125rem;
+      font-weight: 650;
+    }
+    .cp-drawer__controls .stepper {
+      flex: none;
+      width: min(212px, 64%);
+    }
+    .cp-drawer__controls .stepper__btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+    }
+    .cp-drawer__controls .stepper__value {
+      min-width: 0;
+      font-size: 0.875rem;
     }
     :root {
       --cp-dock: calc(var(--dock-h, 65px) + env(safe-area-inset-bottom));

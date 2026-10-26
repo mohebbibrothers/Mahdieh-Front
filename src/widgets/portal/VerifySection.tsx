@@ -4,7 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { VerifyCertificateButton } from "@/features/verify-certificate/VerifyCertificate";
 import { type OfflineFields, checkOffline } from "@/shared/api/portal";
 import { configQuery, propertyQuery } from "@/shared/api/queries";
-import { addDays, faDigits, tehranToday } from "@/shared/lib/fa";
+import { addDays, durationLabel, faDigits, tehranToday } from "@/shared/lib/fa";
 import { jalaliNumeric } from "@/shared/lib/jalali";
 import { VERIFY_HASH, VERIFY_JUMP_EVENT } from "@/shared/lib/verify-jump";
 import { Icon } from "@/shared/ui/Icon";
@@ -284,7 +284,7 @@ function OfflineVerify() {
               quick={
                 d.startDate
                   ? [0, 1, 2].map((n) => ({
-                      label: n === 0 ? "همان روز" : `${faDigits(n)} شبانه‌روز`,
+                      label: n === 0 ? "همان روز" : durationLabel(n * 2),
                       value: addDays(d.startDate, n),
                     }))
                   : []

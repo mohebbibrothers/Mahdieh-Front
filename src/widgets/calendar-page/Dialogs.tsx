@@ -4,7 +4,7 @@ import type { Route } from "next";
 import Link from "next/link";
 import { useId, useState } from "react";
 import type { UnitTimeline } from "@/entities/slot/timeline";
-import { STATUS_ICON } from "@/entities/slot/timeline";
+import { floorLabel } from "@/entities/unit/unit";
 import { rangeLabel } from "@/widgets/booking/parts";
 import { ApiError } from "@/shared/api/client";
 import type { Policies } from "@/shared/api/policies";
@@ -17,7 +17,7 @@ import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon } from "@/shared/ui/Icon";
 import { SelectMenu } from "@/shared/ui/SelectMenu";
 import { Stepper } from "@/shared/ui/Stepper";
-import { periodHours } from "./Matrix";
+import { LEGEND_ITEMS, Swatch, periodHours } from "./Matrix";
 
 const ANY = "*";
 
@@ -133,12 +133,18 @@ export function WaitlistDialog({
           value={chosenUnit}
           onChange={setUnit}
           options={[
-            { value: ANY, label: "هر واحدی که زودتر آزاد شود", hint: "بیشترین شانس پیشنهاد", groupEnd: true },
+            {
+              value: ANY,
+              label: "هر واحدی که زودتر آزاد شود",
+              icon: "sparkle",
+              hint: "بیشترین شانس پیشنهاد",
+              groupEnd: true,
+            },
             ...units.map((u) => ({
               value: u.code,
               code: u.code,
               label: u.title,
-              hint: `ظرفیت ${faDigits(u.capacity)} نفر`,
+              hint: `${floorLabel(u.floor)} · ظرفیت ${faDigits(u.capacity)} نفر`,
             })),
           ]}
         />
@@ -452,25 +458,17 @@ export function GuideDialog({
           </span>
           <div>
             <h3>بی‌تکیه بر رنگ</h3>
-            <ul className="explain-legend">
-              <li>
-                <Icon name={STATUS_ICON.free} size={14} /> خورشید/ماه: آزاد
-              </li>
-              <li>
-                <Icon name={STATUS_ICON.occupied} size={14} /> قفل و هاشور: رزروشده
-              </li>
-              <li>
-                <Icon name={STATUS_ICON.buffer} size={14} /> جارو: نظافت
-              </li>
-              <li>
-                <Icon name={STATUS_ICON.blocked} size={14} /> آچار: تعمیرات
-              </li>
-              <li>
-                <Icon name="hourglass" size={14} /> ساعت شنی: رزرو بسته
-              </li>
-              <li>
-                <Icon name="check" size={14} /> تیک: انتخاب شما
-              </li>
+            <p>هر وضعیت نماد و بافت خودش را دارد؛ بی دیدن رنگ هم خوانده می‌شود.</p>
+            <ul className="cp-keys">
+              {LEGEND_ITEMS.map((it) => (
+                <li key={it.state}>
+                  <Swatch item={it} size={18} />
+                  <span>
+                    <strong>{it.label}</strong>
+                    <small>{it.symbol}</small>
+                  </span>
+                </li>
+              ))}
             </ul>
           </div>
         </li>

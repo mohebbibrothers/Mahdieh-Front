@@ -124,6 +124,7 @@ export function SelectionDrawer({
     <aside
       ref={ref}
       className="cp-drawer"
+      data-float-guard=""
       data-tone={copy.tone}
       data-open={open || undefined}
       aria-labelledby={`${id}-t`}

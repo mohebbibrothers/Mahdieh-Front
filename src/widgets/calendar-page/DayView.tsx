@@ -26,6 +26,9 @@ type Day = Calendar["days"][number];
 export function DayView({
   days,
   units,
+  allUnits,
+  filter,
+  onShowAll,
   clock,
   selection,
   guests,
@@ -39,6 +42,10 @@ export function DayView({
 }: {
   days: Day[];
   units: UnitTimeline[];
+  /** همهٔ واحدها (بی فیلتر) ⇒ «این واحد تکمیل است، ولی واحدهای دیگر جا دارند» */
+  allUnits: UnitTimeline[];
+  filter: { unit: string; floor: number };
+  onShowAll: () => void;
   clock: Clock;
   selection: Selection | null;
   guests: number;
@@ -115,9 +122,19 @@ export function DayView({
       <div className="cp-daypanel" id="cp-daypanel" role="tabpanel" aria-labelledby={`cp-tab-${current.day}`}>
         <header className="cp-daypanel__head">
           <h3>{formatFullDate(current.day)}</h3>
-          <span className="cp-daypanel__free" data-none={f.free === 0 || undefined}>
-            {f.free ? `${faDigits(f.free)} نیم‌روز آزاد از ${faDigits(f.total)}` : "همهٔ واحدها در این روز تکمیل‌اند"}
-          </span>
+          <DayStatus
+            free={f.free}
+            total={f.total}
+            filter={filter}
+            otherFree={
+              dayFree(
+                allUnits.filter((u) => !units.includes(u)),
+                current.day,
+                clock,
+              ).free
+            }
+            onShowAll={onShowAll}
+          />
         </header>
         <ul className="cp-daycards">
           {units.map((u) => (
@@ -186,6 +203,68 @@ export function DayView({
           ))}
         </ul>
       </div>
+    </div>
+  );
+}
+
+/**
+ * وضعیت روز برگزیده، آگاه از فیلتر: «A1 در این روز تکمیل است» (نه «همهٔ واحدها») و اگر واحدهای دیگر جا
+ * دارند، میان‌بُر «نمایش همهٔ واحدها» با شمار نیم‌روزهای آزادشان.
+ */
+function DayStatus({
+  free,
+  total,
+  filter,
+  otherFree,
+  onShowAll,
+}: {
+  free: number;
+  total: number;
+  filter: { unit: string; floor: number };
+  otherFree: number;
+  onShowAll: () => void;
+}) {
+  const filtered = Boolean(filter.unit || filter.floor);
+  if (free) {
+    return (
+      <span className="cp-daypanel__free">
+        <Icon name="sun" size={16} />
+        {faDigits(free)} نیم‌روز آزاد از {faDigits(total)}
+      </span>
+    );
+  }
+  if (!filtered) {
+    return (
+      <span className="cp-daypanel__free" data-none="">
+        <Icon name="lock" size={16} />
+        همهٔ واحدهای زائرسرا در این روز تکمیل‌اند
+      </span>
+    );
+  }
+  const who = filter.unit ? (
+    <>
+      واحد <bdi className="latin">{filter.unit}</bdi> در این روز تکمیل است
+    </>
+  ) : (
+    <>واحدهای {floorLabel(filter.floor)} در این روز تکمیل‌اند</>
+  );
+  return (
+    <div className="cp-daypanel__status" role="status">
+      <span className="cp-daypanel__free" data-none="">
+        <Icon name="lock" size={16} />
+        {who}
+      </span>
+      {otherFree ? (
+        <button type="button" className="cp-daypanel__more" onClick={onShowAll}>
+          <Icon name="sparkle" size={16} />
+          {faDigits(otherFree)} نیم‌روز آزاد در واحدهای دیگر — نمایش همه
+          <Icon name="chevron-left" size={16} />
+        </button>
+      ) : (
+        <span className="cp-daypanel__free" data-none="">
+          سایر واحدها هم در این روز جا ندارند
+        </span>
+      )}
     </div>
   );
 }

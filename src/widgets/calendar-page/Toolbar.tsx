@@ -3,7 +3,8 @@ import type { UnitTimeline } from "@/entities/slot/timeline";
 import { floorLabel } from "@/entities/unit/unit";
 import { faDigits, formatDayMonth, formatDayNumber, formatMonth } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
-import { JalaliDatePicker } from "@/shared/ui/JalaliDatePicker";
+import { addDaysIso } from "@/shared/lib/jalali";
+import { JalaliDatePicker, type QuickDay } from "@/shared/ui/JalaliDatePicker";
 import { SelectMenu } from "@/shared/ui/SelectMenu";
 import { DAY_OPTIONS, type Chip, type DaysOption, type View } from "./model";
 
@@ -13,6 +14,17 @@ export function weekendLabel(days: string[]): string {
   const parts = months.size === 1 ? days.map((d) => formatDayNumber(d)) : days.map((d) => formatDayMonth(d));
   const tail = months.size === 1 && days[0] ? ` ${formatMonth(days[0])}` : "";
   return `آخر هفته ${parts.join(" و ")}${tail}`;
+}
+
+/** میان‌بُرهای پرش: امروز، نخستین پنجشنبهٔ پیش‌رو (آخر هفته) و یک هفته بعد. */
+function jumpShortcuts(today: string): QuickDay[] {
+  const weekday = new Date(`${today}T12:00:00Z`).getUTCDay(); // ۰ = یکشنبه … ۴ = پنجشنبه
+  const toThu = (4 - weekday + 7) % 7 || 7;
+  return [
+    { label: "امروز", value: today },
+    { label: "آخر هفتهٔ پیش‌رو", value: addDaysIso(today, toThu) },
+    { label: "هفتهٔ بعد", value: addDaysIso(today, 7) },
+  ];
 }
 
 /**
@@ -110,22 +122,49 @@ export function Toolbar({
           layout="inline"
           className="cp-filter"
           label="واحد:"
+          sheetTitle="کدام واحد را ببینید؟"
           value={unit}
           onChange={onUnit}
           options={[
-            { value: "", label: `همهٔ واحدها (${faDigits(units.length)} واحد)`, groupEnd: true },
-            ...units.map((u) => ({ value: u.code, code: u.code, label: u.title })),
+            {
+              value: "",
+              label: "همهٔ واحدها",
+              icon: "building",
+              hint: `${faDigits(units.length)} واحد در ${faDigits(floors.length)} طبقه`,
+              groupEnd: true,
+            },
+            ...units.map((u) => ({
+              value: u.code,
+              code: u.code,
+              label: u.title,
+              hint: `${floorLabel(u.floor)} · ظرفیت ${faDigits(u.capacity)} نفر`,
+            })),
           ]}
         />
         <SelectMenu
           layout="inline"
           className="cp-filter"
           label="طبقه:"
+          sheetTitle="کدام طبقه را ببینید؟"
           value={String(floor)}
           onChange={(v) => onFloor(Number(v))}
           options={[
-            { value: "0", label: "همهٔ طبقه‌ها", groupEnd: true },
-            ...floors.map((f) => ({ value: String(f), label: floorLabel(f) })),
+            {
+              value: "0",
+              label: "همهٔ طبقه‌ها",
+              icon: "building",
+              hint: `${faDigits(floors.length)} طبقه · ${faDigits(units.length)} واحد`,
+              groupEnd: true,
+            },
+            ...floors.map((f) => {
+              const on = units.filter((u) => u.floor === f);
+              return {
+                value: String(f),
+                label: floorLabel(f),
+                glyph: faDigits(f),
+                hint: `${faDigits(on.length)} واحد · ظرفیت ${faDigits(on.reduce((n, u) => n + u.capacity, 0))} نفر`,
+              };
+            }),
           ]}
         />
         <div className="cp-jump">
@@ -136,7 +175,7 @@ export function Toolbar({
             onChange={(d) => onJump(d ?? today)}
             min={today}
             max={horizonLast}
-            quick={[{ label: "امروز", value: today }]}
+            quick={jumpShortcuts(today)}
           />
         </div>
         <div className="cp-seg cp-view" role="radiogroup" aria-label="حالت نمایش تقویم">

@@ -104,7 +104,7 @@ function Calendar({
   min: string | null;
   max: string | null;
   quick: QuickDay[];
-  onPick: (isoDay: string | null) => void;
+  onPick: (isoDay: string) => void;
 }) {
   const today = tehranToday();
   const initial = value ?? rangeFrom ?? today;
@@ -145,6 +145,7 @@ function Calendar({
     setMode("years");
   };
   const cells = monthGrid(view.jy, view.jm);
+  const shortcuts = quick.filter((q) => q.value !== value && !outOfBounds(q.value));
   const rangeEnd = rangeFrom ? (hover ?? value) : null;
 
   const moveFocus = (next: string) => {
@@ -366,25 +367,31 @@ function Calendar({
         </div>
       )}
 
-      <div className="picker-cal__foot">
-        {quick.map((q) => (
-          <button
-            key={q.label}
-            type="button"
-            className="picker-chip"
-            aria-pressed={q.value === value}
-            disabled={outOfBounds(q.value)}
-            onClick={() => onPick(q.value)}
-          >
-            {q.label}
-          </button>
-        ))}
-        {value ? (
-          <button type="button" className="picker-chip picker-chip--ghost" onClick={() => onPick(null)}>
-            <Icon name="x" size={14} /> پاک کردن
-          </button>
-        ) : null}
-      </div>
+      {/* میان‌بُرها: هرگز میان‌بُری به همان روزِ برگزیده نشان داده نمی‌شود (روی امروز ⇒ «امروز» پنهان)؛
+          اگر هیچ میان‌بُری نماند، یادآور آرام روز برگزیده جای آن را می‌گیرد تا ارتفاع پنجره نپرد. */}
+      {quick.length ? (
+        <div className="picker-cal__foot">
+          {shortcuts.length ? (
+            shortcuts.map((q) => (
+              <button
+                key={q.label}
+                type="button"
+                className="picker-chip"
+                disabled={outOfBounds(q.value)}
+                onClick={() => onPick(q.value)}
+              >
+                <Icon name={q.value === today ? "calendar-check" : "calendar"} size={14} />
+                {q.label}
+              </button>
+            ))
+          ) : (
+            <p className="picker-cal__picked">
+              <Icon name="check" size={14} />
+              {value === today ? "امروز" : value ? formatFullDate(value) : ""} انتخاب شده است
+            </p>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }

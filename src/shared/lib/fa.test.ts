@@ -28,8 +28,10 @@ describe("قالب‌بندی فارسی", () => {
   it("برچسب مدت", () => {
     expect(durationLabel(1)).toBe("نیم‌روز");
     expect(durationLabel(2)).toBe("یک شبانه‌روز");
-    expect(durationLabel(5)).toBe("۲ شبانه‌روز و نیم");
-    expect(durationLabel(14)).toBe("۷ شبانه‌روز");
+    expect(durationLabel(5)).toBe("دو شبانه‌روز و نیم");
+    expect(durationLabel(3)).toBe("یک شبانه‌روز و نیم");
+    expect(durationLabel(24)).toBe("۱۲ شبانه‌روز");
+    expect(durationLabel(14)).toBe("هفت شبانه‌روز");
   });
   it("تاریخ کامل و لحظه با ترتیب فارسی (نه ترتیب نادرست ICU)", () => {
     expect(formatFullDate("2026-10-20")).toBe("سه‌شنبه، ۲۸ مهر ۱۴۰۵");

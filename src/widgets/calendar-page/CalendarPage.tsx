@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import type { Route } from "next";
 import Link from "next/link";
-import { useDeferredValue, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { buildTimeline, type UnitTimeline } from "@/entities/slot/timeline";
 import { bookingHref } from "@/features/booking-draft/store";
 import { openAccount } from "@/features/session/account-store";
@@ -66,13 +66,19 @@ function mergeCalendars(a: Calendar | undefined, b: Calendar | undefined): Calen
   return { ...a, days };
 }
 
+/**
+ * مقدار با تأخیر. مقایسه محتوایی است (کلید JSON)، نه با هویت شیء: شیءِ تازهٔ هر رندر نباید زمان‌سنج را
+ * از نو بچیند یا پس از رسیدن، رندر بی‌پایان بسازد.
+ */
 function useDebounced<T>(value: T, ms: number): T {
-  const [v, setV] = useState(value);
+  const key = JSON.stringify(value);
+  const [v, setV] = useState<{ key: string; value: T }>({ key, value });
   useEffect(() => {
-    const t = setTimeout(() => setV(value), ms);
+    if (key === v.key) return;
+    const t = setTimeout(() => setV({ key, value: JSON.parse(key) as T }), ms);
     return () => clearTimeout(t);
-  }, [value, ms]);
-  return v;
+  }, [key, ms, v.key]);
+  return v.value;
 }
 
 const scrollToId = (id: string) =>
@@ -153,8 +159,9 @@ function CalendarBody({ now }: { now: number }) {
     enabled: Boolean(sel) && !selInside,
   });
   const occasions = useQuery(occasionsQuery(from, to));
-  const deferredGuests = useDeferredValue(s.guests);
-  const windows = useQuery(windowsQuery(deferredGuests, Math.min(s.stay, policies.maxCells)));
+  // شمارنده‌های «کشف سریع» با چند کلیک پیاپی فقط یک درخواست می‌فرستند (نه یکی به ازای هر کلیک).
+  const windowsKey = useDebounced({ guests: s.guests, stay: Math.min(s.stay, policies.maxCells) }, 280);
+  const windows = useQuery(windowsQuery(windowsKey.guests, windowsKey.stay));
 
   const timeline = cal.data ? buildTimeline(cal.data) : null;
   const merged = mergeCalendars(cal.data, selInside ? undefined : selCal.data);
@@ -451,6 +458,9 @@ function CalendarBody({ now }: { now: number }) {
                 <DayView
                   days={days}
                   units={units}
+                  allUnits={timeline.units}
+                  filter={{ unit: s.unit, floor: s.floor }}
+                  onShowAll={() => set({ unit: "", floor: 0 })}
                   clock={clock}
                   selection={sel}
                   guests={s.guests}
@@ -476,6 +486,7 @@ function CalendarBody({ now }: { now: number }) {
           stay={s.stay}
           maxGuests={maxGuests}
           maxCells={maxCells}
+          minCells={minCells}
           selectedUnit={sel?.unit ?? null}
           onGuests={(g) => set({ guests: g })}
           onStay={(n) => set({ stay: n })}

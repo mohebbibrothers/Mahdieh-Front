@@ -9,7 +9,7 @@ import { NAV } from "@/shared/config/nav";
 
 export function SiteHeader({ current = "/" }: { current?: string }) {
   return (
-    <header className="site-header">
+    <header className="site-header" data-float-guard="">
       <div className="page-shell header-inner">
         <a className="brand-lockup" href={SITE.routes.home} aria-label={`${SITE.name}، ${SITE.tagline} — صفحهٔ نخست`}>
           <Mark />

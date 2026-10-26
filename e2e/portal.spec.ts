@@ -178,7 +178,7 @@ test.describe("P-07 پرتال زائر", () => {
     // تخلیه: روزهای پیش از ورود غیرفعال؛ میان‌بُر «۲ شبانه‌روز»؛ ساعت با جدول ساعت ⇒ دقیقه.
     await form.getByRole("button", { name: /^تاریخ تخلیه/ }).click();
     await expect(pop.getByRole("button", { name: /، ۲۶ آبان ۱۴۰۵$/ })).toBeDisabled();
-    await pop.getByRole("button", { name: "۲ شبانه‌روز" }).click();
+    await pop.getByRole("button", { name: "دو شبانه‌روز" }).click();
     await form.getByRole("button", { name: /^ساعت تخلیه/ }).click();
     await pop.getByRole("button", { name: "ساعت ۸", exact: true }).click();
     await pop.getByRole("button", { name: "دقیقهٔ ۰", exact: true }).click();

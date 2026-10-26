@@ -21,7 +21,7 @@ export function MobileDock({ page = "home" }: { page?: "home" | "booking" | "por
     <>
       {/* فراخوان «انتخاب زمان» فقط در خانه؛ در صفحهٔ صدور رزرو، خود کارت گام‌ها فراخوان است. */}
       {onHome ? (
-        <aside className="mobile-cta" aria-label="شروع رزرو">
+        <aside className="mobile-cta" aria-label="شروع رزرو" data-float-guard="">
           <p>
             <strong>مهمان ما باشید</strong>
             <span>اقامت کاملاً رایگان</span>
@@ -31,7 +31,7 @@ export function MobileDock({ page = "home" }: { page?: "home" | "booking" | "por
           </a>
         </aside>
       ) : null}
-      <nav className="mobile-bottom" aria-label="میان‌بُرها">
+      <nav className="mobile-bottom" aria-label="میان‌بُرها" data-float-guard="">
         <a
           href={SITE.routes.home}
           aria-current={onHome ? "page" : undefined}

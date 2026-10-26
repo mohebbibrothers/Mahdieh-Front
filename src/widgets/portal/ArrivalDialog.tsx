@@ -117,7 +117,7 @@ function ArrivalForm({ r, onDone }: { r: Reservation; onDone: () => void }) {
         </span>
       </p>
 
-      <div className="acc-row pt-arrival__row">
+      <div className="acc-row acc-row--trio pt-arrival__row">
         <ArrivalPicker
           options={options}
           value={arrival}

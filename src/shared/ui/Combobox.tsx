@@ -3,7 +3,7 @@ import { useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { latinDigits } from "@/shared/lib/fa";
 import { cx } from "@/shared/lib/cx";
 import { Icon } from "./Icon";
-import { useAnchoredList } from "./use-anchored-list";
+import { useFloating, useTopLayer } from "./floating";
 
 export type ComboOption = {
   value: string;
@@ -154,7 +154,8 @@ export function Combobox({
     }
   };
 
-  useAnchoredList(open, controlRef, listRef, { dep: shown.length });
+  useTopLayer(open, listRef);
+  useFloating(open, controlRef, listRef, { align: "stretch", max: 248, dep: shown.length, onHidden: close });
 
   const describedBy = [help ? helpId : "", error ? errId : ""].filter(Boolean).join(" ") || undefined;
   const activeId = open && shown[active] ? `${id}-o-${shown[active].value}` : undefined;

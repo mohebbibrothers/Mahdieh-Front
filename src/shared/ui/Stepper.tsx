@@ -11,6 +11,7 @@ export function Stepper({
   labelId,
   incLabel,
   decLabel,
+  className,
 }: {
   value: number;
   min: number;
@@ -20,9 +21,10 @@ export function Stepper({
   labelId: string;
   incLabel: string;
   decLabel: string;
+  className?: string;
 }) {
   return (
-    <div className="stepper" role="group" aria-labelledby={labelId}>
+    <div className={className ? `stepper ${className}` : "stepper"} role="group" aria-labelledby={labelId}>
       <button
         type="button"
         className="stepper__btn"

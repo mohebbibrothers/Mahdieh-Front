@@ -274,6 +274,12 @@
     font-size: 0.9375rem;
     font-weight: 600;
   }
+  /* برچسب‌های بلند واژه‌ای («یک شبانه‌روز و نیم») ⇒ پهنای ثابت تا دکمه‌ها با هر کلیک جابه‌جا نشوند */
+  .stepper--wide .stepper__value {
+    min-width: 9.5em;
+    font-size: 0.875rem;
+    white-space: nowrap;
+  }
 
   .segment {
     display: inline-flex;
@@ -553,23 +559,16 @@
     }
   }
 
-  /* ── پاپ‌اور بومی + CSS Anchor Positioning: شعاع ۱۸، نوار پیمایش کپسولی ۵px ── */
-  /* لنگرِ پاپ‌اورهای جست‌وجو کل فیلد است (زیر متن راهنما باز می‌شود، نه روی آن). */
-  .form-field:has(> .anchor--arrival) {
-    anchor-name: --mahdieh-arrival;
-  }
-  .form-field:has(> .anchor--duration) {
-    anchor-name: --mahdieh-duration;
-  }
-  .anchor--theme {
-    anchor-name: --mahdieh-theme;
-  }
+  /* ── پاپ‌اور بومی: شعاع ۱۸، نوار پیمایش کپسولی ۵px. جای دقیق را موتور مشترک ‎useFloating‎ می‌دهد
+     (درون ناحیهٔ امن میان سرصفحه و نوارهای پایین)؛ گوشی ⇒ برگهٔ پایینی. ── */
   .popover {
+    inset: auto;
     width: min(420px, calc(100vw - 24px));
     max-height: min(70dvh, 560px);
     margin: 0;
     padding: 16px;
     overflow: auto;
+    overscroll-behavior: contain;
     border: 1px solid var(--color-border);
     border-radius: 18px;
     background: var(--color-surface);
@@ -583,9 +582,15 @@
       overlay var(--fast) allow-discrete,
       display var(--fast) allow-discrete;
   }
+  .popover[data-placing] {
+    visibility: hidden;
+  }
   .popover:not(:popover-open) {
     opacity: 0;
     transform: translateY(-6px) scale(0.98);
+  }
+  .popover[data-side="top"]:not(:popover-open) {
+    transform: translateY(6px) scale(0.98);
   }
   @starting-style {
     .popover:popover-open {
@@ -593,44 +598,16 @@
       transform: translateY(-6px) scale(0.98);
     }
   }
-  .popover--arrival {
-    position-anchor: --mahdieh-arrival;
-  }
-  .popover--duration {
-    position-anchor: --mahdieh-duration;
-  }
-  .popover--theme {
-    position-anchor: --mahdieh-theme;
-  }
   .menu-popover {
     width: auto;
     min-width: 260px;
     padding: 6px;
   }
-  @supports (position-area: bottom) {
-    .popover {
-      inset: auto;
-      position-area: bottom;
-      position-try-fallbacks: flip-block;
-      margin-block: 8px;
-    }
-    .menu-popover {
-      position-area: bottom span-x-start;
-      margin-block: 10px;
-    }
-  }
-  @supports not (position-area: bottom) {
-    .popover {
-      inset: auto 12px 12px;
-      margin-inline: auto;
-    }
-  }
   @media (max-width: 620px) {
     .popover:not(.menu-popover) {
-      position-area: none;
       inset: auto 0 0;
       width: 100%;
-      max-height: 80dvh;
+      max-height: min(80dvh, calc(100dvh - 72px));
       margin: 0;
       padding-bottom: calc(16px + env(safe-area-inset-bottom));
       border-radius: 22px 22px 0 0;
@@ -643,6 +620,10 @@
       .popover:not(.menu-popover):popover-open {
         transform: translateY(100%);
       }
+    }
+    /* برگهٔ باز ⇒ صفحهٔ زیرین ثابت می‌ماند (پیمایش فقط درون برگه). */
+    html:has(.popover:not(.menu-popover):popover-open) {
+      overflow: hidden;
     }
   }
   .popover::backdrop {

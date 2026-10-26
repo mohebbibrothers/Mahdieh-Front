@@ -293,31 +293,42 @@ export function Matrix(p: MatrixProps) {
   );
 }
 
-/** نمونهٔ کوچک هر وضعیت برای راهنمای رنگ (همان ظاهر خانهٔ جدول، بی‌تکیه بر رنگ). */
+type LegendItem = { state: string; label: string; symbol: string; icon: Parameters<typeof Icon>[0]["name"] };
+
+/** یک منبع برای راهنمای زیر تقویم و بخش «بی‌تکیه بر رنگ» پنجرهٔ راهنما (همان نماد و ظاهر خانهٔ جدول). */
+export const LEGEND_ITEMS: LegendItem[] = [
+  { state: "free", label: "آزاد (قابل رزرو)", symbol: "خورشید یا ماه", icon: "sun" },
+  { state: "occupied", label: "رزروشده", symbol: "قفل و هاشور", icon: SLOT_ICON.occupied },
+  { state: "buffer", label: "نظافت و آماده‌سازی", symbol: "جارو، کادر خط‌چین", icon: SLOT_ICON.buffer },
+  { state: "blocked", label: "تعمیرات", symbol: "آچار و هاشور خاکستری", icon: SLOT_ICON.blocked },
+  { state: "soon", label: "رزرو بسته (مهلت کوتاه)", symbol: "ساعت شنی", icon: SLOT_ICON.soon },
+  { state: "past", label: "گذشته", symbol: "ساعت، کم‌رنگ", icon: SLOT_ICON.past },
+  { state: "selected", label: "انتخاب شما", symbol: "تیک روی زمینهٔ پررنگ", icon: "check" },
+];
+
+/** نمونهٔ کوچک یک وضعیت (همان ظاهر خانهٔ جدول). */
+export function Swatch({ item, size = 14 }: { item: LegendItem; size?: 14 | 18 }) {
+  return (
+    <span
+      className={cx("cp-slot cp-slot--swatch", size === 18 && "cp-slot--swatch-lg")}
+      data-state={item.state === "selected" ? "free" : item.state}
+      data-sel={item.state === "selected" ? "single" : undefined}
+      aria-hidden="true"
+    >
+      <Icon name={item.icon} size={size} />
+    </span>
+  );
+}
+
+/** راهنمای رنگ زیر تقویم (بی‌تکیه بر رنگ: هر وضعیت نماد خودش را دارد). */
 export function Legend({ onGuide }: { onGuide: () => void }) {
-  const items: Array<{ state: string; label: string; icon: Parameters<typeof Icon>[0]["name"] }> = [
-    { state: "free", label: "آزاد (قابل رزرو)", icon: "sun" },
-    { state: "occupied", label: "رزروشده", icon: SLOT_ICON.occupied },
-    { state: "buffer", label: "نظافت و آماده‌سازی", icon: SLOT_ICON.buffer },
-    { state: "blocked", label: "تعمیرات", icon: SLOT_ICON.blocked },
-    { state: "soon", label: "رزرو بسته (مهلت کوتاه)", icon: SLOT_ICON.soon },
-    { state: "past", label: "گذشته", icon: SLOT_ICON.past },
-    { state: "selected", label: "انتخاب شما", icon: "check" },
-  ];
   return (
     <div className="cp-legend">
       <ul className="cp-legend__items" aria-label="راهنمای وضعیت نیم‌روزها">
-        {items.map((it) => (
+        {LEGEND_ITEMS.map((it) => (
           <li key={it.state}>
-            <span
-              className={cx("cp-slot cp-slot--swatch")}
-              data-state={it.state === "selected" ? "free" : it.state}
-              data-sel={it.state === "selected" ? "single" : undefined}
-              aria-hidden="true"
-            >
-              <Icon name={it.icon} size={14} />
-            </span>
-            {it.label}
+            <Swatch item={it} />
+            <span>{it.label}</span>
           </li>
         ))}
       </ul>

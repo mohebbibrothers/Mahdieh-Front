@@ -448,7 +448,7 @@ export function StepDetails({
         <h3 className="details__section" id={`${id}-h`}>
           <Icon name="map-pin" size={18} /> اطلاعات تکمیلی ورود به مشهد
         </h3>
-        <div className="acc-row">
+        <div className="acc-row acc-row--trio">
           <ArrivalPicker
             options={options}
             value={arrival}

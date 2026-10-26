@@ -87,6 +87,7 @@ export function QuickSearch() {
             </span>
             <Popover
               anchor="arrival"
+              align="center"
               label="انتخاب زمان ورود"
               trigger={(p) => (
                 <button
@@ -113,6 +114,7 @@ export function QuickSearch() {
             </span>
             <Popover
               anchor="duration"
+              align="center"
               label="انتخاب مدت اقامت"
               trigger={(p) => (
                 <button
