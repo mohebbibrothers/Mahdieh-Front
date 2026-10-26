@@ -580,18 +580,6 @@
   .uf-sheet .uf__floors button {
     min-height: 49px;
   }
-  .uf-sheet__actions {
-    position: sticky;
-    bottom: -1px;
-    display: flex;
-    gap: 8px;
-    margin-top: 20px;
-    padding-block: 12px 2px;
-    background: var(--color-surface);
-  }
-  .uf-sheet__actions .btn-primary {
-    flex: 1;
-  }
 
   /* ── سرِ نتایج ──────────────────────────────────────────────────────── */
   .up-results {
@@ -1334,10 +1322,18 @@
   .ucmp[data-cols="3"] .ucmp__row {
     grid-template-columns: var(--ucmp-label) repeat(3, minmax(0, 1fr));
   }
+  /* سرِ جدول بی‌فاصله به بالای ناحیهٔ پیمایش می‌چسبد (هیچ ردیفی از بالایش بیرون نمی‌زند) */
+  .up-dlg--compare .app-dialog__body {
+    padding-top: 0;
+  }
+  .ucmp__row--choose {
+    display: none;
+  }
   .ucmp__row--head {
     position: sticky;
     z-index: 2;
-    top: -1px;
+    top: 0;
+    box-shadow: 0 10px 16px -16px var(--color-shadow-strong, rgb(0 0 0 / 0.4));
     border-bottom-color: var(--color-border-strong);
     background: var(--color-surface);
   }
@@ -1365,7 +1361,7 @@
     display: grid;
     grid-template-rows: auto 1fr auto;
     gap: 6px;
-    padding: 14px 12px;
+    padding: 18px 12px 14px;
   }
   .ucmp__unit-top {
     display: flex;
@@ -1695,18 +1691,6 @@
     flex: none;
     margin-top: 6px;
   }
-  .ut-form__actions {
-    position: sticky;
-    bottom: -1px;
-    display: flex;
-    gap: 8px;
-    margin-top: 16px;
-    padding-block: 12px 2px;
-    background: var(--color-surface);
-  }
-  .ut-form__actions .btn-primary {
-    flex: 1.8;
-  }
 
   /* ── نگاه کوتاه ────────────────────────────────────────────────────── */
   .uqv {
@@ -1869,20 +1853,29 @@
     margin-top: 4px;
     color: var(--color-brand);
   }
-  .uqv__actions {
-    position: sticky;
-    bottom: -1px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding-block: 12px 2px;
-    background: var(--color-surface);
+  /* ── پایین ثابت پنجره‌های این صفحه: بیرون از ناحیهٔ پیمایش، لبه‌به‌لبه و چسبیده به پایین ── */
+  .up-dlg .app-dialog__actions {
+    flex-wrap: nowrap;
+    align-items: center;
+    box-shadow: 0 -10px 22px -18px var(--color-shadow-strong, rgb(0 0 0 / 0.35));
   }
-  .uqv__actions > .btn-primary {
-    flex: 1.6;
+  .up-dlg .app-dialog__actions .btn {
+    min-height: 48px;
+    justify-content: center;
+    text-align: center;
   }
-  .uqv__actions > .btn-secondary {
-    flex: 1;
+  .up-dlg .app-dialog__actions .btn-primary {
+    flex: 1 1 auto;
+  }
+  .up-dlg .app-dialog__actions .btn-ghost {
+    flex: none;
+    padding-inline: 16px;
+  }
+  .up-dlg--quick .app-dialog__actions .btn-primary {
+    flex: 1.6 1 0;
+  }
+  .up-dlg--quick .app-dialog__actions .btn-secondary {
+    flex: 1 1 0;
   }
 
   /* ── حالت آسان: یک ستون، بی تصویر، نوشته‌های درشت‌تر ──────────────── */
@@ -1936,10 +1929,33 @@
       padding: 17px;
     }
     .ufg__tier {
-      gap: 10px;
+      gap: 12px;
     }
+    /* نشان طبقه مثل نمایشگر طبقهٔ آسانسور: رقم درشت بالا، «طبقه» ریز زیرش — ستون ثابت و جدا از ردیف واحدها */
     .ufg__floor {
-      width: 44px;
+      flex-direction: column-reverse;
+      justify-content: center;
+      gap: 0;
+      width: 46px;
+      min-height: 46px;
+      padding-block: 4px;
+      border: 1px solid color-mix(in oklab, var(--color-text) 12%, transparent);
+      border-radius: 12px;
+      background: color-mix(in oklab, var(--color-surface) 70%, transparent);
+      color: var(--color-text-muted);
+      font-size: 0.625rem;
+      line-height: 1.4;
+      text-align: center;
+    }
+    .ufg__floor b {
+      color: var(--color-text);
+      font-size: 1.125rem;
+      line-height: 1.15;
+    }
+    .ufg__sk-label {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
     }
     .ufg__unit {
       padding-inline: 8px;
@@ -2005,11 +2021,8 @@
     .ufg__head h2 {
       font-size: 1rem;
     }
-    .ufg__floor {
-      width: 35px;
-    }
     .ufg__tier {
-      gap: 7px;
+      gap: 10px;
     }
     .ufg__units {
       gap: 6px;
@@ -2112,7 +2125,8 @@
       font-size: 0.875rem;
     }
     .ufg__floor {
-      width: 34px;
+      width: 42px;
+      min-height: 51px;
     }
     .ufg__unit {
       flex-wrap: nowrap;
@@ -2139,11 +2153,16 @@
     .ut-ribbon__actions {
       width: 100%;
     }
-    .ut-ribbon__actions .btn-primary {
+    /* دکمهٔ تمام‌عرض ⇒ محتوا وسط‌چین (استاندارد فراخوان‌های تمام‌عرض در کل سایت) */
+    .ut-ribbon__actions .btn {
       flex: 1;
-      justify-content: space-between;
-      min-height: 44px;
+      justify-content: center;
+      min-height: 46px;
       padding-inline: 14px;
+    }
+    .ut-ribbon__actions .btn-ghost,
+    .ut-ribbon__actions .icon-button {
+      flex: none;
     }
     .up-content {
       padding-top: 29px;
@@ -2279,43 +2298,6 @@
     .ucmp-tray__clear {
       order: 6;
     }
-    /* جدول مقایسه در گوشی: هر ویژگی یک ردیف «عنوان + ستون‌های کنار هم» — بی پیمایش افقی */
-    .ucmp__row,
-    .ucmp[data-cols="3"] .ucmp__row {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .ucmp[data-cols="3"] .ucmp__row {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-    .ucmp__label {
-      grid-column: 1 / -1;
-      padding: 10px 4px 2px;
-      border-inline-end: 0;
-      color: var(--color-text);
-      font-weight: 600;
-    }
-    .ucmp__row--head .ucmp__label {
-      display: none;
-    }
-    .ucmp__unit {
-      padding: 10px 4px 12px;
-    }
-    .ucmp__cell {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 2px;
-      padding: 4px 4px 12px;
-      font-size: 0.75rem;
-    }
-    .ucmp__cell-code {
-      display: inline-block;
-      padding: 0 6px;
-      border-radius: 5px;
-      background: var(--color-brand-tint);
-      color: var(--color-brand-ink);
-      font-size: 0.6875rem;
-      font-weight: 700;
-    }
     .ut-days {
       gap: 5px;
     }
@@ -2382,6 +2364,117 @@
     .uc:hover .uc__visual img,
     .ufg__unit:hover {
       transform: none;
+    }
+  }
+
+  /* ── جدول مقایسه در تبلت و گوشی: هر ویژگی یک ردیف «عنوان تمام‌عرض + ستون‌های وسط‌چینِ جداشده»؛
+     سرِ چسبان فقط کد و نام (حذف در گوشه)، فراخوان‌ها در ردیف پایانی — بی پیمایش افقی ── */
+  @media (max-width: 850px) {
+    .ucmp__row,
+    .ucmp[data-cols="3"] .ucmp__row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .ucmp[data-cols="3"] .ucmp__row {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .ucmp__label {
+      grid-column: 1 / -1;
+      padding: 12px 6px 2px;
+      border-inline-end: 0;
+      color: var(--color-text);
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+    .ucmp__row--head .ucmp__label {
+      display: none;
+    }
+    .ucmp__unit {
+      position: relative;
+      grid-template-rows: auto 1fr;
+      justify-items: center;
+      gap: 6px;
+      padding: 16px 8px 12px;
+      text-align: center;
+    }
+    .ucmp__unit-top {
+      justify-content: center;
+      min-height: 28px;
+    }
+    .ucmp__remove.icon-button {
+      position: absolute;
+      top: 12px;
+      inset-inline-end: 4px;
+      width: 30px;
+      min-width: 30px;
+      height: 30px;
+      min-height: 30px;
+    }
+    .ucmp__unit strong {
+      display: -webkit-box;
+      overflow: hidden;
+      font-size: 0.8125rem;
+      line-height: 1.75;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+    .ucmp__row--head .ucmp__choose {
+      display: none;
+    }
+    .ucmp__row--choose {
+      display: grid;
+      border-bottom: 0;
+    }
+    .ucmp__cell {
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding: 6px 8px 12px;
+      font-size: 0.75rem;
+      line-height: 1.8;
+      text-align: center;
+    }
+    .ucmp__unit + .ucmp__unit,
+    .ucmp__cell + .ucmp__cell {
+      border-inline-start: 1px solid color-mix(in oklab, var(--color-border) 75%, transparent);
+    }
+    .ucmp__cell-code {
+      display: none;
+    }
+    .ucmp-yes,
+    .ucmp-time {
+      justify-content: center;
+      text-align: center;
+    }
+    .ucmp__row--choose .ucmp__cell {
+      padding: 8px 6px 4px;
+    }
+    .ucmp__row--choose .ucmp__choose.btn {
+      min-height: 46px;
+      padding-inline: 6px;
+      font-size: 0.71875rem;
+    }
+  }
+  @media (max-width: 620px) {
+    .up-dlg--compare .app-dialog__actions .btn-ghost {
+      flex: 1 1 auto;
+    }
+    .ucmp__label {
+      padding-inline: 2px;
+    }
+    .ucmp__unit {
+      padding-inline: 4px;
+    }
+    .ucmp__cell {
+      padding-inline: 4px;
+    }
+  }
+  @media (max-width: 400px) {
+    .up-dlg--quick .app-dialog__actions {
+      flex-wrap: wrap;
+    }
+    .up-dlg--quick .app-dialog__actions .btn-primary {
+      flex: 1 1 100%;
     }
   }
 

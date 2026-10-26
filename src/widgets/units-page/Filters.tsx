@@ -195,59 +195,46 @@ export function FilterSheet({
   facetsFor: (f: Filters) => Facets;
   countFor: (f: Filters) => number;
 }) {
+  // پیش‌نویس فیلترها فقط با «نمایش» اعمال می‌شود؛ هر بار باز شدن از مقدار جاری شروع می‌کند
+  // (الگوی «تنظیم state هنگام تغییر ورودی» در خود رندر — بی‌effect).
+  const [draft, setDraft] = useState<Filters>(value);
+  const [wasOpen, setWasOpen] = useState(open);
+  if (open !== wasOpen) {
+    setWasOpen(open);
+    if (open) setDraft(value);
+  }
+  const n = countFor(draft);
   return (
     <AppDialog
       isOpen={open}
       onOpenChange={onOpenChange}
+      className="up-dlg up-dlg--filters"
       title="کدام فضا؟"
       subtitle="نوع، طبقه و امکانات دلخواه را انتخاب کنید."
+      actions={
+        <>
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={!n}
+            onClick={() => {
+              onApply(draft);
+              onOpenChange(false);
+            }}
+          >
+            {n ? `نمایش ${faDigits(n)} واحد` : "واحدی با این شرایط نیست"}
+          </button>
+          <button type="button" className="btn btn-ghost" onClick={() => setDraft(CLEARED)}>
+            پاک کردن
+          </button>
+        </>
+      }
     >
       {open ? (
-        <SheetBody
-          initial={value}
-          onApply={onApply}
-          facetsFor={facetsFor}
-          countFor={countFor}
-          onClose={() => onOpenChange(false)}
-        />
+        <div className="uf-sheet">
+          <FilterControls value={draft} onChange={(p) => setDraft((d) => ({ ...d, ...p }))} facets={facetsFor(draft)} />
+        </div>
       ) : null}
     </AppDialog>
-  );
-}
-
-function SheetBody({
-  initial,
-  onApply,
-  facetsFor,
-  countFor,
-  onClose,
-}: {
-  initial: Filters;
-  onApply: (f: Filters) => void;
-  facetsFor: (f: Filters) => Facets;
-  countFor: (f: Filters) => number;
-  onClose: () => void;
-}) {
-  const [draft, setDraft] = useState<Filters>(initial);
-  const n = countFor(draft);
-  return (
-    <div className="uf-sheet">
-      <FilterControls value={draft} onChange={(p) => setDraft((d) => ({ ...d, ...p }))} facets={facetsFor(draft)} />
-      <div className="uf-sheet__actions">
-        <button
-          type="button"
-          className="btn btn-primary"
-          onClick={() => {
-            onApply(draft);
-            onClose();
-          }}
-        >
-          {n ? `نمایش ${faDigits(n)} واحد` : "واحدی با این شرایط نیست"}
-        </button>
-        <button type="button" className="btn btn-ghost" onClick={() => setDraft(CLEARED)}>
-          پاک کردن
-        </button>
-      </div>
-    </div>
   );
 }

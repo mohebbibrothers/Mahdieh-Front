@@ -49,6 +49,7 @@ export function QuickView({
     <AppDialog
       isOpen={Boolean(unit)}
       onOpenChange={(o) => (o ? undefined : onClose())}
+      className="up-dlg up-dlg--quick"
       size="lg"
       title={unit?.title ?? ""}
       subtitle={
@@ -59,6 +60,19 @@ export function QuickView({
         ) : undefined
       }
       closeLabel="بستن نگاه کوتاه"
+      actions={
+        unit && copy ? (
+          <QuickActions
+            unit={unit}
+            trip={trip}
+            availability={availability}
+            compared={compared}
+            compareFull={compareFull}
+            onCompare={onCompare}
+            calendarHref={calendarHref}
+          />
+        ) : undefined
+      }
     >
       {unit && copy ? (
         <Body
@@ -66,9 +80,6 @@ export function QuickView({
           trip={trip}
           availability={availability}
           copy={copy}
-          compared={compared}
-          compareFull={compareFull}
-          onCompare={onCompare}
           onAction={onAction}
           onAlternative={onAlternative}
           calendarHref={calendarHref}
@@ -79,31 +90,11 @@ export function QuickView({
   );
 }
 
-function Body({
-  unit,
-  trip,
-  availability,
-  copy,
-  compared,
-  compareFull,
-  onCompare,
-  onAction,
-  onAlternative,
-  calendarHref,
-  onWaitlist,
-}: {
-  unit: CatalogUnit;
-  trip: Trip;
-  availability: Availability | undefined;
-  copy: AvailCopy;
-  compared: boolean;
-  compareFull: boolean;
-  onCompare: () => void;
-  onAction: (a: Action) => void;
-  onAlternative: (a: Alternative) => void;
-  calendarHref: Route;
-  onWaitlist: (() => void) | null;
-}) {
+/**
+ * سهمیه/قواعد رزرو همین واحد برای بازهٔ آزاد سفر. بدنه و نوار پایینی هر دو همین را می‌خوانند و چون
+ * کلید پرس‌وجو یکی است، ‎react-query‎ فقط یک درخواست می‌فرستد.
+ */
+function useQuickQuote(unit: CatalogUnit, trip: Trip, availability: Availability | undefined) {
   const me = useQuery(meQuery);
   const free = availability?.kind === "free" ? availability : null;
   const quote = useQuery({
@@ -116,6 +107,77 @@ function Body({
   });
   const blocked = quote.data ? !quote.data.allowed : false;
   const booking = free && trip.day && !blocked ? bookingHref(unit.code, { ...trip, day: trip.day }) : null;
+  return { me, free, quote, booking };
+}
+
+/** نوار پایینی ثابت پنجره (بیرون از ناحیهٔ پیمایش): رزرو/تقویم + مقایسه. */
+function QuickActions({
+  unit,
+  trip,
+  availability,
+  compared,
+  compareFull,
+  onCompare,
+  calendarHref,
+}: {
+  unit: CatalogUnit;
+  trip: Trip;
+  availability: Availability | undefined;
+  compared: boolean;
+  compareFull: boolean;
+  onCompare: () => void;
+  calendarHref: Route;
+}) {
+  const { booking } = useQuickQuote(unit, trip, availability);
+  return (
+    <>
+      {booking ? (
+        <BookingContinue
+          className="btn btn-primary"
+          href={booking}
+          label="رزرو همین بازه"
+          guestLabel="ورود و ادامهٔ رزرو"
+          reason="برای رزرو این واحد، با شمارهٔ همراه وارد شوید."
+        />
+      ) : (
+        <Link className="btn btn-primary" href={calendarHref}>
+          انتخاب زمان در تقویم <Icon name="arrow-left" size={18} />
+        </Link>
+      )}
+      <button
+        type="button"
+        className="btn btn-secondary"
+        aria-pressed={compared}
+        disabled={!compared && compareFull}
+        onClick={onCompare}
+      >
+        <Icon name={compared ? "check" : "compare"} size={18} />
+        {compared ? "در فهرست مقایسه" : compareFull ? `مقایسه پر است (${faDigits(3)})` : "افزودن به مقایسه"}
+      </button>
+    </>
+  );
+}
+
+function Body({
+  unit,
+  trip,
+  availability,
+  copy,
+  onAction,
+  onAlternative,
+  calendarHref,
+  onWaitlist,
+}: {
+  unit: CatalogUnit;
+  trip: Trip;
+  availability: Availability | undefined;
+  copy: AvailCopy;
+  onAction: (a: Action) => void;
+  onAlternative: (a: Alternative) => void;
+  calendarHref: Route;
+  onWaitlist: (() => void) | null;
+}) {
+  const { me, free, quote } = useQuickQuote(unit, trip, availability);
   const mix = composition(unit);
 
   return (
@@ -257,32 +319,6 @@ function Body({
         <Icon name="shield-check" size={16} /> اقامت کاملاً رایگان است؛ نشانی دقیق و راهنمای ورود پس از ثبت رزرو در
         گواهی شما می‌آید.
       </p>
-
-      <div className="uqv__actions">
-        {booking ? (
-          <BookingContinue
-            className="btn btn-primary"
-            href={booking}
-            label="رزرو همین بازه"
-            guestLabel="ورود و ادامهٔ رزرو"
-            reason="برای رزرو این واحد، با شمارهٔ همراه وارد شوید."
-          />
-        ) : (
-          <Link className="btn btn-primary" href={calendarHref}>
-            انتخاب زمان در تقویم <Icon name="arrow-left" size={18} />
-          </Link>
-        )}
-        <button
-          type="button"
-          className="btn btn-secondary"
-          aria-pressed={compared}
-          disabled={!compared && compareFull}
-          onClick={onCompare}
-        >
-          <Icon name={compared ? "check" : "compare"} size={18} />
-          {compared ? "در فهرست مقایسه" : compareFull ? `مقایسه پر است (${faDigits(3)})` : "افزودن به مقایسه"}
-        </button>
-      </div>
     </div>
   );
 }

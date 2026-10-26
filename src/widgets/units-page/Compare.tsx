@@ -155,6 +155,7 @@ export function CompareDialog({
     <AppDialog
       isOpen={open}
       onOpenChange={onOpenChange}
+      className="up-dlg up-dlg--compare"
       size="xl"
       title="مقایسهٔ واحدها"
       subtitle="ردیف‌هایی که نشانهٔ طلایی دارند، میان واحدها متفاوت‌اند."
@@ -205,6 +206,20 @@ export function CompareDialog({
             ))}
           </div>
         ))}
+        {/* گوشی/تبلت: فراخوان‌ها از سرِ چسبان به ردیف پایانی می‌آیند تا سر جمع‌وجور بماند */}
+        <div className="ucmp__row ucmp__row--choose" role="row">
+          <span className="ucmp__label" role="rowheader">
+            <Icon name="calendar" size={16} /> انتخاب زمان
+          </span>
+          {units.map((u) => (
+            <span key={u.code} className="ucmp__cell" role="cell">
+              <button type="button" className="btn btn-primary btn-sm ucmp__choose" onClick={() => onChoose(u)}>
+                {chooseLabel(u)}
+                <span className="sr-only"> — {u.title}</span>
+              </button>
+            </span>
+          ))}
+        </div>
       </div>
     </AppDialog>
   );

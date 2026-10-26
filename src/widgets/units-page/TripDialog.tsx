@@ -19,6 +19,8 @@ import { Stepper } from "@/shared/ui/Stepper";
 import { tripSummary } from "./copy";
 import { DURATION_PRESETS, MAX_GUESTS, quickDays, startEligibility, type Clock, type Trip } from "./model";
 
+const TRIP_FORM_ID = "ut-trip-form";
+
 /** نوار سفر بالای نتایج: «پیدا کردن فضای مناسب، از شرایط سفر شما شروع می‌شود». */
 export function TripRibbon({ trip, onOpen, onClear }: { trip: Trip; onOpen: () => void; onClear: () => void }) {
   return (
@@ -82,8 +84,20 @@ export function TripDialog({
     <AppDialog
       isOpen={open}
       onOpenChange={onOpenChange}
+      className="up-dlg up-dlg--trip"
       title="شرایط سفرتان را بگویید"
       subtitle="فقط برای پیدا کردن واحد مناسب؛ هنوز رزروی ثبت نمی‌شود."
+      actions={
+        <>
+          {/* نوار پایینی ثابت پنجره بیرون از فرم است ⇒ پیوند با ‎form=‎ */}
+          <button type="submit" form={TRIP_FORM_ID} className="btn btn-primary">
+            نمایش واحدهای مناسب
+          </button>
+          <button type="button" className="btn btn-ghost" onClick={() => onOpenChange(false)}>
+            بازگشت
+          </button>
+        </>
+      }
     >
       {open ? (
         <TripForm
@@ -97,7 +111,6 @@ export function TripDialog({
             onApply(t);
             onOpenChange(false);
           }}
-          onCancel={() => onOpenChange(false)}
         />
       ) : null}
     </AppDialog>
@@ -117,7 +130,6 @@ function TripForm({
   maxCells,
   maxCapacity,
   onApply,
-  onCancel,
 }: {
   initial: Trip;
   clock: Clock;
@@ -126,7 +138,6 @@ function TripForm({
   maxCells: number;
   maxCapacity: number;
   onApply: (t: Trip) => void;
-  onCancel: () => void;
 }) {
   const [draft, setDraft] = useState<Trip>(initial);
   const [undated, setUndated] = useState(!initial.day);
@@ -158,6 +169,7 @@ function TripForm({
   const result: Trip = { ...draft, day: undated ? null : draft.day };
   return (
     <form
+      id={TRIP_FORM_ID}
       className="ut-form"
       noValidate
       onSubmit={(e) => {
@@ -294,14 +306,6 @@ function TripForm({
         <Icon name="check" size={16} />
         <span>{tripSummary(result)}</span>
       </p>
-      <div className="ut-form__actions">
-        <button type="submit" className="btn btn-primary">
-          نمایش واحدهای مناسب
-        </button>
-        <button type="button" className="btn btn-ghost" onClick={onCancel}>
-          بازگشت
-        </button>
-      </div>
     </form>
   );
 }

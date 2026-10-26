@@ -33,6 +33,7 @@ export function AppDialog({
   actions,
   size = "md",
   closeLabel = "بستن",
+  className,
 }: {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -43,6 +44,8 @@ export function AppDialog({
   actions?: ReactNode;
   size?: "sm" | "md" | "lg" | "xl";
   closeLabel?: string;
+  /** کلاس اختصاصی صفحه برای ظاهر پنجره (بی‌تغییر رفتار مشترک) */
+  className?: string;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
@@ -61,7 +64,7 @@ export function AppDialog({
   return createPortal(
     <dialog
       ref={ref}
-      className={cx("app-dialog", `app-dialog--${size}`)}
+      className={cx("app-dialog", `app-dialog--${size}`, className)}
       aria-labelledby={titleId}
       aria-describedby={subtitle ? subId : undefined}
       onClose={() => onOpenChange(false)}
