@@ -9,6 +9,7 @@ import {
   relatedUnits,
   shiftWeek,
   slotView,
+  unitTagline,
   usablePhotos,
   weekDays,
   weekStart,
@@ -204,5 +205,15 @@ describe("periodHour", () => {
     expect(periodHour("day", clock)).toBe(8);
     expect(periodHour("night", clock)).toBe(20);
     expect(periodHour("night", { gridStartHour: 14, cellHours: 12 })).toBe(2);
+  });
+});
+
+describe("unitTagline", () => {
+  it("نوشتهٔ مدیر را یکدست می‌کند و تهی ⇒ پیش‌فرض نوع واحد", () => {
+    expect(unitTagline({ tagline: "  آرام و روشن،\n رو به حیاط ", unit_type: "suite" })).toBe(
+      "آرام و روشن، رو به حیاط",
+    );
+    expect(unitTagline({ tagline: "", unit_type: "suite" })).toContain("خانوادگی");
+    expect(unitTagline({ tagline: "   ", unit_type: "large_room" })).toContain("همسفران");
   });
 });

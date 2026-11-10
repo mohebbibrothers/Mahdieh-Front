@@ -202,16 +202,30 @@ function TripForm({
 
       <section className="ut-form__block">
         <h3>از چه روزی؟</h3>
-        <label className="ut-form__toggle">
+        <label className="ut-flex">
+          <span className="ut-flex__icon" aria-hidden="true">
+            <Icon name={undated ? "sparkle" : "calendar"} size={18} />
+          </span>
+          <span className="ut-flex__text">
+            <span className="ut-flex__title">تاریخم قطعی نیست</span>
+            <span className="ut-flex__sub" id="ut-flex-sub">
+              {undated
+                ? "نزدیک‌ترین زمان‌های آزاد برای همسفرانتان را نشان می‌دهیم."
+                : "به‌جای یک روز مشخص، نزدیک‌ترین زمان‌های آزاد را ببینید."}
+            </span>
+          </span>
           <input
             type="checkbox"
+            role="switch"
+            className="ut-flex__input"
             checked={undated}
+            aria-describedby="ut-flex-sub"
             onChange={(e) => {
               setError(false);
               setUndated(e.target.checked);
             }}
           />
-          <span>تاریخم قطعی نیست؛ نزدیک‌ترین زمان‌ها را ببینیم.</span>
+          <span className="ut-flex__track" aria-hidden="true" />
         </label>
         {undated ? null : (
           <>

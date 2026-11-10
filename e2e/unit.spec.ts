@@ -112,14 +112,92 @@ test.describe("P-03 جزئیات واحد", () => {
     await page.getByRole("button", { name: "نمایش بزرگ" }).click();
     const gallery = page.getByRole("dialog", { name: "سوئیت طبقهٔ اول" });
     await expect(gallery).toBeVisible();
-    await gallery.getByRole("button", { name: "بزرگ‌نمایی" }).click();
-    await expect(gallery.locator(".ud-gallery__stage")).toHaveClass(/is-zoomed/);
+    const stage = gallery.locator(".ud-gallery__stage");
+    const img = stage.locator(".ud-zoom__img");
+    await expect(stage).toHaveAttribute("data-zoomed", "false");
+    await gallery.getByRole("button", { name: "بزرگ‌نمایی", exact: true }).click();
+    await expect(stage).toHaveAttribute("data-zoomed", "true");
+    await expect(gallery.locator(".ud-gallery__pct")).toContainText("۱۵۰٪");
+    await expect(stage.locator(".ud-zoom__map")).toBeVisible();
+    // کشیدن ⇒ جابه‌جایی واقعی تا لبه (نه بیشتر)؛ گوشهٔ تصویر دیدنی می‌شود
+    await page.waitForTimeout(350);
+    const box = await stage.boundingBox();
+    if (!box) throw new Error("صحنه اندازه ندارد");
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width / 2 + 600, box.y + box.height / 2 + 600, { steps: 8 });
+    await page.mouse.up();
+    const moved = await img.evaluate((el) => new DOMMatrix(getComputedStyle(el).transform));
+    expect(moved.e).toBeGreaterThan(0);
+    const limit = await stage.evaluate((el) => {
+      const pic = el.querySelector<HTMLImageElement>(".ud-zoom__img");
+      if (!pic) return 0;
+      const ratio = pic.naturalWidth / pic.naturalHeight;
+      const fitW = Math.min(el.clientWidth, el.clientHeight * ratio);
+      return (fitW * 1.5 - el.clientWidth) / 2;
+    });
+    expect(moved.e).toBeLessThanOrEqual(Math.max(0, limit) + 1);
+    // صفر ⇒ اندازهٔ عادی؛ دوبار-کلیک ⇒ بزرگ‌نمایی در همان نقطه
+    await stage.press("0");
+    await expect(stage).toHaveAttribute("data-zoomed", "false");
+    await stage.dblclick({ position: { x: 40, y: 40 } });
+    await expect(stage).toHaveAttribute("data-zoomed", "true");
+    await expect(gallery.locator(".ud-gallery__pct")).toContainText("۲۵۰٪");
     await gallery.getByRole("button", { name: "بستن نمایش بزرگ" }).click();
     await expect(gallery).toBeHidden();
 
     await page.locator(".ud-feature", { hasText: "آشپزخانه" }).click();
     const info = page.getByRole("dialog", { name: /آشپزخانه/ });
     await expect(info).toContainText("از امکانات ثبت‌شدهٔ سوئیت طبقهٔ اول");
+    // نشانه کنار متن، نه سطری جدا بالای آن
+    const head = await info.locator(".ud-explain__head").evaluate((el) => {
+      const iconEl = el.querySelector<HTMLElement>(".ud-explain__icon");
+      const icon = iconEl?.getBoundingClientRect();
+      const text = el.querySelector("p")?.getBoundingClientRect();
+      return icon && text
+        ? { iconW: iconEl?.offsetWidth, sameRow: icon.top < text.bottom && text.top < icon.bottom }
+        : null;
+    });
+    expect(head).toEqual({ iconW: 40, sameRow: true });
+  });
+
+  test("جملهٔ معرفی از سرور، کلید «تاریخم قطعی نیست» و پنل چسبان در حالت آسان", async ({ page, api }, info) => {
+    test.skip(info.project.name === "mobile", "پنل چسبان فقط لپ‌تاپ/رومیزی؛ گوشی نوار پایینی دارد");
+    unitApi(api);
+    await page.setViewportSize({ width: 1280, height: 800 });
+    await page.goto("/units/A1/");
+    await expect(page.locator(".ud-band .ud-eyebrow")).toHaveText("حریمی دنج و خانوادگی، برای آسودن میان زیارت‌ها");
+
+    await page.locator(".ud-layout .ud-trip").click();
+    const trip = page.getByRole("dialog");
+    const flex = trip.getByRole("switch", { name: /تاریخم قطعی نیست/ });
+    // بی تاریخ در نشانی ⇒ «قطعی نیست» روشن؛ لمس هر جای کاشی کلید را جابه‌جا می‌کند
+    await expect(flex).toBeChecked();
+    await expect(trip.locator(".ut-days")).toBeHidden();
+    await trip.locator(".ut-flex").click({ position: { x: 60, y: 20 } });
+    await expect(flex).not.toBeChecked();
+    await expect(trip.locator(".ut-days")).toBeVisible();
+    await flex.press("Space");
+    await expect(flex).toBeChecked();
+    await page.keyboard.press("Escape");
+
+    // پنل رزرو هنگام اسکرول کنار محتوا می‌ماند — حتی در حالت آسان
+    for (const easy of [false, true]) {
+      if (easy) {
+        await page.locator(".easy-toggle:visible").click();
+        await expect(page.locator(".ud--easy")).toBeVisible();
+      }
+      await page.locator("#ud-availability").scrollIntoViewIfNeeded();
+      await page.mouse.wheel(0, 600);
+      await page.waitForTimeout(250);
+      const top = await page.locator(".ud-layout > .ud-panel").evaluate((el) => el.getBoundingClientRect().top);
+      const header = await page.evaluate(
+        () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 0,
+      );
+      expect(top).toBeGreaterThanOrEqual(header);
+      expect(top).toBeLessThan(header + 40);
+      await page.evaluate(() => window.scrollTo(0, 0));
+    }
   });
 
   test("کد ناموجود: صفحهٔ «پیدا نشد» با فهرست واحدهای فعال", async ({ page, api }) => {

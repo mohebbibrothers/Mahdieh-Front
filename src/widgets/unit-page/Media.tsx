@@ -1,12 +1,13 @@
 "use client";
-import { useState, type KeyboardEvent } from "react";
+import { useRef, useState, type KeyboardEvent } from "react";
 import { unitPlan, unitPlan2d } from "@/entities/unit/unit";
 import type { UnitDetail, UnitPhoto } from "@/shared/api/schemas";
-import { cx } from "@/shared/lib/cx";
 import { faDigits } from "@/shared/lib/fa";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon, type IconName } from "@/shared/ui/Icon";
 import type { MediaView } from "./model";
+import { MAX_SCALE, MIN_SCALE, STEP } from "./zoom";
+import { ZoomStage, type ZoomHandle } from "./ZoomStage";
 
 type Photo = UnitPhoto & { src: string };
 
@@ -202,16 +203,21 @@ function Gallery({
   onSelect: (i: number) => void;
   onFail: (id: number) => void;
 }) {
-  const [zoom, setZoom] = useState(false);
+  const [scale, setScale] = useState(1);
+  const zoomRef = useRef<ZoomHandle>(null);
   const photo = view === "photos" ? photos[index] : undefined;
   const many = Boolean(photo) && photos.length > 1;
-  const onKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    if (!many) return;
-    if (e.key === "ArrowLeft") onStep(1);
-    else if (e.key === "ArrowRight") onStep(-1);
-    else return;
-    e.preventDefault();
+  // تصویر تازه ⇒ صحنهٔ تازه (کلید ‎src‎) و درصد بزرگ‌نمایی از نو
+  const step = (d: number) => {
+    setScale(1);
+    onStep(d);
   };
+  const select = (i: number) => {
+    setScale(1);
+    onSelect(i);
+  };
+  const src = photo ? photo.src : view === "plan" ? unitPlan2d(unit.unit_type) : unitPlan(unit.unit_type, unit.code);
+  const pct = Math.round(scale * 100);
   const label = photo
     ? photo.alt_text || `تصویر ثبت‌شده برای ${unit.title}`
     : view === "plan"
@@ -222,7 +228,7 @@ function Gallery({
       isOpen={open}
       onOpenChange={(o) => {
         onOpenChange(o);
-        if (!o) setZoom(false);
+        if (!o) setScale(1);
       }}
       size="xl"
       className="ud-gallery"
@@ -238,11 +244,11 @@ function Gallery({
         <div className="ud-gallery__tools">
           {many ? (
             <div className="ud-gallery__nav">
-              <button type="button" className="icon-button ud-icon-btn" onClick={() => onStep(-1)}>
+              <button type="button" className="icon-button ud-icon-btn" onClick={() => step(-1)}>
                 <Icon name="arrow-right" size={18} />
                 <span className="sr-only">تصویر قبلی</span>
               </button>
-              <button type="button" className="icon-button ud-icon-btn" onClick={() => onStep(1)}>
+              <button type="button" className="icon-button ud-icon-btn" onClick={() => step(1)}>
                 <Icon name="arrow-left" size={18} />
                 <span className="sr-only">تصویر بعدی</span>
               </button>
@@ -252,36 +258,61 @@ function Gallery({
             {many ? `${faDigits(index + 1)} از ${faDigits(photos.length)} · ` : ""}
             {label}
           </p>
-          <button
-            type="button"
-            className="icon-button ud-icon-btn"
-            aria-pressed={zoom}
-            onClick={() => setZoom((z) => !z)}
-          >
-            <Icon name="zoom-in" size={18} />
-            <span className="sr-only">{zoom ? "اندازهٔ عادی" : "بزرگ‌نمایی"}</span>
-          </button>
+          <div className="ud-gallery__zoom" role="group" aria-label="بزرگ‌نمایی">
+            <button
+              type="button"
+              className="icon-button ud-icon-btn"
+              disabled={scale <= MIN_SCALE}
+              onClick={() => zoomRef.current?.zoomBy(1 / STEP)}
+            >
+              <Icon name="minus" size={18} />
+              <span className="sr-only">کوچک‌نمایی</span>
+            </button>
+            <button
+              type="button"
+              className="ud-gallery__pct"
+              disabled={scale <= MIN_SCALE}
+              onClick={() => zoomRef.current?.reset()}
+              title="بازگشت به اندازهٔ عادی"
+            >
+              <bdi>{faDigits(pct)}٪</bdi>
+              <span className="sr-only">، بازگشت به اندازهٔ عادی</span>
+            </button>
+            <button
+              type="button"
+              className="icon-button ud-icon-btn"
+              disabled={scale >= MAX_SCALE}
+              onClick={() => zoomRef.current?.zoomBy(STEP)}
+            >
+              <Icon name="plus" size={18} />
+              <span className="sr-only">بزرگ‌نمایی</span>
+            </button>
+          </div>
         </div>
       }
     >
-      <div className={cx("ud-gallery__stage", zoom && "is-zoomed")} onKeyDown={onKey} data-float-scroll="">
-        {photo ? (
-          <img key={photo.id} src={photo.src} alt={label} onError={() => onFail(photo.id)} />
-        ) : (
-          <img
-            key={view}
-            src={view === "plan" ? unitPlan2d(unit.unit_type) : unitPlan(unit.unit_type, unit.code)}
-            alt={label}
-            width={700}
-            height={460}
-          />
-        )}
-      </div>
+      <ZoomStage
+        key={src}
+        ref={zoomRef}
+        src={src}
+        alt={label}
+        width={photo ? undefined : 700}
+        height={photo ? undefined : 460}
+        hint="ud-zoom-hint"
+        onError={photo ? () => onFail(photo.id) : undefined}
+        onScale={setScale}
+        onPage={many ? step : null}
+      />
+      <p id="ud-zoom-hint" className="sr-only">
+        برای بزرگ‌نمایی دوبار بزنید، از چرخ موشواره یا کلیدهای به‌اضافه و منها استفاده کنید؛ در حالت بزرگ‌نمایی با کشیدن
+        یا کلیدهای جهت جابه‌جا شوید و کلید صفر اندازه را عادی می‌کند.
+        {many ? " در اندازهٔ عادی، کشیدن افقی یا کلیدهای جهت تصویر بعدی و قبلی را نشان می‌دهد." : ""}
+      </p>
       {many ? (
         <ul className="ud-gallery__thumbs" aria-label="همهٔ تصاویر">
           {photos.map((p, i) => (
             <li key={p.id}>
-              <button type="button" aria-current={i === index || undefined} onClick={() => onSelect(i)}>
+              <button type="button" aria-current={i === index || undefined} onClick={() => select(i)}>
                 <img src={p.src} alt="" loading="lazy" />
                 <span className="sr-only">
                   تصویر {faDigits(i + 1)}: {p.alt_text || unit.title}

@@ -17,7 +17,7 @@ import {
   tehranToday,
 } from "@/shared/lib/fa";
 import { AppDialog } from "@/shared/ui/Dialog";
-import { Icon } from "@/shared/ui/Icon";
+import { Icon, type IconName } from "@/shared/ui/Icon";
 import { windowLabel, type AvailCopy } from "@/widgets/units-page/copy";
 import { tripStart, type Clock, type Trip } from "@/widgets/units-page/model";
 import { periodHour, type AccountGate, type MainAction } from "./model";
@@ -67,6 +67,22 @@ function guardMessage(p: PanelProps): string {
   if (a.kind === "profile") return "پیش از صدور، اطلاعات هویتی در گام بعد تکمیل می‌شود؛ هنوز رزروی ثبت نشده است.";
   if (a.kind === "guest") return "پس از انتخاب، ورود تلفنی و بررسی شرایط حساب انجام می‌شود؛ هنوز رزروی ثبت نشده است.";
   return "شرایط حساب شما در گام بعد دوباره بررسی و رزرو صادر می‌شود؛ هنوز رزروی ثبت نشده است.";
+}
+
+/** ردیف میان‌بر پنل: نشانه در کپسول + سرتیتر کوچک و عنوان + پیکان. */
+function LinkBody({ icon, kicker, title }: { icon: IconName; kicker: string; title: string }) {
+  return (
+    <>
+      <span className="ud-nearest__icon" aria-hidden="true">
+        <Icon name={icon} size={16} />
+      </span>
+      <span className="ud-nearest__text">
+        <small>{kicker}</small>
+        <span>{title}</span>
+      </span>
+      <Icon name="chevron-left" size={16} className="ud-nearest__go" />
+    </>
+  );
 }
 
 function PanelBody(p: PanelProps & { idPrefix: string }) {
@@ -141,36 +157,26 @@ function PanelBody(p: PanelProps & { idPrefix: string }) {
       <p id={`${p.idPrefix}-guard`} className="ud-panel__guard">
         {guardMessage(p)}
       </p>
-      {p.account.kind === "active" ? (
-        <a className="ud-nearest" href={destHref("portal") ?? "/"}>
-          مشاهدهٔ رزرو فعلی در پرتال <Icon name="arrow-left" size={16} />
-        </a>
-      ) : null}
-      {p.nearest ? (
-        <button type="button" className="ud-nearest" onClick={() => p.nearest && p.onNearest(p.nearest)}>
-          <span>
-            <small>نزدیک‌ترین شروع آزاد</small>
-            {windowLabel(p.nearest)}
-          </span>
-          <Icon name="arrow-left" size={16} />
-        </button>
-      ) : null}
-      {p.onWaitlist ? (
-        <button type="button" className="ud-nearest" onClick={p.onWaitlist} aria-haspopup="dialog">
-          <span>
-            <small>همین بازه را می‌خواهید؟</small>
-            آزاد شد خبرم کنید
-          </span>
-          <Icon name="bell" size={16} />
-        </button>
-      ) : null}
-      <Link className="ud-nearest" href={p.calendarHref}>
-        <span>
-          <small>مقایسهٔ زمان‌ها با واحدهای دیگر</small>
-          تقویم کامل
-        </span>
-        <Icon name="calendar" size={16} />
-      </Link>
+      <div className="ud-links">
+        {p.account.kind === "active" ? (
+          <a className="ud-nearest" href={destHref("portal") ?? "/"}>
+            <LinkBody icon="ticket" kicker="رزرو فعال شما" title="مشاهدهٔ رزرو فعلی در پرتال" />
+          </a>
+        ) : null}
+        {p.nearest ? (
+          <button type="button" className="ud-nearest" onClick={() => p.nearest && p.onNearest(p.nearest)}>
+            <LinkBody icon="calendar-check" kicker="نزدیک‌ترین شروع آزاد" title={windowLabel(p.nearest)} />
+          </button>
+        ) : null}
+        {p.onWaitlist ? (
+          <button type="button" className="ud-nearest" onClick={p.onWaitlist} aria-haspopup="dialog">
+            <LinkBody icon="bell" kicker="همین بازه را می‌خواهید؟" title="آزاد شد خبرم کنید" />
+          </button>
+        ) : null}
+        <Link className="ud-nearest" href={p.calendarHref}>
+          <LinkBody icon="calendar" kicker="مقایسهٔ زمان‌ها با واحدهای دیگر" title="تقویم کامل" />
+        </Link>
+      </div>
 
       <div className="ud-fair">
         <Icon name="shield-check" size={18} />

@@ -10,6 +10,7 @@ import { Icon } from "@/shared/ui/Icon";
 import { toast } from "@/shared/ui/toast";
 import type { CatalogUnit } from "@/widgets/units-page/model";
 import { composition } from "@/widgets/units-page/UnitCard";
+import { unitTagline } from "./model";
 import { goUnit } from "./store";
 
 /* ── نوار عنوان ───────────────────────────────────────────────────────── */
@@ -53,7 +54,7 @@ export function TitleBand({
         </nav>
         <div className="ud-band__row">
           <div className="ud-band__copy">
-            <p className="ud-eyebrow">برای مکثی آرام، میان ساعت‌های زیارت</p>
+            <p className="ud-eyebrow">{unitTagline(unit)}</p>
             <h1 id="ud-title">{unit.title}</h1>
             <ul className="ud-band__meta">
               <li>

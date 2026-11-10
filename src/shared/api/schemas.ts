@@ -69,6 +69,8 @@ const unit = z.object({
   id: z.string(),
   code: z.string(),
   title: z.string(),
+  /** جملهٔ معرفی صفحهٔ واحد (نوشتهٔ مدیر یا پیش‌فرض نوع)؛ بک‌اند قدیمی‌تر ⇒ تهی و فرانت پیش‌فرض می‌گذارد */
+  tagline: z._default(z.string(), ""),
   unit_type: z.enum(["suite", "large_room"]),
   type_label: z.string(),
   floor_number: z.int(),

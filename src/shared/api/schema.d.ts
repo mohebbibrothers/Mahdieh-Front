@@ -2544,6 +2544,8 @@ export type components = {
              * @description شناسهٔ UUIDv7 — مرتب با زمان و غیرقابل‌حدس
              */
             readonly id: string;
+            /** @description جملهٔ معرفی صفحهٔ واحد — نوشتهٔ مدیر یا پیش‌فرض نوع واحد؛ هرگز تهی. */
+            readonly tagline: string;
             /** عنوان */
             title: string;
             readonly type_label: string;
@@ -2592,6 +2594,8 @@ export type components = {
              */
             readonly id: string;
             readonly photos: components["schemas"]["UnitPhoto"][];
+            /** @description جملهٔ معرفی صفحهٔ واحد — نوشتهٔ مدیر یا پیش‌فرض نوع واحد؛ هرگز تهی. */
+            readonly tagline: string;
             /** عنوان */
             title: string;
             readonly type_label: string;

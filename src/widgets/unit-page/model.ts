@@ -27,6 +27,17 @@ export function codeFromPath(pathname: string): string | null {
 
 export const WEEK = 7;
 
+/** همان پیش‌فرض‌های سرور (‎UnitType.default_tagline‎) — فقط برای بک‌اند قدیمی‌تری که ‎tagline‎ ندارد. */
+const DEFAULT_TAGLINE: Record<"suite" | "large_room", string> = {
+  suite: "حریمی دنج و خانوادگی، برای آسودن میان زیارت‌ها",
+  large_room: "فضایی جادار برای همسفران، تا کنار هم از خستگی راه بیاسایید",
+};
+
+/** جملهٔ معرفی بالای عنوان: نوشتهٔ مدیر، وگرنه پیش‌فرض نوع واحد (هرگز تهی). */
+export function unitTagline(unit: { tagline: string; unit_type: "suite" | "large_room" }): string {
+  return unit.tagline.replace(/\s+/g, " ").trim() || DEFAULT_TAGLINE[unit.unit_type];
+}
+
 /** نخستین روز هفتهٔ نمایش: روز سفر (اگر هست) وگرنه امروز؛ هرگز پیش از امروز یا بیرون از افق. */
 export function weekStart(day: string | null, today: string, horizonDays: number): string {
   const max = addDays(today, Math.max(0, horizonDays - WEEK + 1));

@@ -108,10 +108,15 @@ export function FeatureDialog({
     >
       {feature ? (
         <div className="ud-explain">
-          <span className="ud-explain__icon" aria-hidden="true">
-            <Icon name={featureIcon(feature.code)} size={28} />
-          </span>
-          <p>این مورد در امکانات ثبت‌شدهٔ {unitTitle} آمده است.</p>
+          <div className="ud-explain__head">
+            <span className="ud-explain__icon" aria-hidden="true">
+              <Icon name={featureIcon(feature.code)} size={20} />
+            </span>
+            <p>
+              <strong>این امکان برای همین واحد ثبت شده است.</strong>
+              <small>{feature.is_highlight ? "از امکانات شاخص این واحد" : "طبق فهرست امکانات ثبت‌شده در مهدیه"}</small>
+            </p>
+          </div>
           {feature.note ? (
             <p className="ud-explain__note">
               <Icon name="info" size={16} />
@@ -133,6 +138,7 @@ export function FeatureDialog({
             </>
           ) : null}
           <p className="ud-explain__fine">
+            <Icon name="info" size={14} />
             از این داده، تعداد دستگاه، محل دقیق، ساعت خدمت یا کیفیت سرویس نتیجه‌گیری نمی‌شود.
           </p>
         </div>

@@ -1564,19 +1564,128 @@
     flex: none;
     margin-top: 4px;
   }
-  .ut-form__toggle {
-    display: flex;
+  /* کاشی کلیدی «تاریخم قطعی نیست»: نشانه + عنوان + توضیح + کلید لغزان (role=switch، راست‌به‌چپ) */
+  .ut-flex {
+    position: relative;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: 10px;
-    min-height: 44px;
-    font-size: 0.8125rem;
+    gap: 12px;
+    min-height: 64px;
+    padding: 11px 14px;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 14px;
+    background: var(--color-canvas);
     cursor: pointer;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
   }
-  .ut-form__toggle input {
-    width: 19px;
-    height: 19px;
+  .ut-flex:hover {
+    border-color: color-mix(in oklab, var(--color-brand) 45%, var(--color-border-strong));
+  }
+  .ut-flex:has(.ut-flex__input:checked) {
+    border-color: color-mix(in oklab, var(--color-brand) 60%, transparent);
+    background: var(--color-brand-tint);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-brand) 22%, transparent);
+  }
+  .ut-flex__icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: var(--color-sunken);
+    color: var(--color-text-muted);
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+  .ut-flex:has(.ut-flex__input:checked) .ut-flex__icon {
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+  }
+  .ut-flex__text {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+  .ut-flex__title {
+    color: var(--color-text);
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.6;
+  }
+  .ut-flex__sub {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    line-height: 1.7;
+  }
+  /* ورودی واقعی نامرئی است ولی در دسترس صفحه‌خوان و صفحه‌کلید می‌ماند؛ ظاهر را ‎.ut-flex__track‎ می‌کشد */
+  .ut-flex__input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     margin: 0;
-    accent-color: var(--color-cta);
+    opacity: 0;
+    cursor: pointer;
+    appearance: none;
+  }
+  .ut-flex__track {
+    position: relative;
+    width: 44px;
+    height: 26px;
+    flex: none;
+    border-radius: 999px;
+    background: var(--color-border-strong);
+    transition: background-color 0.2s ease;
+  }
+  .ut-flex__track::after {
+    position: absolute;
+    top: 3px;
+    inset-inline-start: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-raised);
+    box-shadow: 0 1px 3px var(--color-shadow-strong);
+    content: "";
+    transition: inset-inline-start 0.24s cubic-bezier(0.3, 1.4, 0.5, 1);
+  }
+  .ut-flex__input:checked ~ .ut-flex__track {
+    background: var(--color-brand);
+  }
+  .ut-flex__input:checked ~ .ut-flex__track::after {
+    inset-inline-start: 21px;
+  }
+  .ut-flex__input:focus-visible ~ .ut-flex__track {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+  }
+  /* تیره: گوی روشنِ کرم (نه سفید خام) تا روی مسیر سبز و خاکستری هر دو خوانا بماند */
+  :root[data-theme="dark"] .ut-flex__track::after {
+    background: var(--color-text);
+  }
+  :root[data-easy="true"] .ut-flex__track {
+    width: 52px;
+    height: 30px;
+  }
+  :root[data-easy="true"] .ut-flex__track::after {
+    width: 24px;
+    height: 24px;
+  }
+  :root[data-easy="true"] .ut-flex__input:checked ~ .ut-flex__track::after {
+    inset-inline-start: 25px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ut-flex,
+    .ut-flex__icon,
+    .ut-flex__track,
+    .ut-flex__track::after {
+      transition: none;
+    }
   }
   .ut-days {
     display: grid;
