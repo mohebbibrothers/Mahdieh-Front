@@ -12,7 +12,7 @@ import {
 
 /** همان الگوی آزمون نگهبان e2e: قالب‌های قدیمی جنگو (apps/web، apps/core) و پیشخوان مدیریت. */
 const LEGACY =
-  /^(?:https?:\/\/[^/]+)?\/(?:board|book|calendar|demo|feedback|help|login|logout|my|profile|units\/[\w-]+|verify|django-admin)(?:[/?#]|$)/;
+  /^(?:https?:\/\/[^/]+)?\/(?:board|book|calendar|demo|feedback|help\/guide|login|logout|my|profile|units\/[\w-]+|verify|django-admin)(?:[/?#]|$)/;
 const KEYS = Object.keys(DEST) as DestKey[];
 const IDS = Object.keys(PAGES) as PageId[];
 const snapshot = structuredClone(PAGES);
@@ -57,7 +57,7 @@ describe("نقشهٔ مقصدها", () => {
     for (const id of IDS) PAGES[id] = { ...PAGES[id], ready: true };
     expect(destHref("calendar")).toBe("/calendar/");
     expect(destHref("calendarFull")).toBe("/calendar/");
-    expect(destHref("contact")).toBe("/guide/#contact-desk");
+    expect(destHref("contact")).toBe("/help/#contact-desk");
     expect(destHref("booking", { unit: "A1", day: "2026-10-23", period: "day", cells: "4", guests: "4" })).toBe(
       "/booking/?unit=A1&day=2026-10-23&period=day&cells=4&guests=4",
     );

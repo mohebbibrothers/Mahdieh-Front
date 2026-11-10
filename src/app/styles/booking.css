@@ -2202,11 +2202,12 @@
     font-family: var(--font-vazirmatn-print), Tahoma, sans-serif !important;
     font-variation-settings: normal !important;
   }
-  /* هر چه گواهی را در بر ندارد حذف (نه نامرئی ⇒ بی برگ سفید اضافه)؛ پوسته‌های دربرگیرنده بی‌حاشیه */
-  body *:not(.cert, .cert *, :has(.cert)) {
+  /* فقط وقتی برگهٔ گواهی در صفحه است (وگرنه چاپ هر صفحهٔ دیگر — راهنما، واحد — برگ سفید می‌داد):
+     هر چه گواهی را در بر ندارد حذف (نه نامرئی ⇒ بی برگ سفید اضافه)؛ پوسته‌های دربرگیرنده بی‌حاشیه */
+  body:has(.cert) *:not(.cert, .cert *, :has(.cert)) {
     display: none !important;
   }
-  body :has(.cert) {
+  body:has(.cert) :has(.cert) {
     position: static !important;
     width: auto !important;
     max-width: none !important;

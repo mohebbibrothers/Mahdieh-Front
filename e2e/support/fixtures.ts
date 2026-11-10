@@ -18,6 +18,7 @@ const DEFAULTS: Record<string, string> = {
   "/api/v1/calendar": "calendar",
   "/api/v1/property": "property",
   "/api/v1/help": "help",
+  "/api/v1/prayer-times": "prayer-times",
   "/api/v1/occasions": "occasions",
   "/api/v1/meta": "meta",
   "/api/v1/units": "units",

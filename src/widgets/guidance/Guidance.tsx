@@ -4,6 +4,7 @@ import { configQuery, helpQuery } from "@/shared/api/queries";
 import { readPolicies } from "@/shared/api/policies";
 import { durationLabel, faDigits } from "@/shared/lib/fa";
 import { Icon, type IconName } from "@/shared/ui/Icon";
+import { destHref } from "@/shared/config/destinations";
 import { PageLink } from "@/shared/ui/PageLink";
 import { HelpCenter } from "./HelpCenter";
 
@@ -78,7 +79,8 @@ export function Guidance() {
               </div>
             ))
           : null}
-        <HelpCenter help={help.data} />
+        {/* با انتشار P-08 «راهنمای کامل» جای پنجرهٔ مرکز راهنما را می‌گیرد (یک ورودی، نه دو). */}
+        {destHref("guideFull") ? null : <HelpCenter help={help.data} />}
         <PageLink to="guideFull" className="section-link faq-link">
           پرسش دیگری دارید؟ راهنمای کامل زائر <Icon name="arrow-left" size={16} />
         </PageLink>

@@ -1,10 +1,14 @@
 import { queryOptions } from "@tanstack/react-query";
-import { ApiError, api, unwrap } from "./client";
+import { ApiError, api, toApiError, unwrap } from "./client";
+import type { components } from "./schema";
+
+type S_HelpFeedback = components["schemas"]["HelpFeedbackRequest"];
 import {
   calendarSchema,
   calendarWindowsSchema,
   configSchema,
   helpSchema,
+  prayerTimesSchema,
   metaSchema,
   occasionsSchema,
   propertySchema,
@@ -33,6 +37,7 @@ export const qk = {
     ["calendar", "windows", guests, minCells, from ?? "", period ?? ""] as const,
   occasions: (from: string, to: string) => ["occasions", from, to] as const,
   help: ["help"] as const,
+  prayer: (days: number) => ["prayer-times", days] as const,
   session: ["session"] as const,
   standing: ["me", "standing"] as const,
   reservations: (scope: "upcoming" | "past" | "all") => ["me", "reservations", scope] as const,
@@ -141,6 +146,25 @@ export const helpQuery = queryOptions({
   queryFn: ({ signal }) => unwrap(api.GET("/api/v1/help", { signal }), (d) => helpSchema.parse(d)),
   staleTime: 10 * 60_000,
 });
+
+/** اوقات شرعی به افق حرم (P-08) — کش بک‌اند ۳۰ دقیقه؛ روز جاری را صفحه از ساعت تهران برمی‌گزیند. */
+export const prayerTimesQuery = (days = 8) =>
+  queryOptions({
+    queryKey: qk.prayer(days),
+    queryFn: ({ signal }) =>
+      unwrap(api.GET("/api/v1/prayer-times", { params: { query: { days } }, signal }), (d) =>
+        prayerTimesSchema.parse(d),
+      ),
+    staleTime: 30 * 60_000,
+  });
+
+/** رأی بی‌نام «این پاسخ مفید بود؟» — ۲۰۴ بی‌بدنه. */
+export async function sendHelpFeedback(slug: string, helpful: boolean): Promise<void> {
+  const { response, error } = await api.POST("/api/v1/help/feedback", {
+    body: { slug: slug as S_HelpFeedback["slug"], helpful },
+  });
+  if (!response.ok) throw toApiError(response.status, error);
+}
 
 /** نشست: ۴۰۱ یعنی مهمان (null)، نه خطا. */
 /**

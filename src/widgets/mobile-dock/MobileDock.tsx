@@ -17,7 +17,7 @@ const SPY = ["availability"] as const;
 export function MobileDock({
   page = "home",
 }: {
-  page?: "home" | "booking" | "portal" | "calendar" | "units" | "unit";
+  page?: "home" | "booking" | "portal" | "calendar" | "units" | "unit" | "help";
 }) {
   const spied = useActiveSection(SPY, "home");
   const onHome = page === "home";

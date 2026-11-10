@@ -408,6 +408,26 @@ export type paths = {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/help/feedback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * بازخورد یک پاسخ راهنما
+         * @description یک رأی؛ نشانهٔ ناشناخته ⇒ ۴۲۲ (رأی بی‌صاحب ذخیره نمی‌شود).
+         */
+        post: operations["help_feedback_create"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -560,6 +580,26 @@ export type paths = {
          * @description بازگرداندن مناسبت‌های بازه؛ پیش‌فرض شش ماه آینده.
          */
         get: operations["occasions_list"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/prayer-times": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * اوقات شرعی به افق مشهد
+         * @description اوقات امروز و روزهای پیش رو (کش کوتاه؛ فرانت روز جاری را خودش برمی‌گزیند).
+         */
+        get: operations["prayer_times_retrieve"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1536,20 +1576,117 @@ export type components = {
         };
         /** @description پاسخ میز راهنما (سند). */
         Help: {
-            categories: {
-                [key: string]: unknown;
-            }[];
-            contact: {
-                [key: string]: string;
-            };
-            matches: {
-                [key: string]: unknown;
-            }[];
+            categories: components["schemas"]["HelpCategory"][];
+            contact: components["schemas"]["HelpContact"];
+            /** @description نشانهٔ پرسش‌های داده‌ی ساخت‌یافتهٔ FAQPage */
+            faq: string[];
+            matches: components["schemas"]["HelpMatch"][];
             note: string;
             query: string;
-            quick_steps: {
-                [key: string]: unknown;
-            }[];
+            quick_steps: components["schemas"]["HelpQuickStep"][];
+            rules: components["schemas"]["HelpRule"][];
+            staff_checklist: components["schemas"]["HelpChecklist"][];
+            stats: components["schemas"]["HelpStats"];
+            /** @description تاریخ امروز (جلالی، با روز هفته) — نشانهٔ برگ چاپی */
+            today: string;
+            values: {
+                [key: string]: string;
+            };
+        };
+        /** @description دکمهٔ اقدام پایان پاسخ: برچسب + هدف معنایی. */
+        HelpAction: {
+            label: string;
+            target: string;
+        };
+        /** @description یک دستهٔ راهنما با پرسش‌هایش. */
+        HelpCategory: {
+            icon: string;
+            items: components["schemas"]["HelpItem"][];
+            slug: string;
+            summary: string;
+            title: string;
+        };
+        /** @description یک گام چک‌لیست میز پذیرش (برگ چاپی). */
+        HelpChecklist: {
+            text: string;
+            title: string;
+        };
+        /** @description تماس پذیرش — رشتهٔ خالی یعنی «تنظیم نشده» (هرگز شمارهٔ ساختگی). */
+        HelpContact: {
+            address: string;
+            phone: string;
+            phone_display: string;
+        };
+        /** @description رأی بی‌نام دربارهٔ یک پاسخ. */
+        HelpFeedbackRequest: {
+            helpful: boolean;
+            /**
+             * @description * `signup` - signup
+             *     * `profile` - profile
+             *     * `otp-problem` - otp-problem
+             *     * `what-to-bring` - what-to-bring
+             *     * `how-to-book` - how-to-book
+             *     * `halfday` - halfday
+             *     * `limits` - limits
+             *     * `horizon` - horizon
+             *     * `gap` - gap
+             *     * `guests` - guests
+             *     * `cancel` - cancel
+             *     * `late-cancel` - late-cancel
+             *     * `move` - move
+             *     * `no-show` - no-show
+             *     * `join` - join
+             *     * `offer` - offer
+             *     * `fairness` - fairness
+             *     * `arrival` - arrival
+             *     * `certificate` - certificate
+             *     * `units` - units
+             *     * `cleaning` - cleaning
+             *     * `sms-missing` - sms-missing
+             *     * `wrong-booking` - wrong-booking
+             *     * `contact` - contact
+             *     * `feedback` - feedback
+             * @enum {string}
+             */
+            slug: "signup" | "profile" | "otp-problem" | "what-to-bring" | "how-to-book" | "halfday" | "limits" | "horizon" | "gap" | "guests" | "cancel" | "late-cancel" | "move" | "no-show" | "join" | "offer" | "fairness" | "arrival" | "certificate" | "units" | "cleaning" | "sms-missing" | "wrong-booking" | "contact" | "feedback";
+        };
+        /** @description یک پرسش راهنما (متن‌ها پرشده از سیاست زنده). */
+        HelpItem: {
+            action: components["schemas"]["HelpAction"] | null;
+            answer: string;
+            question: string;
+            related: string[];
+            slug: string;
+            steps: string[];
+            tags: string[];
+        };
+        /** @description یک نتیجهٔ جست‌وجو با امتیاز و برش متن. */
+        HelpMatch: {
+            category: string;
+            item: components["schemas"]["HelpItem"];
+            score: number;
+            snippet: string;
+        };
+        /** @description یک گام «رزرو در چهار حرکت» (نشان از سیاست زنده). */
+        HelpQuickStep: {
+            badge: string;
+            icon: string;
+            target: string;
+            text: string;
+            title: string;
+        };
+        /** @description یک ردیف جدول «قواعد اقامت» (زنده از سامانه). */
+        HelpRule: {
+            key: string;
+            label: string;
+            value: string;
+        };
+        /** @description شمار خلاصهٔ راهنما. */
+        HelpStats: {
+            categories: number;
+            contact_ready: boolean;
+            questions: number;
+            steps: number;
         };
         /** @description کل پاسخ ``GET /api/v1/staff/insights``. */
         Insights: {
@@ -1976,6 +2113,46 @@ export type components = {
             updated_at: string | null;
             value: unknown;
             version: number;
+        };
+        /** @description اوقات یک روز. */
+        PrayerDay: {
+            /** Format: date */
+            date: string;
+            /** @description تاریخ جلالی با روز هفته */
+            label: string;
+            slots: components["schemas"]["PrayerSlot"][];
+        };
+        /** @description یک آیین حرم وابسته به اوقات (مثل نقاره‌خانه). */
+        PrayerRitual: {
+            text: string;
+            title: string;
+        };
+        /** @description یک وقت شرعی. */
+        PrayerSlot: {
+            /**
+             * Format: date-time
+             * @description زمان با منطقهٔ تهران (گردشده به دقیقه)
+             */
+            at: string;
+            /**
+             * @description * `fajr` - fajr
+             *     * `sunrise` - sunrise
+             *     * `dhuhr` - dhuhr
+             *     * `sunset` - sunset
+             *     * `maghrib` - maghrib
+             *     * `midnight` - midnight
+             * @enum {string}
+             */
+            key: "fajr" | "sunrise" | "dhuhr" | "sunset" | "maghrib" | "midnight";
+            label: string;
+        };
+        /** @description اوقات شرعی چند روز پیاپی به افق مشهد. */
+        PrayerTimes: {
+            city: string;
+            days: components["schemas"]["PrayerDay"][];
+            method: string;
+            naqqareh: components["schemas"]["PrayerRitual"];
+            note: string;
         };
         /** @description فشار پیش‌رو — چند روز خالی است و چند روز پُر؛ مبنای تصمیم پذیرش. */
         Pressure: {
@@ -4552,6 +4729,28 @@ export interface operations {
             };
         };
     };
+    help_feedback_create: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HelpFeedbackRequest"];
+            };
+        };
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     me_retrieve: {
         parameters: {
             query?: never;
@@ -5111,6 +5310,28 @@ export interface operations {
                     } & {
                         [key: string]: unknown;
                     };
+                };
+            };
+        };
+    };
+    prayer_times_retrieve: {
+        parameters: {
+            query?: {
+                /** @description شمار روزها از امروز (۱ تا 14؛ پیش‌فرض 7) */
+                days?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PrayerTimes"];
                 };
             };
         };

@@ -1,6 +1,7 @@
 "use client";
 import { useState, type ReactNode } from "react";
 import type { ReservationStatus } from "@/shared/api/schemas";
+import { copyText } from "@/shared/lib/clipboard";
 import { faDigits } from "@/shared/lib/fa";
 import { Icon, type IconName } from "@/shared/ui/Icon";
 import { toast } from "@/shared/ui/toast";
@@ -36,32 +37,6 @@ export function StatusPill({ status, label }: { status: ReservationStatus | unde
       {label}
     </span>
   );
-}
-
-/** کپی امن (HTTPS ⇒ ‎Clipboard API‎؛ وگرنه ‎execCommand‎) با بازخورد «کپی شد». */
-export async function copyText(text: string): Promise<boolean> {
-  try {
-    if (window.isSecureContext && "clipboard" in navigator) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-  } catch {
-    /* ادامه با روش جایگزین */
-  }
-  const area = document.createElement("textarea");
-  area.value = text;
-  area.setAttribute("readonly", "");
-  area.className = "sr-only";
-  document.body.append(area);
-  area.select();
-  let ok = false;
-  try {
-    ok = document.execCommand("copy");
-  } catch {
-    ok = false;
-  }
-  area.remove();
-  return ok;
 }
 
 export function CopyButton({ text, label, className }: { text: string; label: string; className?: string }) {

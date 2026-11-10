@@ -39,7 +39,7 @@ export function HelpCenter({ help }: { help: Help | undefined }) {
       items: q ? c.items.filter((i) => norm(`${i.question} ${i.answer}`).includes(q)) : c.items,
     }))
     .filter((c) => c.items.length > 0);
-  const contact = help?.contact ?? {};
+  const contact = help?.contact ?? { phone: "", phone_display: "", address: "" };
   const phone = contact.phone ?? "";
 
   return (

@@ -34,7 +34,7 @@ export const PAGES: Record<PageId, PageInfo> = {
   "P-04": { title: "تقویم موجودی", path: "/calendar/", ready: true },
   "P-05": { title: "تکمیل و صدور رزرو", path: "/booking/", ready: true },
   "P-07": { title: "پرتال زائر و پیگیری", path: "/portal/", ready: true },
-  "P-08": { title: "راهنمای زائر و احکام", path: "/guide/", ready: false },
+  "P-08": { title: "راهنمای زائر و احکام", path: "/help/", ready: true },
 };
 
 type Intent = {

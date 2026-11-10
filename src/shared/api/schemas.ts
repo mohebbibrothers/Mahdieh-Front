@@ -435,21 +435,61 @@ const helpItem = z.object({
   slug: z.string(),
   question: z.string(),
   answer: z.string(),
-  steps: z._default(z.array(z.string()), []),
-  tags: z._default(z.array(z.string()), []),
-  action: z.exactOptional(z.nullable(z.object({ label: z.string(), target: z.string() }))),
-  related: z._default(z.array(z.string()), []),
-});
+  steps: z.array(z.string()),
+  tags: z.array(z.string()),
+  action: z.nullable(z.object({ label: z.string(), target: z.string() })),
+  related: z.array(z.string()),
+}) satisfies z.ZodMiniType<S["HelpItem"]>;
+const helpCategory = z.object({
+  slug: z.string(),
+  title: z.string(),
+  icon: z.string(),
+  summary: z.string(),
+  items: z.array(helpItem),
+}) satisfies z.ZodMiniType<S["HelpCategory"]>;
+/** میز راهنما (P-08): پرسش‌ها، جدول قواعد زنده، چک‌لیست پذیرش، آمار و تماس — همه از ‎/help‎. */
 export const helpSchema = z.object({
-  categories: z.array(
-    z.object({ slug: z.string(), title: z.string(), icon: z.string(), summary: z.string(), items: z.array(helpItem) }),
+  query: z.string(),
+  matches: z.array(z.object({ item: helpItem, category: z.string(), score: z.number(), snippet: z.string() })),
+  categories: z.array(helpCategory),
+  quick_steps: z.array(
+    z.object({ icon: z.string(), title: z.string(), text: z.string(), target: z.string(), badge: z.string() }),
   ),
-  quick_steps: z.array(z.object({ icon: z.string(), title: z.string(), text: z.string(), target: z.string() })),
-  contact: z.record(z.string(), z.string()),
+  rules: z.array(z.object({ key: z.string(), label: z.string(), value: z.string() })),
+  staff_checklist: z.array(z.object({ title: z.string(), text: z.string() })),
+  values: z.record(z.string(), z.string()),
+  stats: z.object({
+    categories: z.int(),
+    questions: z.int(),
+    steps: z.int(),
+    contact_ready: z.boolean(),
+  }),
+  faq: z.array(z.string()),
+  today: z.string(),
+  contact: z.object({ phone: z.string(), phone_display: z.string(), address: z.string() }),
   note: z.string(),
-});
+}) satisfies z.ZodMiniType<S["Help"]>;
 export type Help = z.infer<typeof helpSchema>;
 export type HelpItem = z.infer<typeof helpItem>;
+export type HelpCategory = z.infer<typeof helpCategory>;
+
+export const prayerKey = z.enum(["fajr", "sunrise", "dhuhr", "sunset", "maghrib", "midnight"]);
+export type PrayerKey = z.infer<typeof prayerKey>;
+/** اوقات شرعی به افق حرم (محاسبهٔ بک‌اند) + آیین نقاره‌خانه. */
+export const prayerTimesSchema = z.object({
+  city: z.string(),
+  method: z.string(),
+  note: z.string(),
+  days: z.array(
+    z.object({
+      date: z.string(),
+      label: z.string(),
+      slots: z.array(z.object({ key: prayerKey, label: z.string(), at: z.string() })),
+    }),
+  ),
+  naqqareh: z.object({ title: z.string(), text: z.string() }),
+}) satisfies z.ZodMiniType<S["PrayerTimes"]>;
+export type PrayerTimes = z.infer<typeof prayerTimesSchema>;
 
 export const metaSchema = z.object({
   service: z.string(),
