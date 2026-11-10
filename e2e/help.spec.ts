@@ -76,6 +76,8 @@ test.describe("P-08 راهنمای زائر", () => {
   test("جست‌وجو: یکسان‌سازی عربی، برجسته‌سازی، شمار دسته‌ها، نشانی قابل اشتراک و حالت تهی", async ({ page }) => {
     await page.goto("/help/");
     const input = page.getByRole("searchbox", { name: "جست‌وجو در پرسش‌ها و پاسخ‌ها" });
+    // داده رسیده و صفحه هیدراته است (نوشتهٔ پیش از هیدراته‌شدن جداگانه در آزمون بعدی سنجیده می‌شود)
+    await expect(page.locator("#hp-search-count")).toHaveText("۲۵ پرسش در دسترس");
     await input.fill("كد"); // «ك» عربی
     await expect(page.locator(".hp-faq")).toHaveCount(8);
     await expect(page.locator(".hp-faq mark").first()).toContainText("کد");
@@ -109,6 +111,22 @@ test.describe("P-08 راهنمای زائر", () => {
     await expect(input).toBeFocused();
     await input.press("Escape");
     await expect(input).toHaveValue("");
+  });
+
+  test("نوشتهٔ پیش از هیدراته‌شدن گم نمی‌شود (اینترنت کند)", async ({ page }) => {
+    let release!: () => void;
+    const gate = new Promise<void>((r) => (release = r));
+    // جاوااسکریپت صفحه تا تایپ کاربر نگه داشته می‌شود ⇒ تایپ روی HTML ایستا رخ می‌دهد
+    await page.route(/\/_next\/static\/chunks\/.*\.js$/, async (route) => {
+      await gate;
+      await route.continue();
+    });
+    await page.goto("/help/", { waitUntil: "domcontentloaded" });
+    await page.locator(".hp-search__input").fill("کلید");
+    release();
+    await expect(page.locator("#hp-search-count")).toHaveText("۳ پاسخ یافت شد");
+    await expect(page.locator(".hp-faq")).toHaveCount(3);
+    await expect(page).toHaveURL(/[?&]q=/);
   });
 
   test("آکاردئون: پیوند مستقیم ‎#item-slug‎، پرسش مرتبط، باز و بستن همه و زبانه با صفحه‌کلید", async ({ page }) => {

@@ -64,6 +64,11 @@ function HelpHero({
     e.preventDefault();
     input.current?.focus();
   });
+  // نوشتهٔ پیش از هیدراته‌شدن (اینترنت کند، کاربر تندنویس) گم نشود: پس از سوارشدن به وضعیت جست‌وجو برده می‌شود.
+  useEffect(() => {
+    const typed = input.current?.value ?? "";
+    if (typed && typed !== helpStore.get().q) helpStore.set({ q: typed });
+  }, []);
   useEffect(() => {
     const handler = (e: KeyboardEvent) => onKey(e);
     window.addEventListener("keydown", handler);
