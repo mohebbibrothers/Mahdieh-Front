@@ -9,6 +9,7 @@ import {
   nextSlot,
   normalizeFa,
   pickToday,
+  prayerHint,
   quickTopics,
   readState,
   resolveTarget,
@@ -118,5 +119,14 @@ describe("تابلوی قواعد", () => {
     expect(groups.flatMap((g) => g.rules)).toHaveLength(help.rules.length);
     const extra = groupRules([...help.rules, { key: "future", label: "تازه", value: "۱" }]);
     expect(extra.at(-1)?.rules.at(-1)?.key).toBe("future");
+  });
+});
+
+describe("prayerHint", () => {
+  it("یاد نقاره فقط روزهایی که نقاره‌خانه نواخته می‌شود", () => {
+    expect(prayerHint("sunrise", true)).toBe("پایان وقت نماز صبح · نقارهٔ صبح");
+    expect(prayerHint("sunset", true)).toBe("پایان وقت نماز عصر · نقارهٔ شامگاه");
+    expect(prayerHint("sunrise", false)).toBe("پایان وقت نماز صبح");
+    expect(prayerHint("dhuhr", true)).toBe("آغاز وقت نماز ظهر و عصر");
   });
 });

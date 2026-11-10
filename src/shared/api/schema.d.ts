@@ -2118,8 +2118,12 @@ export type components = {
         PrayerDay: {
             /** Format: date */
             date: string;
+            /** @description تاریخ قمری بر پایهٔ تقویم رسمی ایران، مثل «۳ رجب ۱۴۴۸» */
+            hijri: string;
             /** @description تاریخ جلالی با روز هفته */
             label: string;
+            /** @description نقاره‌خانهٔ حرم در این روز نواخته می‌شود؟ (در محرم و صفر، به احترام عزاداری، نه) */
+            naqqareh: boolean;
             slots: components["schemas"]["PrayerSlot"][];
         };
         /** @description یک آیین حرم وابسته به اوقات (مثل نقاره‌خانه). */

@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import type { Route } from "@playwright/test";
-import { expect, horizontalOverflow, test, type MockApi } from "./support/fixtures";
+import { expect, fixture, horizontalOverflow, test, type MockApi } from "./support/fixtures";
 
 /**
  * P-08 «راهنمای زائر» — همه از ‎/api/v1/help‎ (fixture واقعی بک‌اند: ۶ دسته، ۲۵ پرسش، ۱۴ قاعده، تماس
@@ -20,6 +20,59 @@ function feedbackApi(api: MockApi, status = 204) {
 }
 
 test.describe("P-08 راهنمای زائر", () => {
+  test("نوارهای پیمایش گوشی: دکمهٔ بعدی/قبلی فقط هنگام سرریز، تب کلیک‌شده کامل در دید", async ({ page }, info) => {
+    test.skip(info.project.name !== "mobile", "نوار افقی دسته‌ها فقط در عرض گوشی/تبلت");
+    await page.goto("/help/");
+    const frame = page.locator(".hp-cats-frame");
+    const rail = frame.locator(".hp-cats");
+    await expect(frame).toHaveAttribute("data-overflow", "true");
+    await expect(frame).toHaveAttribute("data-at-start", "true");
+    const next = frame.locator(".rail-frame__btn--next");
+    const prev = frame.locator(".rail-frame__btn--prev");
+    await expect(prev).toBeHidden();
+    await next.click();
+    await expect.poll(() => rail.evaluate((el) => Math.abs(el.scrollLeft))).toBeGreaterThan(100);
+    await expect(prev).toBeVisible();
+    await prev.click();
+    await expect(frame).toHaveAttribute("data-at-start", "true");
+
+    // تبی که نیمه بیرون است با کلیک کامل به دید می‌آید (از زیر دکمه‌ها هم بیرون)
+    const last = frame.getByRole("tab").last();
+    await last.click({ force: true });
+    await expect(last).toHaveAttribute("aria-selected", "true");
+    await expect
+      .poll(() =>
+        last.evaluate((t) => {
+          const r = t.getBoundingClientRect();
+          return r.left >= 0 && r.right <= window.innerWidth;
+        }),
+      )
+      .toBe(true);
+    await expect(frame).toHaveAttribute("data-at-end", "true");
+    await expect(next).toBeHidden();
+    // دکمه‌ها کمک موس/لمس‌اند: بیرون از ترتیب Tab و درخت دسترس‌پذیری
+    await expect(next).toHaveAttribute("tabindex", "-1");
+    expect(await horizontalOverflow(page)).toBeNull();
+  });
+
+  test("محرم و صفر: نقاره‌خانه خاموش ⇒ پیام احترام به‌جای ساعت‌ها و بی برچسب «آیین سنتی»", async ({ page, api }) => {
+    const pt = fixture<{ days: { hijri: string; naqqareh: boolean }[] }>("prayer-times");
+    pt.days.forEach((d, i) => {
+      d.naqqareh = false;
+      d.hijri = `${["۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸"][i]} محرم ۱۴۴۹`;
+    });
+    api.set("/api/v1/prayer-times", { body: pt });
+    await page.goto("/help/");
+    const today = page.locator(".hp-ritual__today");
+    await expect(today).toHaveAttribute("data-silent", "");
+    await expect(today).toContainText("نقاره‌خانه در این روزها خاموش است");
+    await expect(today).toContainText("محرم ۱۴۴۹");
+    await expect(page.locator(".hp-ritual__time")).toHaveCount(0);
+    await expect(page.locator(".hp-slot[data-ritual]")).toHaveCount(0);
+    await expect(page.locator(".hp-slot").nth(1)).toContainText("آغاز روز");
+    await expect(page.locator(".hp-slot").nth(1)).not.toContainText("نقاره");
+  });
+
   test("نمای کامل: سرتیتر، گام‌ها با مقصد درست، قواعد زنده، اوقات شرعی، تماس؛ بی‌سرریز و دسترس‌پذیر", async ({
     page,
   }, info) => {
@@ -53,6 +106,8 @@ test.describe("P-08 راهنمای زائر", () => {
     await expect(page.locator(".hp-prayer__next")).toContainText("تا غروب آفتاب");
     await expect(page.locator(".hp-day")).toHaveCount(7);
     await expect(page.locator(".hp-ritual__today")).toContainText("پیش از طلوع");
+    await expect(page.locator(".hp-ritual__time time")).toHaveCount(2);
+    await expect(page.locator(".hp-prayer__hijri")).toContainText("۹ جمادی‌الاول ۱۴۴۸");
 
     await expect(page.locator("#contact-desk a[href^='tel:']")).toHaveAttribute("href", "tel:05131234567");
     await expect(page.locator("#contact-desk").getByRole("button", { name: "استعلام گواهی اقامت" })).toBeVisible();

@@ -5,8 +5,10 @@ import { prayerTimesQuery } from "@/shared/api/queries";
 import type { PrayerKey } from "@/shared/api/schemas";
 import { faDigits, formatClock, formatDayNumber, formatWeekday, tehranToday } from "@/shared/lib/fa";
 import { useHydratedNow } from "@/shared/lib/use-clock";
+import { revealInRail, useScrollRail } from "@/shared/lib/use-scroll-rail";
 import { Icon } from "@/shared/ui/Icon";
-import { nextSlot, pickToday, PRAYER_HINT, PRAYER_ICON, untilLabel } from "./model";
+import { RailFrame } from "@/shared/ui/RailFrame";
+import { nextSlot, pickToday, PRAYER_ICON, prayerHint, untilLabel } from "./model";
 
 const SLOT_BADGE: Record<PrayerKey, string> = {
   fajr: "سحرگاه",
@@ -16,6 +18,8 @@ const SLOT_BADGE: Record<PrayerKey, string> = {
   maghrib: "شامگاه",
   midnight: "پاس شب",
 };
+/** برچسب طلوع و غروب در روزهایی که نقاره‌خانه خاموش است (محرم و صفر). */
+const QUIET_BADGE: Partial<Record<PrayerKey, string>> = { sunrise: "آغاز روز", sunset: "پایان روز" };
 const DAYS = 8;
 const WEEK = 7;
 
@@ -27,6 +31,7 @@ export function PrayerBoard() {
   const pt = useQuery(prayerTimesQuery(DAYS));
   const now = useHydratedNow(30_000);
   const [picked, setPicked] = useState<string | null>(null);
+  const [attachDays, dayEdges, stepDays] = useScrollRail<HTMLDivElement>();
   const days = pt.data?.days ?? [];
   const todayIso = now ? tehranToday(new Date(now)) : null;
   const from = todayIso ? pickToday(days, todayIso) : 0;
@@ -61,12 +66,16 @@ export function PrayerBoard() {
             <p className="hp-prayer__live">
               <span className="hp-live" aria-hidden="true" />
               <span>
-                افق شرعی {pt.data?.city ?? "مشهد مقدس"} (حرم مطهر رضوی)
+                <span className="hp-prayer__place">افق شرعی {pt.data?.city ?? "مشهد مقدس"} (حرم مطهر رضوی)</span>
                 {selected ? (
-                  <>
-                    {" · "}
+                  <span className="hp-prayer__date">
+                    <span className="hp-prayer__sep">{" · "}</span>
                     <bdi>{selected.label}</bdi>
-                  </>
+                    <span className="hp-prayer__hijri">
+                      {" · "}
+                      <bdi>{selected.hijri}</bdi>
+                    </span>
+                  </span>
                 ) : null}
               </span>
             </p>
@@ -81,28 +90,40 @@ export function PrayerBoard() {
           </div>
 
           {week.length > 1 ? (
-            <div className="hp-days" role="group" aria-label="انتخاب روز" data-float-scroll="" tabIndex={0}>
-              {week.map((d, i) => {
-                const name = i === 0 ? "امروز" : i === 1 ? "فردا" : formatWeekday(d.date);
-                const num = formatDayNumber(d.date);
-                return (
-                  <button
-                    key={d.date}
-                    type="button"
-                    className="hp-day"
-                    aria-pressed={d.date === selected?.date}
-                    onClick={() => setPicked(d.date)}
-                  >
-                    {/* نام دسترس‌پذیر = همان متن دیدنی + بقیهٔ تاریخ (فرمان صوتی «امروز ۱۹» هم کار می‌کند) */}
-                    <span className="hp-day__name">{name}</span>
-                    <span className="hp-day__num">{num}</span>
-                    <span className="sr-only">
-                      {i < 2 ? `، ${d.label}` : ` ${d.label.replace(/^\S+\s+\S+\s*/, "")}`}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
+            <RailFrame edges={dayEdges} onStep={stepDays} className="hp-days-frame">
+              <div
+                ref={attachDays}
+                className="hp-days"
+                role="group"
+                aria-label="انتخاب روز"
+                data-float-scroll=""
+                tabIndex={0}
+              >
+                {week.map((d, i) => {
+                  const name = i === 0 ? "امروز" : i === 1 ? "فردا" : formatWeekday(d.date);
+                  const num = formatDayNumber(d.date);
+                  return (
+                    <button
+                      key={d.date}
+                      type="button"
+                      className="hp-day"
+                      aria-pressed={d.date === selected?.date}
+                      onClick={(e) => {
+                        setPicked(d.date);
+                        revealInRail(e.currentTarget);
+                      }}
+                    >
+                      {/* نام دسترس‌پذیر = همان متن دیدنی + بقیهٔ تاریخ (فرمان صوتی «امروز ۱۹» هم کار می‌کند) */}
+                      <span className="hp-day__name">{name}</span>
+                      <span className="hp-day__num">{num}</span>
+                      <span className="sr-only">
+                        {i < 2 ? `، ${d.label}` : ` ${d.label.replace(/^\S+\s+\S+\s*/, "")}`}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </RailFrame>
           ) : null}
 
           <ol className="hp-slots" aria-busy={pt.isPending || undefined} aria-label="وقت‌های شرعی روز">
@@ -110,21 +131,23 @@ export function PrayerBoard() {
               ? selected.slots.map((s, i) => {
                   const isNext = nextDay?.date === selected.date && next?.[1] === i;
                   const past = now !== null && Date.parse(s.at) <= now;
+                  const ritual = (s.key === "sunrise" || s.key === "sunset") && selected.naqqareh;
+                  const badge = ritual ? SLOT_BADGE[s.key] : (QUIET_BADGE[s.key] ?? SLOT_BADGE[s.key]);
                   return (
                     <li
                       key={s.key}
                       className="hp-slot"
                       data-next={isNext || undefined}
                       data-past={past || undefined}
-                      data-ritual={s.key === "sunrise" || s.key === "sunset" || undefined}
+                      data-ritual={ritual || undefined}
                     >
-                      <span className="hp-slot__badge">{isNext ? "نوبت بعدی" : SLOT_BADGE[s.key]}</span>
+                      <span className="hp-slot__badge">{isNext ? "نوبت بعدی" : badge}</span>
                       <Icon name={PRAYER_ICON[s.key]} size={24} className="hp-slot__icon" />
                       <h3 className="hp-slot__title">{s.label}</h3>
                       <p className="hp-slot__time">
                         <time dateTime={s.at}>{formatClock(s.at)}</time>
                       </p>
-                      <p className="hp-slot__sub">{PRAYER_HINT[s.key]}</p>
+                      <p className="hp-slot__sub">{prayerHint(s.key, selected.naqqareh)}</p>
                     </li>
                   );
                 })
@@ -150,17 +173,34 @@ export function PrayerBoard() {
             <div>
               <h3 className="hp-ritual__title">{pt.data?.naqqareh.title ?? "آیین نقاره‌خانهٔ حرم"}</h3>
               <p className="hp-ritual__text">{pt.data?.naqqareh.text ?? "…"}</p>
-              {sunrise && sunset ? (
-                <p className="hp-ritual__today">
-                  امروز: پیش از طلوع{" "}
-                  <time dateTime={sunrise.at}>
-                    <bdi>{formatClock(sunrise.at)}</bdi>
-                  </time>{" "}
-                  و پیش از غروب{" "}
-                  <time dateTime={sunset.at}>
-                    <bdi>{formatClock(sunset.at)}</bdi>
-                  </time>
-                </p>
+              {today && !today.naqqareh ? (
+                <div className="hp-ritual__today" data-silent="">
+                  <p className="hp-ritual__today-title">نقاره‌خانه در این روزها خاموش است</p>
+                  <p className="hp-ritual__silent">
+                    <bdi className="hp-ritual__hijri">{today.hijri}</bdi>
+                    در ماه‌های محرم و صفر، به احترام ایام عزاداری، نقاره نواخته نمی‌شود.
+                  </p>
+                </div>
+              ) : sunrise && sunset ? (
+                <div className="hp-ritual__today">
+                  <p className="hp-ritual__today-title">نوای نقاره در امروز</p>
+                  <ul className="hp-ritual__times">
+                    <li className="hp-ritual__time">
+                      <Icon name="sunrise" size={20} />
+                      <span className="hp-ritual__time-label">پیش از طلوع</span>
+                      <time dateTime={sunrise.at}>
+                        <bdi>{formatClock(sunrise.at)}</bdi>
+                      </time>
+                    </li>
+                    <li className="hp-ritual__time">
+                      <Icon name="sunset" size={20} />
+                      <span className="hp-ritual__time-label">پیش از غروب</span>
+                      <time dateTime={sunset.at}>
+                        <bdi>{formatClock(sunset.at)}</bdi>
+                      </time>
+                    </li>
+                  </ul>
+                </div>
               ) : null}
             </div>
           </article>

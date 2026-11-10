@@ -173,9 +173,11 @@
   }
 }
 
-/* ورود تدریجی بخش‌ها با «زمان‌بندی وابسته به اسکرول» (بدون JS؛ مرورگر قدیمی ⇒ بی‌حرکت). */
+/* ورود تدریجی بخش‌ها با «زمان‌بندی وابسته به اسکرول» (بدون JS؛ مرورگر قدیمی ⇒ بی‌حرکت).
+   فقط صفحهٔ نمایش: در چاپ/PDF بخش‌هایی که هنوز به دید نیامده‌اند در حالت آغازین (شفاف) می‌ماندند و برگ سفید
+   چاپ می‌شد — و این قاعدهٔ بی‌لایه بر هر اصلاح چاپیِ درون لایه‌ها می‌چربید. */
 @supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
+  @media screen and (prefers-reduced-motion: no-preference) {
     .reveal {
       animation: reveal-in linear both;
       animation-timeline: view();

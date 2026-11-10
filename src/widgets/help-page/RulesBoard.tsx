@@ -1,5 +1,6 @@
 "use client";
 import type { Help } from "@/shared/api/schemas";
+import { loadPrintFonts } from "@/shared/fonts";
 import { Icon } from "@/shared/ui/Icon";
 import { groupRules } from "./model";
 
@@ -47,7 +48,11 @@ export function RulesBoard({ help }: { help: Help | undefined }) {
             : [0, 1, 2].map((i) => <div key={i} className="hp-rules__group hp-skel" aria-hidden="true" />)}
         </div>
         <div className="hp-rules__actions">
-          <button type="button" className="btn btn-secondary" onClick={() => window.print()}>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => void loadPrintFonts().then(() => window.print())}
+          >
             <Icon name="printer" size={18} />
             نسخهٔ چاپی راهنما
           </button>

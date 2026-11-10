@@ -1,14 +1,16 @@
 "use client";
 import Link from "next/link";
-import { Fragment, useEffect, useEffectEvent, useId, useMemo, useRef, useState, type KeyboardEvent } from "react";
+import { Fragment, useEffect, useEffectEvent, useId, useMemo, useState, type KeyboardEvent } from "react";
 import { AccountTrigger } from "@/features/session/AccountButton";
 import { ApiError } from "@/shared/api/client";
 import { sendHelpFeedback } from "@/shared/api/queries";
 import type { Help } from "@/shared/api/schemas";
 import { copyText } from "@/shared/lib/clipboard";
 import { faDigits } from "@/shared/lib/fa";
+import { revealInRail, useScrollRail } from "@/shared/lib/use-scroll-rail";
 import { Icon } from "@/shared/ui/Icon";
 import { toast } from "@/shared/ui/toast";
+import { RailFrame } from "@/shared/ui/RailFrame";
 import {
   ALL,
   CATEGORY_ICON,
@@ -64,7 +66,7 @@ export function FaqDeck({ help, items, loading }: { help: Help | undefined; item
   const bySlug = useMemo(() => new Map(items.map((i) => [i.slug, i])), [items]);
   const openSet = new Set(open);
   const allOpen = visible.length > 0 && visible.every((i) => openSet.has(i.slug));
-  const tabs = useRef<HTMLDivElement>(null);
+  const [attachRail, railEdges, stepRail] = useScrollRail<HTMLDivElement>();
 
   /**
    * یک پرسش را آشکار می‌کند (اگر زیر فیلتر پنهان است، فیلتر برداشته می‌شود)، باز و به آن پیمایش می‌کند.
@@ -107,7 +109,7 @@ export function FaqDeck({ help, items, loading }: { help: Help | undefined; item
 
   const selectTab = (slug: string) => helpStore.set({ cat: slug });
   const onTabKey = (e: KeyboardEvent<HTMLDivElement>) => {
-    const list = [...(tabs.current?.querySelectorAll<HTMLButtonElement>("[role=tab]") ?? [])];
+    const list = [...e.currentTarget.querySelectorAll<HTMLButtonElement>("[role=tab]")];
     const at = list.indexOf(document.activeElement as HTMLButtonElement);
     if (at < 0) return;
     // راست‌به‌چپ: «چپ» یعنی زبانهٔ بعدی.
@@ -145,41 +147,46 @@ export function FaqDeck({ help, items, loading }: { help: Help | undefined; item
           </p>
         </header>
 
-        <div
-          ref={tabs}
-          className="hp-cats"
-          role="tablist"
-          aria-label="دسته‌بندی پرسش‌ها"
-          onKeyDown={onTabKey}
-          data-float-scroll=""
-          tabIndex={-1}
-        >
-          {[{ slug: ALL, title: "همهٔ موضوعات" }, ...categories].map((c) => {
-            const selected = activeCat === c.slug;
-            const n = c.slug === ALL ? matches.length : (counts.get(c.slug) ?? 0);
-            return (
-              <button
-                key={c.slug}
-                type="button"
-                role="tab"
-                id={`hp-tab-${c.slug}`}
-                aria-selected={selected}
-                aria-controls="faq-panel"
-                tabIndex={selected ? 0 : -1}
-                className="hp-cat"
-                data-zero={(help && n === 0) || undefined}
-                onClick={() => selectTab(c.slug)}
-              >
-                <Icon name={c.slug === ALL ? "grid" : (CATEGORY_ICON[c.slug] ?? "info")} size={18} />
-                <span>{c.title}</span>
-                <span className="hp-cat__count">
-                  {help ? faDigits(n) : "…"}
-                  <span className="sr-only"> پرسش</span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
+        <RailFrame edges={railEdges} onStep={stepRail} className="hp-cats-frame">
+          <div
+            ref={attachRail}
+            className="hp-cats"
+            role="tablist"
+            aria-label="دسته‌بندی پرسش‌ها"
+            onKeyDown={onTabKey}
+            data-float-scroll=""
+            tabIndex={-1}
+          >
+            {[{ slug: ALL, title: "همهٔ موضوعات" }, ...categories].map((c) => {
+              const selected = activeCat === c.slug;
+              const n = c.slug === ALL ? matches.length : (counts.get(c.slug) ?? 0);
+              return (
+                <button
+                  key={c.slug}
+                  type="button"
+                  role="tab"
+                  id={`hp-tab-${c.slug}`}
+                  aria-selected={selected}
+                  aria-controls="faq-panel"
+                  tabIndex={selected ? 0 : -1}
+                  className="hp-cat"
+                  data-zero={(help && n === 0) || undefined}
+                  onClick={(e) => {
+                    selectTab(c.slug);
+                    revealInRail(e.currentTarget);
+                  }}
+                >
+                  <Icon name={c.slug === ALL ? "grid" : (CATEGORY_ICON[c.slug] ?? "info")} size={18} />
+                  <span>{c.title}</span>
+                  <span className="hp-cat__count">
+                    {help ? faDigits(n) : "…"}
+                    <span className="sr-only"> پرسش</span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </RailFrame>
 
         <div className="hp-controls">
           <p className="hp-controls__status" role="status">

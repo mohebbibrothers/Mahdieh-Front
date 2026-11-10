@@ -250,14 +250,21 @@ export const PRAYER_ICON: Record<PrayerKey, IconName> = {
 };
 
 /** «اذان»ها نوبت نمازند؛ طلوع/غروب/نیمه‌شب نشانهٔ پایان فرصت‌اند — برای زیرنویس کارت. */
-export const PRAYER_HINT: Record<PrayerKey, string> = {
+const PRAYER_HINT: Record<PrayerKey, string> = {
   fajr: "آغاز وقت نماز صبح",
-  sunrise: "پایان وقت نماز صبح · نقارهٔ صبح",
+  sunrise: "پایان وقت نماز صبح",
   dhuhr: "آغاز وقت نماز ظهر و عصر",
-  sunset: "پایان وقت نماز عصر · نقارهٔ شامگاه",
+  sunset: "پایان وقت نماز عصر",
   maghrib: "آغاز وقت نماز مغرب و عشا",
   midnight: "پایان وقت نماز مغرب و عشا",
 };
+const NAQQAREH_HINT: Partial<Record<PrayerKey, string>> = { sunrise: "نقارهٔ صبح", sunset: "نقارهٔ شامگاه" };
+
+/** توضیح زیر هر وقت؛ یادِ نقاره فقط روزهایی که نقاره‌خانه نواخته می‌شود (نه محرم و صفر — ‎naqqareh‎ بک‌اند). */
+export function prayerHint(key: PrayerKey, naqqareh: boolean): string {
+  const extra = naqqareh ? NAQQAREH_HINT[key] : undefined;
+  return extra ? `${PRAYER_HINT[key]} · ${extra}` : PRAYER_HINT[key];
+}
 
 type PrayerDay = PrayerTimes["days"][number];
 

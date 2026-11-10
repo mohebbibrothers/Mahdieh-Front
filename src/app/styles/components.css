@@ -808,3 +808,133 @@
     transform: translateY(12px) scale(0.96);
   }
 }
+
+/* ── قاب نوار پیمایش افقی (RailFrame) ─────────────────────────────────────
+   دو دکمهٔ گرد در دو لبه، فقط هنگام سرریز و فقط سمتی که جای رفتن دارد؛ لبهٔ همان سمت نرم محو می‌شود
+   تا «ادامه دارد» بی‌کلمه دیده شود. نوار خودش بی‌اسکرول‌بار است (کشیدن، چرخ، لمس و جهت‌نماها کار می‌کنند). */
+@property --rail-fade-s {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --rail-fade-e {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@layer components {
+  .rail-frame {
+    --rail-fade: 64px;
+    position: relative;
+    min-width: 0;
+    transition:
+      --rail-fade-s 0.25s var(--ease-out),
+      --rail-fade-e 0.25s var(--ease-out);
+  }
+  .rail-frame[data-overflow]:not([data-at-start]) {
+    --rail-fade-s: var(--rail-fade);
+  }
+  .rail-frame[data-overflow]:not([data-at-end]) {
+    --rail-fade-e: var(--rail-fade);
+  }
+  .rail-frame > :not(.rail-frame__btn) {
+    scrollbar-width: none;
+    mask-image: linear-gradient(
+      to left,
+      transparent 0,
+      #000 var(--rail-fade-s),
+      #000 calc(100% - var(--rail-fade-e)),
+      transparent 100%
+    );
+  }
+  .rail-frame > :not(.rail-frame__btn):dir(ltr) {
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 var(--rail-fade-s),
+      #000 calc(100% - var(--rail-fade-e)),
+      transparent 100%
+    );
+  }
+  .rail-frame > :not(.rail-frame__btn)::-webkit-scrollbar {
+    display: none;
+  }
+  .rail-frame__btn {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    background: color-mix(in oklab, var(--color-surface) 92%, transparent);
+    backdrop-filter: blur(6px);
+    color: var(--color-brand-ink);
+    box-shadow:
+      0 6px 18px color-mix(in oklab, var(--color-text) 14%, transparent),
+      0 1px 2px color-mix(in oklab, var(--color-text) 10%, transparent);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    translate: 0 -50%;
+    scale: 0.8;
+    transition:
+      opacity 0.22s var(--ease-out),
+      scale 0.22s var(--ease-out),
+      background 0.2s,
+      color 0.2s,
+      border-color 0.2s,
+      visibility 0s linear 0.22s;
+  }
+  .rail-frame__btn--prev {
+    inset-inline-start: var(--rail-btn-inset, 0px);
+  }
+  .rail-frame__btn--next {
+    inset-inline-end: var(--rail-btn-inset, 0px);
+  }
+  .rail-frame[data-overflow]:not([data-at-start]) > .rail-frame__btn--prev,
+  .rail-frame[data-overflow]:not([data-at-end]) > .rail-frame__btn--next {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    scale: 1;
+    transition-delay: 0s;
+  }
+  .rail-frame__btn:hover {
+    border-color: var(--color-brand);
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+  }
+  .rail-frame__btn:active {
+    scale: 0.92;
+  }
+  /* اشاره‌گر ظریف به جهت حرکت هنگام نشانه‌روی */
+  .rail-frame__btn--prev:hover > svg {
+    translate: 2px 0;
+  }
+  .rail-frame__btn--next:hover > svg {
+    translate: -2px 0;
+  }
+  .rail-frame__btn > svg {
+    transition: translate 0.2s var(--ease-out);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rail-frame,
+    .rail-frame__btn,
+    .rail-frame__btn > svg {
+      transition-duration: 1ms;
+    }
+  }
+  @media print {
+    .rail-frame__btn {
+      display: none;
+    }
+    .rail-frame > :not(.rail-frame__btn) {
+      mask-image: none;
+    }
+  }
+}

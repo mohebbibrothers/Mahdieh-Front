@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useEffectEvent, useMemo, useRef } from "react";
 import { AccountTrigger } from "@/features/session/AccountButton";
 import { helpQuery } from "@/shared/api/queries";
+import { loadPrintFonts } from "@/shared/fonts";
 import type { Help } from "@/shared/api/schemas";
 import { faDigits } from "@/shared/lib/fa";
 import { Icon } from "@/shared/ui/Icon";
@@ -73,6 +74,11 @@ function HelpHero({
     const handler = (e: KeyboardEvent) => onKey(e);
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
+  }, []);
+  // فونت ایستای چاپی در زمان بیکاری (Ctrl+P هم برگی با حروف درست بسازد؛ فونت متغیر در PDF به‌هم می‌ریزد)
+  useEffect(() => {
+    const warm = window.setTimeout(() => void loadPrintFonts(), 1500);
+    return () => window.clearTimeout(warm);
   }, []);
 
   const pill = failed
@@ -168,7 +174,9 @@ function HelpHero({
             </p>
           ) : null}
           <div className="hp-topics">
-            <span className="hp-topics__label">موضوعات پرتکرار:</span>
+            <span className="hp-topics__label">
+              موضوعات پرتکرار<span className="hp-topics__colon">:</span>
+            </span>
             {topics.map((t) => (
               <button
                 key={t.label}

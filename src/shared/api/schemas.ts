@@ -484,6 +484,10 @@ export const prayerTimesSchema = z.object({
     z.object({
       date: z.string(),
       label: z.string(),
+      /** تاریخ قمری رسمی ایران (همان جدول مناسبت‌های تقویم). */
+      hijri: z.string(),
+      /** نقاره در این روز نواخته می‌شود؟ (محرم و صفر: نه) */
+      naqqareh: z.boolean(),
       slots: z.array(z.object({ key: prayerKey, label: z.string(), at: z.string() })),
     }),
   ),
