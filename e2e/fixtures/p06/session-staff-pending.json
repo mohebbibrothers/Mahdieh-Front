@@ -1,0 +1,22 @@
+{
+  "authenticated": true,
+  "profile": {
+    "id": "01a1c9c7-9e8a-7d44-a120-e83cae546d1a",
+    "phone_masked": "+989***0003",
+    "first_name": "حسن",
+    "last_name": "کریمی",
+    "display_name": "حسن کریمی",
+    "province": "khorasan_razavi",
+    "province_title": "خراسان رضوی",
+    "city": "مشهد",
+    "nationality": "IR",
+    "nationality_title": "ایران",
+    "id_document_type": "national_id",
+    "national_id_masked": "***0031",
+    "role": "operator",
+    "is_profile_complete": true,
+    "is_staff_member": true,
+    "date_joined": "2026-11-11T12:14:25.098780+03:30"
+  },
+  "mfa_pending": true
+}

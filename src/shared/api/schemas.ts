@@ -391,8 +391,9 @@ export type SlotOffer = z.infer<typeof slotOfferSchema>;
 
 export const waitlistEntrySchema = z.object({
   id: z.string(),
-  unit_code: z.string(),
-  unit_title: z.string(),
+  /** تهی ⇒ درخواست برای «هر واحد آزاد» در آن بازه */
+  unit_code: z.nullable(z.string()),
+  unit_title: z.nullable(z.string()),
   starts_at: z.string(),
   ends_at: z.string(),
   cells_count: z.number(),

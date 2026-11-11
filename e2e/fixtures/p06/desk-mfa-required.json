@@ -1,0 +1,13 @@
+{
+  "type": "https://docs.mahdieh.ir/problems/mfa_required",
+  "title": "تأیید دومرحله‌ای لازم است",
+  "status": 403,
+  "detail": "برای ادامه، کد اپ احراز هویت را وارد کنید.",
+  "code": "mfa_required",
+  "instance": "/api/v1/staff/desk",
+  "trace_id": "01a158d163c07077a0ac380330751ab5",
+  "mfa": {
+    "enrolled": false,
+    "step_up_seconds": 600
+  }
+}

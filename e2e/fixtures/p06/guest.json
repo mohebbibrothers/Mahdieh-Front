@@ -1,0 +1,94 @@
+{
+  "guest": {
+    "id": "01a1c9c7-9e86-7073-bc2b-dca5c99e4b47",
+    "display_name": "زهرا محمدی",
+    "phone_masked": "+989***0001",
+    "nationality": "IR",
+    "nationality_title": "ایران",
+    "province_title": "خراسان رضوی",
+    "city": "مشهد",
+    "is_profile_complete": true,
+    "reservations_count": 1,
+    "no_show_count": 0,
+    "last_stay_end": "2026-10-21T08:00:00+03:30",
+    "date_joined": "2026-11-11T12:14:25.094894+03:30"
+  },
+  "national_id_masked": "***0013",
+  "id_document_type": "national_id",
+  "standing": {
+    "can_book": false,
+    "profile_complete": true,
+    "active": {
+      "used": 1,
+      "limit": 1,
+      "remaining": 0,
+      "window_days": null
+    },
+    "window": {
+      "used": 2,
+      "limit": 14,
+      "remaining": 12,
+      "window_days": 30
+    },
+    "year": {
+      "used": 2,
+      "limit": 60,
+      "remaining": 58,
+      "window_days": 365
+    },
+    "cooldown_until": null,
+    "suspended_until": null,
+    "next_eligible_at": null,
+    "blockers": [
+      {
+        "code": "active_limit",
+        "message": "شما ۱ رزرو فعال دارید و سقف مجاز ۱ است."
+      }
+    ]
+  },
+  "recent_reservations": [
+    {
+      "id": "01a1488d-9240-7e02-9cce-336d82ed4b9c",
+      "code": "M-1405-0003",
+      "unit_code": "B1",
+      "unit_title": "اتاق بزرگ طبقهٔ اول",
+      "floor_number": 1,
+      "status": "confirmed",
+      "status_label": "تأییدشده",
+      "is_active": true,
+      "start": "2026-10-20T08:00:00+03:30",
+      "end": "2026-10-21T08:00:00+03:30",
+      "date_jalali": "۱۴۰۵/۰۷/۲۸",
+      "weekday": "سه‌شنبه",
+      "cells_count": 2,
+      "duration_label": "یک شبانه‌روز کامل",
+      "guests_count": 6,
+      "guest_note": "",
+      "expected_arrival": null,
+      "vehicle_plate": "",
+      "can_cancel": true,
+      "free_cancel_until": "2026-10-19T08:00:00+03:30",
+      "hold_expires_at": null,
+      "feedback_url": null,
+      "feedback_rating": null,
+      "is_late_cancel": false,
+      "details_editable": true,
+      "created_at": "2026-10-17T10:00:00+03:30",
+      "guest_id": "01a1c9c7-9e86-7073-bc2b-dca5c99e4b47",
+      "guest_name": "زهرا محمدی",
+      "guest_phone_masked": "+989***0001",
+      "guest_nationality": "IR",
+      "staff_note": "",
+      "source": "web",
+      "source_label": "وب (خود زائر)",
+      "version": 1,
+      "superseded_by_code": null,
+      "cancelled_at": null,
+      "cancel_reason_kind": "",
+      "cancel_reason": "",
+      "checked_in_at": null,
+      "checked_out_at": null,
+      "no_show_at": null
+    }
+  ]
+}

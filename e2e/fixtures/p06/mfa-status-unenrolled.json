@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "enrolled": false,
+  "verified": false,
+  "verified_at": null,
+  "step_up_valid_until": null,
+  "step_up_seconds": 600,
+  "recovery_codes_remaining": 0,
+  "method": ""
+}

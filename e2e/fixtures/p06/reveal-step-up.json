@@ -1,0 +1,13 @@
+{
+  "type": "https://docs.mahdieh.ir/problems/step_up_required",
+  "title": "تأیید دوباره لازم است",
+  "status": 403,
+  "detail": "این کار حساس است؛ لطفاً کد اپ احراز هویت را دوباره وارد کنید.",
+  "code": "step_up_required",
+  "instance": "/api/v1/staff/guests/01a1c9c7-9e86-7073-bc2b-dca5c99e4b47/reveal-phone",
+  "trace_id": "01a158e0f420723eb6937c413c236c7a",
+  "mfa": {
+    "enrolled": true,
+    "step_up_seconds": 600
+  }
+}

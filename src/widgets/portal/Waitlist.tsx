@@ -55,7 +55,13 @@ function WaitCard({ entry, onAccepted }: { entry: WaitlistEntry; onAccepted: (co
         </span>
         <div className="pt-wait__body">
           <strong>
-            {entry.unit_title} (<bdi className="latin">{entry.unit_code}</bdi>)
+            {entry.unit_code ? (
+              <>
+                {entry.unit_title} (<bdi className="latin">{entry.unit_code}</bdi>)
+              </>
+            ) : (
+              "هر واحد آزاد"
+            )}
           </strong>
           <span>
             {rangeLabel(entry.starts_at, entry.ends_at)} · {spanLabel(entry.cells_count)} ·{" "}
@@ -209,7 +215,7 @@ function WithdrawDialog({
       isOpen={isOpen}
       onOpenChange={onOpenChange}
       title="انصراف از صف انتظار"
-      subtitle={`${entry.unit_title} · ${rangeLabel(entry.starts_at, entry.ends_at)}`}
+      subtitle={`${entry.unit_title ?? "هر واحد آزاد"} · ${rangeLabel(entry.starts_at, entry.ends_at)}`}
       size="sm"
       actions={
         <>

@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "enrolled": true,
+  "verified": true,
+  "verified_at": "2026-10-20T13:48:00+03:30",
+  "step_up_valid_until": "2026-10-20T13:58:00+03:30",
+  "step_up_seconds": 600,
+  "recovery_codes_remaining": 10,
+  "method": "totp"
+}

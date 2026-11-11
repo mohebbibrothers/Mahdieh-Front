@@ -1,0 +1,40 @@
+{
+  "queue": [
+    {
+      "id": "01a1488d-9240-7e14-b96d-83e2cd04384c",
+      "status": "waiting",
+      "status_label": "در انتظار",
+      "unit_code": "A1",
+      "unit_title": "سوئیت طبقهٔ اول",
+      "starts_at": "2026-10-20T20:00:00+03:30",
+      "ends_at": "2026-10-21T08:00:00+03:30",
+      "cells_count": 1,
+      "guests_count": 4,
+      "offers_sent": 0,
+      "position": 1,
+      "created_at": "2026-10-17T10:00:00+03:30",
+      "open_offer": null,
+      "guest_id": "01a1c9c7-9e89-724e-a380-864a2470a091",
+      "guest_name": "زهرا محمدی",
+      "guest_phone_masked": "+989***0002"
+    }
+  ],
+  "open_offers": [],
+  "stats": {
+    "waiting": 1,
+    "offered": 0,
+    "converted": 0,
+    "unfulfilled": 0,
+    "open_offers": 0,
+    "expiring_soon": 0,
+    "acceptance_rate": 0.0,
+    "next_offer": null
+  },
+  "overview": {
+    "waiting": 1,
+    "offered": 0,
+    "converted": 0,
+    "unfulfilled": 0,
+    "conversion_rate": 0.0
+  }
+}

@@ -390,6 +390,11 @@
   .contact-note {
     font-size: 0.75rem;
   }
+  /* «استعلام گواهی» و «اطلاعات تماس»: هر کدام یک سطر مستقل (پیش‌تر کنار هم و بی‌فاصله می‌چسبیدند) */
+  .site-footer :is(.verify-link, .contact-link) {
+    display: flex;
+    width: fit-content;
+  }
   .footer-bottom {
     display: flex;
     justify-content: space-between;

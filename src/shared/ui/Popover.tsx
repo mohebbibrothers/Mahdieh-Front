@@ -12,7 +12,17 @@ export type PopoverAnchor =
   | "stamp-end-date"
   | "stamp-end-time"
   | "calendar-from"
-  | "trip-arrival";
+  | "trip-arrival"
+  | "desk-unit"
+  | "desk-officer"
+  | "desk-block-date"
+  | "desk-block-time"
+  | "desk-move-date"
+  | "desk-move-time"
+  | "desk-create-date"
+  | "desk-create-time"
+  | "desk-export-from"
+  | "desk-export-to";
 
 /** پاپ‌اورهای جست‌وجوی سریع زیر کل فیلد (پس از متن راهنما) باز می‌شوند، نه زیر خود دکمه. */
 const FIELD_ANCHORED = new Set<PopoverAnchor>(["arrival", "duration"]);
