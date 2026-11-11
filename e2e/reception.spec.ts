@@ -223,4 +223,81 @@ test.describe("P-06 میز پذیرش", () => {
     const result = await new AxeBuilder({ page }).include("main").analyze();
     expect(result.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(" | ")}`)).toEqual([]);
   });
+
+  test("دور ۱: زبانه‌های یک‌ردیفه، کارت‌های هم‌تراز، منوی کنار دکمه و فرم بخش‌بندی‌شده", async ({ page, api }) => {
+    staff(api);
+    const tops = (loc: ReturnType<Page["locator"]>) =>
+      loc.evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().top)));
+
+    // ۳۶۰: زبانه‌های دفتر و شیوه‌نامه هر پنج در یک ردیف هم‌عرض (بی‌شکستن ۳+۲)
+    await page.setViewportSize({ width: 360, height: 800 });
+    await page.goto("/reception/");
+    await ready(page);
+    expect(new Set(await tops(page.locator(".rc-ledger__bar .rc-tab"))).size).toBe(1);
+    await page.getByRole("button", { name: "شیوه‌نامه و مقررات کشیک" }).click();
+    const sop = page.getByRole("dialog", { name: "شیوه‌نامه و مقررات کشیک خادمان" });
+    const sopTabs = sop.getByRole("tab");
+    await expect(sopTabs).toHaveCount(5);
+    expect(new Set(await tops(sopTabs)).size).toBe(1);
+    await sopTabs.first().focus();
+    await page.keyboard.press("ArrowLeft");
+    await expect(sop.getByRole("tab", { name: /حریم خصوصی/ })).toHaveAttribute("aria-selected", "true");
+    await expect(sop.getByRole("heading", { name: "حریم خصوصی زائران" })).toBeVisible();
+    await page.keyboard.press("Escape");
+
+    // منوی ⋯ واحد در گوشی کنار دکمهٔ خودش باز می‌شود، نه بالای صفحه
+    const card = page.locator(".rc-unit").filter({ has: page.getByText("B3", { exact: true }) });
+    const more = card.locator(".rc-unit__more");
+    await more.scrollIntoViewIfNeeded();
+    await more.click();
+    const menu = page.getByRole("menu");
+    await expect(menu).toBeVisible();
+    const [btn, pop] = await Promise.all([more.boundingBox(), menu.boundingBox()]);
+    expect(btn && pop && Math.abs(pop.y - (btn.y + btn.height)) < 24).toBe(true);
+    await page.keyboard.press("Escape");
+
+    // نوار وضعیت کارت از گوشه‌های گرد بیرون نمی‌زند
+    const bar = await card.evaluate((e) => {
+      const s = getComputedStyle(e, "::before");
+      return { left: parseFloat(s.left), right: parseFloat(s.right) };
+    });
+    expect(bar.left).toBeGreaterThanOrEqual(16);
+    expect(bar.right).toBeGreaterThanOrEqual(16);
+
+    // ثبت حضوری: چهار گام، استان بی پرکردن خودکار مرورگر، پلاک یکسان با صفحهٔ رزرو
+    await more.click();
+    await page.getByRole("menuitem", { name: "ثبت نوبت حضوری" }).click();
+    const create = page.getByRole("dialog", { name: "ثبت نوبت حضوری یا تلفنی" });
+    await expect(create.locator(".rc-fsec")).toHaveCount(4);
+    await expect(create.getByRole("combobox", { name: /استان مبدأ/ })).toHaveAttribute(
+      "autocomplete",
+      "mahdieh-picker",
+    );
+    await expect(create.getByRole("group", { name: /پلاک خودرو/ })).toBeVisible();
+    await expect(create.getByText("ساعت تقریبی رسیدن", { exact: true })).toBeVisible();
+    const overflow = await create.locator(".app-dialog__body").evaluate((b) => b.scrollWidth - b.clientWidth);
+    expect(overflow).toBeLessThanOrEqual(0);
+    await page.keyboard.press("Escape");
+
+    // ۱۲۸۰: عنوان گروه کارتی بیرون از شبکه؛ کارت‌های هم‌ردیف هم‌قد
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.getByRole("button", { name: "خروجی دفتر آمار شیفت" }).click();
+    const exp = page.getByRole("dialog", { name: "خروجی اکسل دفتر شیفت" });
+    const group = exp.getByRole("group", { name: "بازهٔ گزارش" });
+    const boxes = await group
+      .locator(".rc-choice")
+      .evaluateAll((els) => els.map((e) => e.getBoundingClientRect()).map((r) => [r.top, r.height]));
+    expect(boxes).toHaveLength(4);
+    expect(boxes[0]?.[0]).toBe(boxes[1]?.[0]); // دو کارت نخست در یک ردیف
+    expect(new Set(boxes.map((b) => Math.round(b[1] ?? 0))).size).toBe(1); // همه هم‌قد
+    const legend = await group.locator("legend").boundingBox();
+    expect(legend && legend.y + legend.height <= (boxes[0]?.[0] ?? 0)).toBe(true);
+    await page.keyboard.press("Escape");
+
+    // ۱۲۸۰: شیوه‌نامه با فهرست عمودی فصل‌ها کنار متن
+    await page.getByRole("button", { name: "شیوه‌نامه و مقررات کشیک" }).click();
+    const rail = await tops(page.getByRole("dialog", { name: "شیوه‌نامه و مقررات کشیک خادمان" }).getByRole("tab"));
+    expect(rail).toEqual([...rail].sort((a, b) => a - b));
+    expect(new Set(rail).size).toBe(5);
+  });
 });

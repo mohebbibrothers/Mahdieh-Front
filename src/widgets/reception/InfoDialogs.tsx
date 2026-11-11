@@ -18,10 +18,9 @@ import { cx } from "@/shared/lib/cx";
 import { faDigits, formatFullDate, formatMoment } from "@/shared/lib/fa";
 import { useClock } from "@/shared/lib/use-clock";
 import { AppDialog } from "@/shared/ui/Dialog";
-import { Icon } from "@/shared/ui/Icon";
-import { JalaliDatePicker } from "@/shared/ui/JalaliDatePicker";
+import { Icon, type IconName } from "@/shared/ui/Icon";
 import { toast } from "@/shared/ui/toast";
-import { ChoiceCards, Summary } from "./form";
+import { ChoiceCards, DateField, Summary } from "./form";
 import { PURPOSES, exportRange, minutesLabel, phoneWorthy, type ExportRange, type PurposeId } from "./model";
 import { Info, LanePill, Latin, Notice, UnitBadge } from "./parts";
 import { errorText, useDeskRuntime } from "./runtime";
@@ -319,7 +318,7 @@ export function WaitlistDialog({ close }: { close: Close }) {
       size="lg"
       className="rc-dialog"
       actions={
-        <button type="button" className="btn btn-secondary" onClick={close}>
+        <button type="button" className="btn btn-secondary btn-block" onClick={close}>
           بستن پنجره
         </button>
       }
@@ -466,9 +465,14 @@ export function ExportDialog({ desk, close }: { desk: Desk; close: Close }) {
         legend="بازهٔ گزارش"
         columns={2}
         items={[
-          { value: "shift", label: `شیفت جاری (${desk.shift.label})`, hint: desk.shift.hours_label },
-          { value: "today", label: "امروز", hint: desk.day_label },
-          { value: "week", label: "هفت روز گذشته", hint: "تا امروز" },
+          {
+            value: "shift",
+            label: `شیفت جاری (${desk.shift.label})`,
+            hint: desk.shift.hours_label,
+            icon: "clock",
+          },
+          { value: "today", label: "امروز", hint: desk.day_label, icon: "sun" },
+          { value: "week", label: "هفت روز گذشته", hint: "تا امروز", icon: "history" },
           { value: "custom", label: "بازهٔ دلخواه", hint: "انتخاب از تقویم", icon: "calendar" },
         ]}
         value={kind}
@@ -476,8 +480,8 @@ export function ExportDialog({ desk, close }: { desk: Desk; close: Close }) {
       />
       {kind === "custom" ? (
         <div className="rc-row-2">
-          <JalaliDatePicker anchor="desk-export-from" label="از روز" value={from} onChange={setFrom} max={desk.day} />
-          <JalaliDatePicker
+          <DateField anchor="desk-export-from" label="از روز" value={from} onChange={setFrom} max={desk.day} />
+          <DateField
             anchor="desk-export-to"
             label="تا روز"
             value={to}
@@ -519,6 +523,8 @@ export function ExportDialog({ desk, close }: { desk: Desk; close: Close }) {
 
 /* ── شیوه‌نامهٔ کشیک (کشوی کناری) ────────────────────────────────────────── */
 type SopTab = "id" | "privacy" | "cleaning" | "waitlist" | "routine";
+/** پیمایش صفحه‌کلیدی زبانه‌ها (عمودی در دسکتاپ، افقی راست‌به‌چپ در گوشی). */
+const SOP_KEYS: Partial<Record<string, 1 | -1>> = { ArrowDown: 1, ArrowLeft: 1, ArrowUp: -1, ArrowRight: -1 };
 
 export function SopDrawer({ desk, close }: { desk: Desk; close: Close }) {
   const help = useQuery(helpQuery);
@@ -526,13 +532,20 @@ export function SopDrawer({ desk, close }: { desk: Desk; close: Close }) {
   const r = desk.rules;
   const hk = desk.housekeeping;
   const phone = help.data?.contact.phone_display || "";
-  const tabs: Array<{ id: SopTab; label: string }> = [
-    { id: "id", label: "۱. تطبیق هویت" },
-    { id: "privacy", label: "۲. حریم خصوصی" },
-    { id: "cleaning", label: "۳. بافر نظافت" },
-    { id: "waitlist", label: "۴. صف و اضطرار" },
-    { id: "routine", label: "۵. روال روزانه" },
+  const tabs: Array<{ id: SopTab; label: string; short: string; icon: IconName }> = [
+    { id: "id", label: "تطبیق هویت", short: "هویت", icon: "id-card" },
+    { id: "privacy", label: "حریم خصوصی", short: "حریم", icon: "lock" },
+    { id: "cleaning", label: "بافر نظافت", short: "نظافت", icon: "broom" },
+    { id: "waitlist", label: "صف و اضطرار", short: "اضطرار", icon: "alert" },
+    { id: "routine", label: "روال روزانه", short: "روال", icon: "list" },
   ];
+  const move = (step: number) => {
+    const i = tabs.findIndex((t) => t.id === tab);
+    const next = tabs[(i + step + tabs.length) % tabs.length];
+    if (!next) return;
+    setTab(next.id);
+    document.getElementById(`rc-sop-${next.id}`)?.focus();
+  };
   return (
     <AppDialog
       isOpen
@@ -547,114 +560,142 @@ export function SopDrawer({ desk, close }: { desk: Desk; close: Close }) {
         </button>
       }
     >
-      <div className="rc-tabs rc-tabs--sop" role="tablist" aria-label="بخش‌های شیوه‌نامه">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            role="tab"
-            id={`rc-sop-${t.id}`}
-            aria-selected={tab === t.id}
-            aria-controls="rc-sop-panel"
-            className="rc-tab"
-            onClick={() => setTab(t.id)}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-      <div id="rc-sop-panel" role="tabpanel" aria-labelledby={`rc-sop-${tab}`} className="rc-sop__panel" tabIndex={0}>
-        {tab === "id" ? (
-          <>
-            <h3>بررسی اصل مدارک هویتی</h3>
-            <p>
-              پذیرش سرپرست منوط به ارائهٔ <strong>اصل کارت ملی هوشمند</strong> یا <strong>گذرنامه</strong> (زائران
-              غیرایرانی) است؛ تصویر یا کپی مدرک پذیرفته نیست.
-            </p>
-            <ul className="rc-ticks">
-              <li>تطبیق چهره و نام سرپرست با پروندهٔ نوبت و گواهی امضاشدهٔ سرور.</li>
-              <li>شمار همراهان از ظرفیت مجاز واحد بیشتر نباشد.</li>
-              <li>
-                پنجرهٔ پذیرش از <strong>{faDigits(r.checkin_early_hours)} ساعت</strong> پیش از آغاز اقامت باز می‌شود؛
-                ورود زودتر را سامانه نمی‌پذیرد.
-              </li>
-              <li>گواهی نامعتبر یا ناهمخوان (هشدار قرمز اسکن) ⇒ پذیرش متوقف و مسئول شیفت آگاه شود.</li>
-            </ul>
-          </>
-        ) : tab === "privacy" ? (
-          <>
-            <h3>حریم خصوصی زائران</h3>
-            <ul className="rc-ticks">
-              <li>
-                شماره‌ها همه‌جا پوشیده‌اند؛ نمایش کامل فقط با هدف مشخص و تأیید امنیتی تازه، و هر بار حسابرسی می‌شود.
-              </li>
-              <li>شمارهٔ نمایان‌شده پس از ۹۰ ثانیه خودبه‌خود پوشیده می‌شود.</li>
-              <li>خروجی اکسل با شمارهٔ کامل فقط برای مدیر و با تأیید تازه ممکن است.</li>
-              <li>هنگام ترک پیشخوان، از منوی نام خود «خروج امن» را بزنید تا نشست بسته شود.</li>
-            </ul>
-          </>
-        ) : tab === "cleaning" ? (
-          <>
-            <h3>چرخهٔ بهداشتی و آماده‌سازی واحد</h3>
-            <p>
-              پس از خروج زائر، واحد به «بافر نظافت» می‌رود. زمان پیش‌فرض{" "}
-              <strong>{minutesLabel(hk.default_minutes)}</strong> و بازهٔ مجاز {minutesLabel(hk.min_minutes)} تا{" "}
-              {minutesLabel(hk.max_minutes)} است.
-            </p>
-            <ul className="rc-ticks">
-              <li>تعویض ملافه و روبالشتی؛ ضدعفونی سرویس بهداشتی، حمام و شیرآلات.</li>
-              <li>نظافت سالن و آشپزخانه و تکمیل پک بهداشتی زائر.</li>
-              <li>کلید در این مدت با برچسب کهربایی «خدمات» نزد خادم نظافت می‌ماند.</li>
-              <li>پایان کار را از کارت واحد ثبت کنید تا واحد «آمادهٔ پذیرش» شود.</li>
-            </ul>
-          </>
-        ) : tab === "waitlist" ? (
-          <>
-            <h3>تأخیر، عدم‌حضور و صف انتظار</h3>
-            <ul className="rc-ticks">
-              <li>
-                {faDigits(r.late_minutes)} دقیقه پس از ساعت ورود، نوبت در دفتر «تأخیر» نشان داده می‌شود؛ با زائر تماس
-                بگیرید.
-              </li>
-              <li>
-                ثبت عدم‌حضور پس از <strong>{faDigits(r.no_show_grace_hours)} ساعت</strong> مهلت ممکن است و دلیل آن
-                الزامی است.
-              </li>
-              <li>سانس آزادشده خودکار و به ترتیب صف به زائران منتظر پیشنهاد و پیامک می‌شود.</li>
-            </ul>
-            <h3>شماره‌های اضطراری</h3>
-            <div className="rc-emergency">
-              <Info label="اورژانس">
-                <Latin>115</Latin>
-              </Info>
-              <Info label="پلیس">
-                <Latin>110</Latin>
-              </Info>
-              <Info label="آتش‌نشانی">
-                <Latin>125</Latin>
-              </Info>
-              <Info label="پشتیبانی مهدیه">{phone ? <Latin>{phone}</Latin> : "در تنظیمات ثبت نشده"}</Info>
-            </div>
-          </>
-        ) : (
-          <>
-            <h3>روال روزانهٔ خادم پیشخوان</h3>
-            {help.data ? (
-              <ol className="rc-routine">
-                {help.data.staff_checklist.map((s) => (
-                  <li key={s.title}>
-                    <strong>{s.title}</strong>
-                    <p>{s.text}</p>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p className="rc-skeleton" aria-busy="true">
-                در حال خواندن…
+      <div className="rc-sop__layout">
+        <div className="rc-sop__nav" role="tablist" aria-label="بخش‌های شیوه‌نامه" aria-orientation="vertical">
+          {tabs.map((t, i) => (
+            <button
+              key={t.id}
+              type="button"
+              role="tab"
+              id={`rc-sop-${t.id}`}
+              aria-selected={tab === t.id}
+              aria-controls="rc-sop-panel"
+              tabIndex={tab === t.id ? 0 : -1}
+              className="rc-sop__tab"
+              aria-label={`بخش ${faDigits(i + 1)}: ${t.label}`}
+              onClick={() => setTab(t.id)}
+              onKeyDown={(e) => {
+                const step = SOP_KEYS[e.key];
+                if (!step) return;
+                e.preventDefault();
+                move(step);
+              }}
+            >
+              <span className="rc-sop__tab-icon" aria-hidden="true">
+                <Icon name={t.icon} size={18} />
+              </span>
+              <span className="rc-sop__tab-text">
+                <span className="rc-sop__tab-step" aria-hidden="true">
+                  بخش {faDigits(i + 1)}
+                </span>
+                <span className="rc-sop__tab-long">{t.label}</span>
+                <span className="rc-sop__tab-short" aria-hidden="true">
+                  {t.short}
+                </span>
+              </span>
+            </button>
+          ))}
+        </div>
+        <div
+          id="rc-sop-panel"
+          key={tab}
+          role="tabpanel"
+          aria-labelledby={`rc-sop-${tab}`}
+          className="rc-sop__panel"
+          tabIndex={0}
+        >
+          {tab === "id" ? (
+            <>
+              <h3>بررسی اصل مدارک هویتی</h3>
+              <p>
+                پذیرش سرپرست منوط به ارائهٔ <strong>اصل کارت ملی هوشمند</strong> یا <strong>گذرنامه</strong> (زائران
+                غیرایرانی) است؛ تصویر یا کپی مدرک پذیرفته نیست.
               </p>
-            )}
-          </>
-        )}
+              <ul className="rc-ticks">
+                <li>تطبیق چهره و نام سرپرست با پروندهٔ نوبت و گواهی امضاشدهٔ سرور.</li>
+                <li>شمار همراهان از ظرفیت مجاز واحد بیشتر نباشد.</li>
+                <li>
+                  پنجرهٔ پذیرش از <strong>{faDigits(r.checkin_early_hours)} ساعت</strong> پیش از آغاز اقامت باز می‌شود؛
+                  ورود زودتر را سامانه نمی‌پذیرد.
+                </li>
+                <li>گواهی نامعتبر یا ناهمخوان (هشدار قرمز اسکن) ⇒ پذیرش متوقف و مسئول شیفت آگاه شود.</li>
+              </ul>
+            </>
+          ) : tab === "privacy" ? (
+            <>
+              <h3>حریم خصوصی زائران</h3>
+              <ul className="rc-ticks">
+                <li>
+                  شماره‌ها همه‌جا پوشیده‌اند؛ نمایش کامل فقط با هدف مشخص و تأیید امنیتی تازه، و هر بار حسابرسی می‌شود.
+                </li>
+                <li>شمارهٔ نمایان‌شده پس از ۹۰ ثانیه خودبه‌خود پوشیده می‌شود.</li>
+                <li>خروجی اکسل با شمارهٔ کامل فقط برای مدیر و با تأیید تازه ممکن است.</li>
+                <li>هنگام ترک پیشخوان، از منوی نام خود «خروج امن» را بزنید تا نشست بسته شود.</li>
+              </ul>
+            </>
+          ) : tab === "cleaning" ? (
+            <>
+              <h3>چرخهٔ بهداشتی و آماده‌سازی واحد</h3>
+              <p>
+                پس از خروج زائر، واحد به «بافر نظافت» می‌رود. زمان پیش‌فرض{" "}
+                <strong>{minutesLabel(hk.default_minutes)}</strong> و بازهٔ مجاز {minutesLabel(hk.min_minutes)} تا{" "}
+                {minutesLabel(hk.max_minutes)} است.
+              </p>
+              <ul className="rc-ticks">
+                <li>تعویض ملافه و روبالشتی؛ ضدعفونی سرویس بهداشتی، حمام و شیرآلات.</li>
+                <li>نظافت سالن و آشپزخانه و تکمیل پک بهداشتی زائر.</li>
+                <li>کلید در این مدت با برچسب کهربایی «خدمات» نزد خادم نظافت می‌ماند.</li>
+                <li>پایان کار را از کارت واحد ثبت کنید تا واحد «آمادهٔ پذیرش» شود.</li>
+              </ul>
+            </>
+          ) : tab === "waitlist" ? (
+            <>
+              <h3>تأخیر، عدم‌حضور و صف انتظار</h3>
+              <ul className="rc-ticks">
+                <li>
+                  {faDigits(r.late_minutes)} دقیقه پس از ساعت ورود، نوبت در دفتر «تأخیر» نشان داده می‌شود؛ با زائر تماس
+                  بگیرید.
+                </li>
+                <li>
+                  ثبت عدم‌حضور پس از <strong>{faDigits(r.no_show_grace_hours)} ساعت</strong> مهلت ممکن است و دلیل آن
+                  الزامی است.
+                </li>
+                <li>سانس آزادشده خودکار و به ترتیب صف به زائران منتظر پیشنهاد و پیامک می‌شود.</li>
+              </ul>
+              <h3>شماره‌های اضطراری</h3>
+              <div className="rc-emergency">
+                <Info label="اورژانس">
+                  <Latin>115</Latin>
+                </Info>
+                <Info label="پلیس">
+                  <Latin>110</Latin>
+                </Info>
+                <Info label="آتش‌نشانی">
+                  <Latin>125</Latin>
+                </Info>
+                <Info label="پشتیبانی مهدیه">{phone ? <Latin>{phone}</Latin> : "در تنظیمات ثبت نشده"}</Info>
+              </div>
+            </>
+          ) : (
+            <>
+              <h3>روال روزانهٔ خادم پیشخوان</h3>
+              {help.data ? (
+                <ol className="rc-routine">
+                  {help.data.staff_checklist.map((s) => (
+                    <li key={s.title}>
+                      <strong>{s.title}</strong>
+                      <p>{s.text}</p>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p className="rc-skeleton" aria-busy="true">
+                  در حال خواندن…
+                </p>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </AppDialog>
   );

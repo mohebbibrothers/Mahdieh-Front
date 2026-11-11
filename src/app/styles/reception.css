@@ -262,24 +262,92 @@
     gap: 4px;
     padding: 6px;
   }
-  .rc-officer-menu__facts {
-    display: grid;
-    gap: 8px;
-    margin: 0 0 6px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    background: var(--color-sunken);
-    list-style: none;
-    font-size: 0.8125rem;
-  }
-  .rc-officer-menu__facts li {
+  .rc-officer-menu__id {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
+    padding: 4px 6px 10px;
   }
-  .rc-officer-menu__facts li[data-warn] {
+  .rc-officer-menu__id .rc-officer__avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 0.875rem;
+  }
+  .rc-officer-menu__who {
+    display: grid;
+    min-width: 0;
+    line-height: 1.5;
+  }
+  .rc-officer-menu__who strong {
+    font-size: 0.875rem;
+    font-weight: 850;
+  }
+  .rc-officer-menu__who span {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+  }
+  /* ردیف‌های برچسب/مقدار هم‌تراز (برچسب راست، مقدار چپ) */
+  .rc-officer-menu__facts {
+    display: grid;
+    margin: 0;
+    padding: 2px 12px;
+    border: 1px solid var(--rc-line);
+    border-radius: 14px;
+    background: var(--color-canvas);
+    font-size: 0.8125rem;
+  }
+  .rc-officer-menu__facts > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 44px;
+  }
+  .rc-officer-menu__facts > div + div {
+    border-top: 1px solid var(--rc-line);
+  }
+  .rc-officer-menu__facts dt {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--color-text-muted);
+  }
+  .rc-officer-menu__facts dd {
+    margin: 0;
+    color: var(--color-text);
+    font-weight: 750;
+    text-align: end;
+  }
+  .rc-officer-menu__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 26px;
+    padding: 2px 10px;
+    border-radius: var(--radius-pill);
+    background: var(--color-sunken);
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .rc-officer-menu__badge[data-tone="ok"] {
+    background: var(--color-brand-tint);
+    color: var(--color-brand);
+  }
+  .rc-officer-menu__badge[data-tone="warn"] {
+    background: color-mix(in oklab, var(--rc-amber) 14%, transparent);
     color: var(--rc-amber);
-    font-weight: 700;
+  }
+  .rc-officer-menu__hint {
+    margin: 4px 4px 2px;
+    color: var(--color-text-muted);
+    font-size: 0.6875rem;
+    line-height: 1.8;
+  }
+  .rc-officer-menu__sep {
+    height: 1px;
+    margin: 4px 2px;
+    background: var(--rc-line);
   }
   .rc-strip__chips {
     display: flex;
@@ -527,13 +595,13 @@
       box-shadow 0.2s,
       transform 0.25s var(--ease-out);
   }
+  /* نوار وضعیت: کپسولی که از گوشه‌های گرد فاصله دارد و روی لبهٔ بالا می‌نشیند ⇒ هرگز از دو سوی کارت بیرون نمی‌زند */
   .rc-unit::before {
     position: absolute;
-    inset: 0 0 auto;
+    inset: -1px calc(var(--rc-card-radius) + 4px) auto;
     height: 3px;
-    border-radius: var(--rc-card-radius) var(--rc-card-radius) 0 0;
+    border-radius: 0 0 3px 3px;
     background: var(--u);
-    opacity: 0.85;
     content: "";
   }
   .rc-unit[data-state="ready"] {
@@ -1104,13 +1172,31 @@
   }
 
   /* ── دفتر حضور و غیاب ───────────────────────────────────────────────── */
+  /* سربرگ دفتر: عنوان + جست‌وجو در یک ردیف، زبانه‌ها تمام‌عرض و هم‌اندازه در ردیف دوم */
   .rc-ledger__bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    justify-content: space-between;
-    gap: 12px 16px;
-    margin-bottom: 18px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 340px);
+    grid-template-areas:
+      "head search"
+      "tabs tabs";
+    align-items: end;
+    gap: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .rc-ledger__bar .rc-head {
+    grid-area: head;
+  }
+  .rc-ledger__bar .rc-tabs {
+    grid-area: tabs;
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+    overflow: visible;
+  }
+  .rc-ledger__bar .rc-tab {
+    justify-content: center;
+    min-width: 0;
+    white-space: nowrap;
   }
   .rc-ledger__bar .rc-head {
     margin: 0;
@@ -1168,7 +1254,7 @@
     position: relative;
     display: flex;
     align-items: center;
-    flex: 0 1 300px;
+    grid-area: search;
   }
   .rc-ledger__search .icon {
     position: absolute;
@@ -1365,7 +1451,31 @@
   .rc-row-2 {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
     gap: 12px;
+  }
+  /* شمارنده در پنجره‌ها: کپسول جمع‌وجور هم‌قد فیلدها (نه کشیده در تمام پهنا) */
+  .rc-form .stepper {
+    justify-self: start;
+    padding: 3px;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    background: var(--color-surface);
+  }
+  .rc-form .stepper__btn {
+    width: 38px;
+    height: 38px;
+    border-color: transparent;
+    border-radius: 9px;
+    background: var(--color-sunken);
+  }
+  .rc-form .stepper__value {
+    min-width: 88px;
+    font-size: 0.875rem;
+    font-weight: 750;
+  }
+  .rc-form .stepper--wide .stepper__value {
+    min-width: 9.5em;
   }
   .rc-inline-field {
     display: flex;
@@ -1374,19 +1484,23 @@
     justify-content: space-between;
     gap: 10px;
   }
+  /* دلیل‌های آماده: شبکهٔ هم‌عرض و مرتب به‌جای ردیف‌های ناهموار */
   .rc-suggest {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 6px;
   }
   .rc-suggest__chip {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: 5px;
-    min-height: 32px;
-    padding: 4px 11px;
+    gap: 7px;
+    min-width: 0;
+    min-height: 36px;
+    padding: 6px 10px;
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-pill);
+    border-radius: 10px;
+    text-align: start;
+    line-height: 1.55;
     background: var(--color-surface);
     color: var(--color-text);
     font: inherit;
@@ -1395,6 +1509,13 @@
     transition:
       border-color 0.18s,
       background-color 0.18s;
+  }
+  .rc-suggest__chip .icon {
+    flex: none;
+    color: var(--color-text-subtle);
+  }
+  .rc-suggest__chip[aria-pressed="true"] .icon {
+    color: var(--color-brand);
   }
   .rc-suggest__chip:hover {
     border-color: var(--color-border-strong);
@@ -1405,34 +1526,45 @@
     color: var(--color-brand);
     font-weight: 700;
   }
+  /* گروه کارتی: عنوان بیرون از شبکه (نه خانه‌ای از آن)، کارت‌های هم‌قد و هم‌عرض */
   .rc-choices {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
+    min-inline-size: 0;
     margin: 0;
     padding: 0;
     border: 0;
   }
-  .rc-choices[data-cols="3"] {
+  .rc-choices__legend {
+    padding: 0;
+  }
+  .rc-choices__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: 1fr;
+    gap: 8px;
+  }
+  .rc-choices__grid[data-cols="3"] {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-  .rc-choices[data-cols="4"] {
+  .rc-choices__grid[data-cols="4"] {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
-  .rc-choices legend {
-    float: inline-start;
-    width: 100%;
-    margin-bottom: 6px;
+  /* شمار فرد در شبکهٔ دوستونه: کارت آخر تمام‌عرض تا حفره نماند */
+  .rc-choices__grid[data-cols="2"][data-count="3"] > .rc-choice:last-child,
+  .rc-choices__grid[data-cols="2"][data-count="5"] > .rc-choice:last-child {
+    grid-column: 1 / -1;
   }
   .rc-choice {
     position: relative;
     display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    min-height: 52px;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 58px;
     padding: 10px 12px;
     border: 1px solid var(--color-border);
-    border-radius: 12px;
+    border-radius: 14px;
     background: var(--color-surface);
     cursor: pointer;
     transition:
@@ -1445,24 +1577,47 @@
     opacity: 0;
     pointer-events: none;
   }
-  .rc-choice > .icon {
-    flex: none;
-    margin-top: 2px;
-    color: var(--color-text-muted);
-  }
-  .rc-choice span {
+  .rc-choice__icon {
     display: grid;
-    gap: 1px;
+    flex: none;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--color-sunken);
+    color: var(--color-text-muted);
+    transition:
+      background-color 0.18s,
+      color 0.18s;
+  }
+  .rc-choice__text {
+    display: grid;
+    flex: 1 1 auto;
+    gap: 2px;
     min-width: 0;
   }
   .rc-choice strong {
+    overflow-wrap: anywhere;
     font-size: 0.8125rem;
     font-weight: 750;
+    line-height: 1.5;
   }
   .rc-choice small {
     color: var(--color-text-muted);
     font-size: 0.6875rem;
-    line-height: 1.5;
+    line-height: 1.55;
+  }
+  /* نشانگر رادیویی گرد در لبهٔ چپ کارت */
+  .rc-choice__mark {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--color-border-strong);
+    border-radius: 50%;
+    background: var(--color-surface);
+    transition:
+      border-color 0.18s,
+      box-shadow 0.18s;
   }
   .rc-choice:hover {
     border-color: var(--color-border-strong);
@@ -1472,8 +1627,15 @@
     background: var(--color-brand-tint);
     box-shadow: 0 0 0 1px var(--color-brand);
   }
-  .rc-choice:has(input:checked) > .icon {
-    color: var(--color-brand);
+  .rc-choice:has(input:checked) .rc-choice__icon {
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+  }
+  .rc-choice:has(input:checked) .rc-choice__mark {
+    border-color: var(--color-brand);
+    box-shadow:
+      inset 0 0 0 4px var(--color-surface),
+      inset 0 0 0 9px var(--color-brand);
   }
   .rc-choice:has(input:focus-visible) {
     outline: 2px solid var(--color-focus);
@@ -1485,7 +1647,7 @@
   }
   .rc-summary {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 12px;
     padding: 14px;
@@ -1571,11 +1733,187 @@
     font-size: 0.6875rem;
     line-height: 1.6;
   }
+  /* انتخاب اقامت: روز ورود + مدت در ردیف نخست، دو کارت نیم‌روز تمام‌عرض در ردیف دوم */
   .rc-stay {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    align-items: end;
-    gap: 12px;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "day cells"
+      "period period";
+    align-items: start;
+    gap: 14px 16px;
+  }
+  .rc-stay__day {
+    grid-area: day;
+    min-width: 0;
+  }
+  .rc-stay__cells {
+    grid-area: cells;
+  }
+  .rc-stay__period {
+    grid-area: period;
+  }
+  .rc-period {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .rc-period button {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 56px;
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    transition:
+      border-color 0.18s,
+      background-color 0.18s,
+      box-shadow 0.18s;
+  }
+  .rc-period button:hover {
+    border-color: var(--color-border-strong);
+  }
+  .rc-period button:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+  .rc-period__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--color-sunken);
+    color: var(--color-text-muted);
+  }
+  .rc-period__text {
+    display: grid;
+    min-width: 0;
+    line-height: 1.5;
+  }
+  .rc-period strong {
+    font-size: 0.8125rem;
+    font-weight: 800;
+  }
+  .rc-period small {
+    color: var(--color-text-muted);
+    font-size: 0.6875rem;
+  }
+  .rc-period button[aria-pressed="true"] {
+    border-color: var(--color-brand);
+    background: var(--color-brand-tint);
+    box-shadow: 0 0 0 1px var(--color-brand);
+  }
+  .rc-period button[aria-pressed="true"] .rc-period__icon {
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+  }
+
+  /* بخش‌های شماره‌دار فرم بلند (ثبت حضوری) */
+  .rc-fsec {
+    display: grid;
+    gap: 14px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--rc-line);
+    border-radius: 18px;
+    background: var(--color-canvas);
+  }
+  .rc-fsec__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 12px;
+  }
+  .rc-fsec__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    background: var(--color-brand-tint);
+    color: var(--color-brand);
+  }
+  .rc-fsec__titles {
+    display: grid;
+    flex: 1 1 auto;
+    min-width: 0;
+    line-height: 1.4;
+  }
+  .rc-fsec__step {
+    color: var(--color-text-subtle);
+    font-size: 0.625rem;
+    font-weight: 750;
+  }
+  .rc-fsec__titles h3 {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 850;
+  }
+  .rc-fsec__hint {
+    margin: 0;
+    padding: 3px 10px;
+    border-radius: var(--radius-pill);
+    background: var(--color-sunken);
+    color: var(--color-text-muted);
+    font-size: 0.6875rem;
+  }
+  .rc-fsec__body {
+    display: grid;
+    gap: 14px;
+    min-width: 0;
+  }
+  .rc-fsec .text-input,
+  .rc-fsec .rc-period button,
+  .rc-fsec .rc-source {
+    background: var(--color-surface);
+  }
+  /* منبع نوبت: کپسول دوگزینه‌ای جمع‌وجور (نه نوار سنگین تمام‌پهنا) */
+  .rc-source {
+    display: inline-grid;
+    grid-template-columns: repeat(2, minmax(0, auto));
+    justify-self: start;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+  }
+  .rc-source button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 38px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+      background-color 0.18s,
+      color 0.18s;
+  }
+  .rc-source button[aria-pressed="true"] {
+    background: var(--color-brand);
+    color: var(--color-on-brand);
+  }
+  .rc-source button:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
   }
   .rc-preview {
     display: flex;
@@ -1592,29 +1930,46 @@
   .rc-preview .icon {
     color: var(--color-brand);
   }
+  /* بندهای شیوه‌نامه: هر بند یک سطر نرم با نشان تیک درون دایره (نه شِورون) */
   .rc-ticks {
     display: grid;
-    gap: 8px;
+    gap: 6px;
     margin: 0;
     padding: 0;
     list-style: none;
     font-size: 0.8125rem;
-    line-height: 1.8;
+    line-height: 1.85;
   }
   .rc-ticks li {
     position: relative;
-    padding-inline-start: 24px;
+    padding: 9px 12px;
+    padding-inline-start: 44px;
+    border: 1px solid var(--rc-line);
+    border-radius: 12px;
+    background: var(--color-canvas);
   }
   .rc-ticks li::before {
     position: absolute;
-    inset-block-start: 0.55em;
-    inset-inline-start: 4px;
-    width: 10px;
-    height: 6px;
-    border-bottom: 2px solid var(--color-brand);
-    border-inline-start: 2px solid var(--color-brand);
+    inset-block-start: 11px;
+    inset-inline-start: 12px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-brand-tint);
+    box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--color-brand) 30%, transparent);
     content: "";
-    transform: rotate(-45deg);
+  }
+  /* تیک فیزیکی (‎✓‎) در مرکز دایره؛ جهت تیک به راست‌به‌چپ وابسته نیست */
+  .rc-ticks li::after {
+    position: absolute;
+    inset-block-start: 16px;
+    inset-inline-start: 20px;
+    width: 5px;
+    height: 10px;
+    border-right: 2px solid var(--color-brand);
+    border-bottom: 2px solid var(--color-brand);
+    content: "";
+    transform: rotate(45deg);
   }
   .rc-block {
     display: grid;
@@ -1822,12 +2177,13 @@
   }
   .rc-sop__panel {
     display: grid;
+    align-content: start;
     gap: 12px;
-    margin-top: 16px;
+    min-width: 0;
     animation: rc-rise 0.25s var(--ease-out);
   }
   .rc-sop__panel h3 {
-    margin: 4px 0 0;
+    margin: 0;
     font-size: 0.9375rem;
     font-weight: 850;
   }
@@ -1836,10 +2192,88 @@
     font-size: 0.8125rem;
     line-height: 1.9;
   }
-  .rc-tabs--sop {
+  /* شیوه‌نامه: فهرست فصل‌ها کنار متن (دسکتاپ/تبلت) و نوار پنج‌ستونهٔ هم‌عرض (گوشی) */
+  .rc-sop__layout {
+    display: grid;
+    grid-template-columns: 208px minmax(0, 1fr);
+    align-items: start;
+    gap: 22px;
+    padding-top: 18px;
+  }
+  .rc-sop__nav {
     position: sticky;
     inset-block-start: 0;
-    z-index: 1;
+    display: grid;
+    gap: 4px;
+    padding: 6px;
+    border: 1px solid var(--rc-line);
+    border-radius: 16px;
+    background: var(--color-canvas);
+  }
+  .rc-sop__tab {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    min-height: 54px;
+    padding: 8px 10px;
+    border: 0;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    text-align: start;
+    cursor: pointer;
+    transition:
+      background-color 0.18s,
+      color 0.18s,
+      box-shadow 0.18s;
+  }
+  .rc-sop__tab:hover {
+    background: color-mix(in oklab, var(--color-brand) 5%, transparent);
+    color: var(--color-text);
+  }
+  .rc-sop__tab:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 1px;
+  }
+  .rc-sop__tab-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--color-sunken);
+    transition:
+      background-color 0.18s,
+      color 0.18s;
+  }
+  .rc-sop__tab-text {
+    display: grid;
+    min-width: 0;
+    line-height: 1.45;
+  }
+  .rc-sop__tab-step {
+    color: var(--color-text-subtle);
+    font-size: 0.625rem;
+    font-weight: 700;
+  }
+  .rc-sop__tab-long {
+    font-size: 0.8125rem;
+    font-weight: 800;
+  }
+  .rc-sop__tab-short {
+    display: none;
+  }
+  .rc-sop__tab[aria-selected="true"] {
+    background: var(--color-surface);
+    box-shadow: 0 2px 10px color-mix(in oklab, var(--color-text) 8%, transparent);
+    color: var(--color-brand);
+  }
+  .rc-sop__tab[aria-selected="true"] .rc-sop__tab-icon {
+    background: var(--color-brand);
+    color: var(--color-on-brand);
   }
   .rc-routine {
     display: grid;
@@ -2087,11 +2521,86 @@
       gap: 18px;
       padding: 16px;
     }
-    .rc-stay {
-      grid-template-columns: 1fr 1fr;
+  }
+  /* دفتر: جدول ۸۶۰ پیکسلی زیر ۹۶۰ پیکسل جا نمی‌شود ⇐ کارت تک‌ستونهٔ جادار */
+  @media (max-width: 960px) {
+    .rc-table {
+      display: none;
     }
-    .rc-stay > :first-child {
-      grid-column: 1 / -1;
+    .rc-ledger__panel {
+      overflow: visible;
+      border: 0;
+    }
+    .rc-cards {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    .rc-card {
+      display: grid;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--color-border);
+      border-radius: 14px;
+      background: var(--color-surface);
+    }
+    .rc-card[data-lane="delayed"],
+    .rc-card[data-lane="overstay"] {
+      border-inline-start: 3px solid var(--color-danger-fg);
+    }
+    .rc-card__head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 10px;
+    }
+    .rc-card__head > div {
+      display: grid;
+      flex: 1 1 110px;
+      min-width: 0;
+      font-size: 0.6875rem;
+    }
+    .rc-card__head > .rc-pill {
+      margin-inline-start: auto;
+    }
+    .rc-card__head > div strong {
+      font-size: 0.8125rem;
+    }
+    .rc-card__head > div span {
+      color: var(--color-text-muted);
+    }
+    .rc-card__facts {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 6px;
+      margin: 0;
+      font-size: 0.6875rem;
+    }
+    .rc-card__facts dt {
+      color: var(--color-text-muted);
+    }
+    .rc-card__facts dd {
+      margin: 0;
+      font-weight: 700;
+    }
+    .rc-card__facts .rc-lock {
+      min-height: 30px;
+      padding: 2px 6px;
+      font-size: 0.6875rem;
+    }
+    .rc-row-actions--block .btn {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+  @media (max-width: 1024px) {
+    .rc-ledger__bar .rc-tab__long {
+      display: none;
+    }
+    .rc-ledger__bar .rc-tab__short {
+      display: inline;
     }
   }
   @media (max-width: 768px) {
@@ -2132,11 +2641,13 @@
       gap: 12px;
       padding: 14px;
     }
+    /* کارت کامل و یکپارچهٔ خادم (بی‌لبهٔ نقطه‌چین و گوشهٔ نیمه‌گرد) */
     .rc-officer {
       width: 100%;
-      padding-bottom: 10px;
-      border-bottom: 1px dashed var(--color-border);
-      border-radius: 14px 14px 0 0;
+      padding: 8px 10px;
+      border-color: var(--color-border);
+      border-radius: 14px;
+      background: var(--color-surface);
     }
     .rc-officer > .icon {
       margin-inline-start: auto;
@@ -2241,99 +2752,113 @@
     }
   }
   @media (max-width: 640px) {
-    .rc-table {
-      display: none;
-    }
-    .rc-ledger__panel {
-      overflow: visible;
-      border: 0;
-    }
-    .rc-cards {
-      display: grid;
-      gap: 10px;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-    }
-    .rc-card {
-      display: grid;
-      gap: 10px;
-      padding: 12px;
-      border: 1px solid var(--color-border);
-      border-radius: 14px;
-      background: var(--color-surface);
-    }
-    .rc-card[data-lane="delayed"],
-    .rc-card[data-lane="overstay"] {
-      border-inline-start: 3px solid var(--color-danger-fg);
-    }
-    .rc-card__head {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px 10px;
-    }
-    .rc-card__head > div {
-      display: grid;
-      flex: 1 1 110px;
-      min-width: 0;
-      font-size: 0.6875rem;
-    }
-    .rc-card__head > .rc-pill {
-      margin-inline-start: auto;
-    }
-    .rc-card__head > div strong {
-      font-size: 0.8125rem;
-    }
-    .rc-card__head > div span {
-      color: var(--color-text-muted);
-    }
-    .rc-card__facts {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 6px;
-      margin: 0;
-      font-size: 0.6875rem;
-    }
-    .rc-card__facts dt {
-      color: var(--color-text-muted);
-    }
-    .rc-card__facts dd {
-      margin: 0;
-      font-weight: 700;
-    }
-    .rc-card__facts .rc-lock {
-      min-height: 30px;
-      padding: 2px 6px;
-      font-size: 0.6875rem;
-    }
-    .rc-row-actions--block .btn {
-      flex: 1;
-      justify-content: center;
-    }
     .rc-tab__long {
       display: none;
     }
     .rc-tab__short {
       display: inline;
     }
-    /* هر پنج زبانه بی‌پیمایش افقی دیده شوند: دو ردیف متقارن به‌جای نوار بریده */
-    .rc-tabs {
-      flex-wrap: wrap;
-      overflow: visible;
+    /* هر پنج زبانه در یک ردیف هم‌عرض: برچسب کوتاه بالای شمارنده (بی‌پیمایش، بی‌شکستن) */
+    .rc-ledger__bar {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "head"
+        "search"
+        "tabs";
+      gap: 12px;
     }
-    .rc-tab {
-      flex: 1 1 auto;
+    .rc-ledger__bar .rc-tabs {
+      gap: 2px;
+      padding: 3px;
+    }
+    .rc-ledger__bar .rc-tab {
+      flex-direction: column;
+      gap: 3px;
+      min-height: 54px;
+      padding: 6px 2px;
+      font-size: 0.6875rem;
+      line-height: 1.3;
+      white-space: nowrap;
+    }
+    .rc-wl-stats {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .rc-wl-stats > :last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+    .rc-stay {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas:
+        "day"
+        "period"
+        "cells";
+    }
+    .rc-fsec {
+      gap: 12px;
+      padding: 14px 12px;
+      border-radius: 16px;
+    }
+    .rc-fsec__hint {
+      flex-basis: 100%;
+      padding: 0;
+      background: none;
+    }
+    .rc-source {
+      display: grid;
+      justify-self: stretch;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .rc-source button {
+      padding: 0 8px;
+    }
+    .rc-sop__layout {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 14px;
+      padding-top: 0;
+    }
+    .rc-sop__nav {
+      z-index: 1;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 2px;
+      padding: 4px;
+      margin-inline: -2px;
+      border-radius: 14px;
+      box-shadow: 0 6px 12px -10px color-mix(in oklab, var(--color-text) 30%, transparent);
+    }
+    .rc-sop__tab {
+      flex-direction: column;
       justify-content: center;
-      padding-inline: 9px;
+      gap: 4px;
+      min-height: 62px;
+      padding: 6px 2px;
+      text-align: center;
+    }
+    .rc-sop__tab-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 9px;
+    }
+    .rc-sop__tab-step,
+    .rc-sop__tab-long {
+      display: none;
+    }
+    .rc-sop__tab-short {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 800;
+      white-space: nowrap;
     }
     .rc-hide-sm {
       display: none;
     }
     .rc-row-2,
-    .rc-choices[data-cols="3"],
-    .rc-choices[data-cols="4"] {
+    .rc-choices__grid[data-cols="3"],
+    .rc-choices__grid[data-cols="4"] {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .rc-choices__grid[data-cols="4"][data-count="3"] > .rc-choice:last-child,
+    .rc-choices__grid[data-cols="3"][data-count="3"] > .rc-choice:last-child {
+      grid-column: 1 / -1;
     }
     .rc-row-2 {
       grid-template-columns: minmax(0, 1fr);
@@ -2350,17 +2875,23 @@
     .rc-dossier__grid {
       grid-template-columns: minmax(0, 1fr);
     }
-    .rc-choices {
+    .rc-choices__grid[data-cols="2"],
+    .rc-choices__grid[data-cols="3"] {
       grid-template-columns: minmax(0, 1fr);
+      grid-auto-rows: auto;
     }
-    .rc-choices[data-cols="4"] {
+    .rc-choices__grid[data-cols="4"] {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .rc-codes {
       grid-template-columns: 1fr 1fr;
     }
     .rc-summary {
-      flex-direction: column;
+      align-items: flex-start;
+      padding: 12px;
+    }
+    .rc-suggest {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
   @media (max-width: 360px) {

@@ -1,9 +1,11 @@
 "use client";
-import { useId, type ReactNode } from "react";
+import { useId, type ComponentProps, type ReactNode } from "react";
 import { ApiError } from "@/shared/api/client";
 import { cx } from "@/shared/lib/cx";
 import { faDigits } from "@/shared/lib/fa";
 import { Icon, type IconName } from "@/shared/ui/Icon";
+import { JalaliDatePicker } from "@/shared/ui/JalaliDatePicker";
+import { TimePicker } from "@/shared/ui/TimePicker";
 import { REASON_MIN } from "./model";
 
 /** پیام نخستین خطای فیلدِ پاسخ ‎422‎ سرور (‎errors.{field}[0]‎) — برای نشاندن زیر همان فیلد. */
@@ -58,7 +60,8 @@ export function ReasonField({
               aria-pressed={value === p}
               onClick={() => onChange(p)}
             >
-              {p}
+              <Icon name={value === p ? "check" : "plus"} size={14} />
+              <span>{p}</span>
             </button>
           ))}
         </div>
@@ -74,7 +77,7 @@ export function ReasonField({
         aria-describedby={`${id}-hint`}
         onChange={(e) => onChange(e.target.value)}
       />
-      <p id={`${id}-hint`} className={cx("rc-field__hint", (error || short) && "rc-field__hint--warn")}>
+      <p id={`${id}-hint`} className={cx("rc-field__hint", (error || (short && length > 0)) && "rc-field__hint--warn")}>
         {error ??
           (short
             ? `دست‌کم ${faDigits(min)} نویسه — ${faDigits(length)} نوشته‌اید`
@@ -108,26 +111,93 @@ export function ChoiceCards<T extends string>({
 }) {
   const name = useId();
   return (
-    <fieldset className="rc-choices" data-cols={columns}>
-      <legend className="field-label">{legend}</legend>
-      {items.map((it) => (
-        <label key={it.value} className="rc-choice" data-disabled={it.disabled || undefined}>
-          <input
-            type="radio"
-            name={name}
-            value={it.value}
-            checked={value === it.value}
-            disabled={it.disabled}
-            onChange={() => onChange(it.value)}
-          />
-          {it.icon ? <Icon name={it.icon} size={18} /> : null}
-          <span>
-            <strong>{it.label}</strong>
-            {it.hint ? <small>{it.hint}</small> : null}
-          </span>
-        </label>
-      ))}
+    <fieldset className="rc-choices">
+      <legend className="field-label rc-choices__legend">{legend}</legend>
+      <div className="rc-choices__grid" data-cols={columns} data-count={items.length}>
+        {items.map((it) => (
+          <label key={it.value} className="rc-choice" data-disabled={it.disabled || undefined}>
+            <input
+              type="radio"
+              name={name}
+              value={it.value}
+              checked={value === it.value}
+              disabled={it.disabled}
+              onChange={() => onChange(it.value)}
+            />
+            {it.icon ? (
+              <span className="rc-choice__icon" aria-hidden="true">
+                <Icon name={it.icon} size={18} />
+              </span>
+            ) : null}
+            <span className="rc-choice__text">
+              <strong>{it.label}</strong>
+              {it.hint ? <small>{it.hint}</small> : null}
+            </span>
+            <span className="rc-choice__mark" aria-hidden="true" />
+          </label>
+        ))}
+      </div>
     </fieldset>
+  );
+}
+
+/**
+ * انتخابگر روز/ساعت با برچسب دیدنی بالای دکمه (هم‌شکل دیگر فیلدهای پنجره). نام دسترس‌پذیر را خود دکمه
+ * (‎aria-label‎ کامل با مقدار) دارد؛ برچسب دیدنی برای صفحه‌خوان تکرار نمی‌شود.
+ */
+export function DateField(props: ComponentProps<typeof JalaliDatePicker>) {
+  return (
+    <div className="rc-field">
+      <span className="field-label" aria-hidden="true">
+        {props.label}
+      </span>
+      <JalaliDatePicker {...props} />
+    </div>
+  );
+}
+
+export function TimeField(props: ComponentProps<typeof TimePicker>) {
+  return (
+    <div className="rc-field">
+      <span className="field-label" aria-hidden="true">
+        {props.label}
+      </span>
+      <TimePicker {...props} />
+    </div>
+  );
+}
+
+/** بخش شماره‌دار فرم‌های بلند (عنوان + توضیح کوتاه + بدنه) — فرم را به گام‌های خوانا می‌شکند. */
+export function FormSection({
+  step,
+  title,
+  hint,
+  icon,
+  children,
+}: {
+  step: number;
+  title: string;
+  hint?: string;
+  icon: IconName;
+  children: ReactNode;
+}) {
+  const id = useId();
+  return (
+    <section className="rc-fsec" aria-labelledby={id}>
+      <header className="rc-fsec__head">
+        <span className="rc-fsec__icon" aria-hidden="true">
+          <Icon name={icon} size={18} />
+        </span>
+        <span className="rc-fsec__titles">
+          <span className="rc-fsec__step" aria-hidden="true">
+            گام {faDigits(step)}
+          </span>
+          <h3 id={id}>{title}</h3>
+        </span>
+        {hint ? <p className="rc-fsec__hint">{hint}</p> : null}
+      </header>
+      <div className="rc-fsec__body">{children}</div>
+    </section>
   );
 }
 

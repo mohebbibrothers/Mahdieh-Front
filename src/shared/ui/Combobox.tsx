@@ -185,7 +185,12 @@ export function Combobox({
           aria-invalid={error ? true : undefined}
           aria-describedby={describedBy}
           aria-required={required || undefined}
-          autoComplete="off"
+          // کروم «off» را برای فیلدهای نشانی‌مانند (استان/شهر) نادیده می‌گیرد و پیشنهاد نشانی‌های ذخیره‌شده را
+          // روی فهرست ما می‌اندازد؛ نشانهٔ ناشناخته، پرکردن خودکار مرورگر را برای این فیلد خاموش می‌کند.
+          autoComplete="mahdieh-picker"
+          data-1p-ignore=""
+          data-lpignore="true"
+          data-form-type="other"
           spellCheck={false}
           placeholder={selected ? selected.label : placeholder}
           value={query ?? selected?.label ?? ""}

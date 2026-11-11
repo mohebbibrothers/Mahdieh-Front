@@ -21,12 +21,19 @@ import { durationLabel, faDigits, latinDigits } from "@/shared/lib/fa";
 import { useClock } from "@/shared/lib/use-clock";
 import { Combobox, type ComboOption } from "@/shared/ui/Combobox";
 import { AppDialog } from "@/shared/ui/Dialog";
-import { Icon } from "@/shared/ui/Icon";
-import { JalaliDatePicker } from "@/shared/ui/JalaliDatePicker";
+import { Icon, type IconName } from "@/shared/ui/Icon";
 import { SelectMenu } from "@/shared/ui/SelectMenu";
 import { Stepper } from "@/shared/ui/Stepper";
-import { TimePicker } from "@/shared/ui/TimePicker";
-import { ChoiceCards, DialogActions, ReasonField, Summary, fieldError } from "./form";
+import {
+  ChoiceCards,
+  DateField,
+  DialogActions,
+  FormSection,
+  ReasonField,
+  Summary,
+  TimeField,
+  fieldError,
+} from "./form";
 import {
   BLOCK_REASONS,
   MAX_CELLS,
@@ -47,6 +54,7 @@ import {
   type Period,
   tehranLabel,
 } from "./model";
+import { PlateInput, type PlateValue } from "@/widgets/booking/PlateInput";
 import { LanePill, Latin, Notice, UnitBadge } from "./parts";
 import { errorText, useDeskRuntime } from "./runtime";
 
@@ -452,6 +460,20 @@ export function CompleteDialog({ unit, close }: { unit: DeskUnit; close: Close }
 }
 
 /* ── مسدودسازی برای تعمیرات ──────────────────────────────────────────────── */
+/** نشانه و توضیح کوتاه هر نوع مسدودی (برچسب از سرور می‌آید؛ نوع ناشناخته ⇐ قفل). */
+const BLOCK_KIND_LOOK = {
+  maintenance: { icon: "wrench", hint: "تأسیسات، برق یا لوله‌کشی" },
+  cleaning: { icon: "broom", hint: "شست‌وشو و ضدعفونی کامل" },
+  event: { icon: "users", hint: "اسکان هیئت یا مأموریت ویژه" },
+  admin: { icon: "shield-check", hint: "به دستور مدیر زائرسرا" },
+} as const satisfies Record<string, { icon: IconName; hint: string }>;
+
+function kindLook(value: string): { icon: IconName; hint?: string } {
+  return Object.hasOwn(BLOCK_KIND_LOOK, value)
+    ? BLOCK_KIND_LOOK[value as keyof typeof BLOCK_KIND_LOOK]
+    : { icon: "lock" };
+}
+
 export function BlockDialog({ unit, desk, close }: { unit: DeskUnit; desk: Desk; close: Close }) {
   const now = useClock();
   const presets = now ? releasePresets(now) : [];
@@ -515,11 +537,11 @@ export function BlockDialog({ unit, desk, close }: { unit: DeskUnit; desk: Desk;
       </Summary>
       <ChoiceCards
         legend="نوع مسدودی"
-        columns={desk.block_kinds.length >= 3 ? 3 : 2}
+        columns={2}
         items={desk.block_kinds.map((k) => ({
           value: k.value,
           label: k.label,
-          icon: k.value === "maintenance" ? ("wrench" as const) : ("lock" as const),
+          ...kindLook(k.value),
         }))}
         value={kind}
         onChange={setKind}
@@ -534,9 +556,9 @@ export function BlockDialog({ unit, desk, close }: { unit: DeskUnit; desk: Desk;
       />
       <ChoiceCards
         legend="زمان تخمینی اتمام کار و رفع مسدودی"
-        columns={3}
+        columns={(presets.length + 1) % 3 === 0 ? 3 : 2}
         items={[
-          ...presets.map((p) => ({ value: p.id, label: p.label, hint: p.hint })),
+          ...presets.map((p) => ({ value: p.id, label: p.label, hint: p.hint, icon: "clock" as const })),
           { value: "custom", label: "زمان دلخواه", hint: "انتخاب روز و ساعت", icon: "calendar" as const },
         ]}
         value={chosen}
@@ -544,7 +566,7 @@ export function BlockDialog({ unit, desk, close }: { unit: DeskUnit; desk: Desk;
       />
       {chosen === "custom" ? (
         <div className="rc-row-2">
-          <JalaliDatePicker
+          <DateField
             anchor="desk-block-date"
             label="روز رفع مسدودی"
             value={day}
@@ -552,7 +574,7 @@ export function BlockDialog({ unit, desk, close }: { unit: DeskUnit; desk: Desk;
             min={now ? tehranDay(now) : undefined}
             invalid={Boolean(day) && !endValid}
           />
-          <TimePicker
+          <TimeField
             anchor="desk-block-time"
             label="ساعت رفع مسدودی"
             value={time}
@@ -828,34 +850,26 @@ function StayPicker({
   lattice: ReturnType<typeof readLattice>;
 }) {
   const cellsId = useId();
+  const periodId = useId();
   const startH = lattice.gridStartHour;
   const nightH = (startH + lattice.cellHours) % 24;
   const pad = (h: number) => `${String(h).padStart(2, "0")}:00`;
   return (
     <div className="rc-stay">
-      <JalaliDatePicker
-        anchor={anchor}
-        label="روز ورود"
-        value={day}
-        min={minDay}
-        onChange={(v) => v && setDay(v)}
-        quick={[
-          { label: "امروز", value: minDay },
-          { label: "فردا", value: tehranDay(Date.parse(`${minDay}T12:00:00+03:30`) + 86_400_000) },
-        ]}
-      />
-      <div className="rc-field">
-        <span className="field-label">نیم‌روز ورود</span>
-        <div className="segment segment--wide" role="group" aria-label="نیم‌روز ورود">
-          <button type="button" aria-pressed={period === "day"} onClick={() => setPeriod("day")}>
-            <Icon name="sun" size={16} /> روز · {faDigits(pad(startH))}
-          </button>
-          <button type="button" aria-pressed={period === "night"} onClick={() => setPeriod("night")}>
-            <Icon name="moon" size={16} /> شب · {faDigits(pad(nightH))}
-          </button>
-        </div>
+      <div className="rc-stay__day">
+        <DateField
+          anchor={anchor}
+          label="روز ورود"
+          value={day}
+          min={minDay}
+          onChange={(v) => v && setDay(v)}
+          quick={[
+            { label: "امروز", value: minDay },
+            { label: "فردا", value: tehranDay(Date.parse(`${minDay}T12:00:00+03:30`) + 86_400_000) },
+          ]}
+        />
       </div>
-      <div className="rc-field">
+      <div className="rc-field rc-stay__cells">
         <span id={cellsId} className="field-label">
           مدت اقامت
         </span>
@@ -866,9 +880,39 @@ function StayPicker({
           onChange={setCells}
           format={(v) => durationLabel(v)}
           labelId={cellsId}
+          className="stepper--wide"
           incLabel="نیم‌روز بیشتر"
           decLabel="نیم‌روز کمتر"
         />
+      </div>
+      <div className="rc-field rc-stay__period">
+        <span id={periodId} className="field-label">
+          نیم‌روز ورود
+        </span>
+        <div className="rc-period" role="group" aria-labelledby={periodId}>
+          <button type="button" aria-pressed={period === "day"} onClick={() => setPeriod("day")}>
+            <span className="rc-period__icon" aria-hidden="true">
+              <Icon name="sun" size={18} />
+            </span>
+            <span className="rc-period__text">
+              <strong>نیم‌روزِ روز</strong>
+              <small>
+                ورود از ساعت <bdi>{faDigits(pad(startH))}</bdi>
+              </small>
+            </span>
+          </button>
+          <button type="button" aria-pressed={period === "night"} onClick={() => setPeriod("night")}>
+            <span className="rc-period__icon" aria-hidden="true">
+              <Icon name="moon" size={18} />
+            </span>
+            <span className="rc-period__text">
+              <strong>نیم‌روزِ شب</strong>
+              <small>
+                ورود از ساعت <bdi>{faDigits(pad(nightH))}</bdi>
+              </small>
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -1008,10 +1052,10 @@ export function CreateDialog({ unit: initialUnit, desk, close }: { unit: string 
   );
   const [cells, setCells] = useState(2);
   const [arrival, setArrival] = useState("");
-  const [plate, setPlate] = useState("");
+  const [plate, setPlate] = useState<PlateValue>({ text: "", complete: true });
   const [note, setNote] = useState("");
   const { busy, error, submit } = useSubmit(close);
-  const ids = { phone: useId(), first: useId(), last: useId(), city: useId(), guests: useId(), plate: useId() };
+  const ids = { phone: useId(), first: useId(), last: useId(), city: useId(), guests: useId() };
 
   const provinces = useMemo<ComboOption[]>(
     () =>
@@ -1025,7 +1069,8 @@ export function CreateDialog({ unit: initialUnit, desk, close }: { unit: string 
   const capacity = target?.capacity_total ?? 8;
   const range = latticeRange({ day, period, cells }, lattice);
   const phoneOk = phoneLooksValid(phone);
-  const ready = phoneOk && Boolean(unit) && guests <= capacity;
+  const plateBad = Boolean(plate.text) && !plate.complete;
+  const ready = phoneOk && Boolean(unit) && guests <= capacity && !plateBad;
   const phoneErr = fieldError(error, "phone");
 
   const go = () =>
@@ -1044,7 +1089,7 @@ export function CreateDialog({ unit: initialUnit, desk, close }: { unit: string 
           ...(province ? { province } : {}),
           ...(city.trim() ? { city: city.trim() } : {}),
           ...(arrival ? { expected_arrival: arrival } : {}),
-          ...(plate.trim() ? { vehicle_plate: plate.trim() } : {}),
+          ...(plate.text ? { vehicle_plate: plate.text } : {}),
           ...(note.trim() ? { staff_note: note.trim() } : {}),
         }),
       { success: `نوبت ${unit} ثبت شد و گواهی برای زائر پیامک می‌شود.`, quiet: true },
@@ -1068,146 +1113,150 @@ export function CreateDialog({ unit: initialUnit, desk, close }: { unit: string 
         />
       )}
     >
-      <div className="segment segment--wide" role="group" aria-label="منبع نوبت">
-        <button type="button" aria-pressed={source === "desk"} onClick={() => setSource("desk")}>
-          <Icon name="user" size={16} /> زائر حاضر در پیشخوان
-        </button>
-        <button type="button" aria-pressed={source === "phone"} onClick={() => setSource("phone")}>
-          <Icon name="phone" size={16} /> رزرو تلفنی
-        </button>
-      </div>
-      <div className="rc-row-2">
-        <div className="rc-field">
-          <label className="field-label" htmlFor={ids.phone}>
-            شمارهٔ همراه سرپرست
-          </label>
-          <input
-            id={ids.phone}
-            className="text-input latin"
-            dir="ltr"
-            type="tel"
-            inputMode="tel"
-            autoComplete="off"
-            value={phone}
-            maxLength={20}
-            placeholder="09xx xxx xxxx"
-            aria-invalid={(phone && !phoneOk) || phoneErr ? true : undefined}
-            onChange={(e) => setPhone(e.target.value)}
-          />
-          <p className={cx("rc-field__hint", ((phone && !phoneOk) || phoneErr) && "rc-field__hint--warn")}>
-            {phoneErr ??
-              (phone && !phoneOk ? "شمارهٔ همراه معتبر نیست." : "اگر حساب نداشته باشد، همین‌جا ساخته می‌شود.")}
-          </p>
+      <FormSection step={1} icon="user" title="سرپرست و شمار زائران" hint="فقط شمارهٔ همراه الزامی است">
+        <div className="rc-source" role="group" aria-label="منبع نوبت">
+          <button type="button" aria-pressed={source === "desk"} onClick={() => setSource("desk")}>
+            <Icon name="user" size={16} /> حضوری در پیشخوان
+          </button>
+          <button type="button" aria-pressed={source === "phone"} onClick={() => setSource("phone")}>
+            <Icon name="phone" size={16} /> تماس تلفنی
+          </button>
         </div>
-        <div className="rc-field">
-          <span id={ids.guests} className="field-label">
-            شمار زائران
-          </span>
-          <Stepper
-            value={guests}
-            min={1}
-            max={capacity}
-            onChange={setGuests}
-            format={(v) => `${faDigits(v)} نفر`}
-            labelId={ids.guests}
-            incLabel="یک نفر بیشتر"
-            decLabel="یک نفر کمتر"
-          />
-          <p className="rc-field__hint">
-            ظرفیت {target?.title ?? "واحد"}: {faDigits(capacity)} نفر
-          </p>
+        <div className="rc-row-2">
+          <div className="rc-field">
+            <label className="field-label" htmlFor={ids.phone}>
+              شمارهٔ همراه سرپرست
+            </label>
+            <input
+              id={ids.phone}
+              name="desk-guest-mobile"
+              className="text-input latin"
+              dir="ltr"
+              type="tel"
+              inputMode="tel"
+              autoComplete="off"
+              value={phone}
+              maxLength={20}
+              placeholder="09xx xxx xxxx"
+              aria-invalid={(phone && !phoneOk) || phoneErr ? true : undefined}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            <p className={cx("rc-field__hint", ((phone && !phoneOk) || phoneErr) && "rc-field__hint--warn")}>
+              {phoneErr ??
+                (phone && !phoneOk ? "شمارهٔ همراه معتبر نیست." : "اگر حساب نداشته باشد، همین‌جا ساخته می‌شود.")}
+            </p>
+          </div>
+          <div className="rc-field">
+            <span id={ids.guests} className="field-label">
+              شمار زائران
+            </span>
+            <Stepper
+              value={guests}
+              min={1}
+              max={capacity}
+              onChange={setGuests}
+              format={(v) => `${faDigits(v)} نفر`}
+              labelId={ids.guests}
+              incLabel="یک نفر بیشتر"
+              decLabel="یک نفر کمتر"
+            />
+            <p className="rc-field__hint">
+              ظرفیت {target?.title ?? "واحد"}: {faDigits(capacity)} نفر
+            </p>
+          </div>
         </div>
-      </div>
-      <div className="rc-row-2">
-        <div className="rc-field">
-          <label className="field-label" htmlFor={ids.first}>
-            نام سرپرست <span className="rc-optional">(اختیاری)</span>
-          </label>
-          <input
-            id={ids.first}
-            className="text-input"
-            value={first}
-            maxLength={50}
-            onChange={(e) => setFirst(e.target.value)}
-          />
+      </FormSection>
+
+      <FormSection
+        step={2}
+        icon="id-card"
+        title="مشخصات سرپرست"
+        hint="اختیاری · هر چهار مورد ⇐ نمایهٔ زائر هم تکمیل می‌شود"
+      >
+        <div className="rc-row-2">
+          <div className="rc-field">
+            <label className="field-label" htmlFor={ids.first}>
+              نام
+            </label>
+            <input
+              id={ids.first}
+              name="desk-guest-given"
+              className="text-input"
+              autoComplete="off"
+              value={first}
+              maxLength={50}
+              onChange={(e) => setFirst(e.target.value)}
+            />
+          </div>
+          <div className="rc-field">
+            <label className="field-label" htmlFor={ids.last}>
+              نام خانوادگی
+            </label>
+            <input
+              id={ids.last}
+              name="desk-guest-family"
+              className="text-input"
+              autoComplete="off"
+              value={last}
+              maxLength={50}
+              onChange={(e) => setLast(e.target.value)}
+            />
+          </div>
         </div>
-        <div className="rc-field">
-          <label className="field-label" htmlFor={ids.last}>
-            نام خانوادگی <span className="rc-optional">(اختیاری)</span>
-          </label>
-          <input
-            id={ids.last}
-            className="text-input"
-            value={last}
-            maxLength={50}
-            onChange={(e) => setLast(e.target.value)}
-          />
+        <div className="rc-row-2">
+          <Combobox label="استان مبدأ" options={provinces} value={province} onChange={setProvince} quickPicks={3} />
+          <div className="rc-field">
+            <label className="field-label" htmlFor={ids.city}>
+              شهر مبدأ
+            </label>
+            <input
+              id={ids.city}
+              name="desk-guest-origin"
+              className="text-input"
+              autoComplete="off"
+              value={city}
+              maxLength={60}
+              onChange={(e) => setCity(e.target.value)}
+            />
+          </div>
         </div>
-      </div>
-      <div className="rc-row-2">
-        <Combobox
-          label="استان مبدأ (اختیاری)"
-          options={provinces}
-          value={province}
-          onChange={setProvince}
-          quickPicks={3}
+      </FormSection>
+
+      <FormSection step={3} icon="calendar" title="واحد و زمان اقامت" hint="نیم‌روزهای آزاد همان لحظه بررسی می‌شوند">
+        <SelectMenu
+          label="واحد اقامتی"
+          icon="home"
+          options={unitOptions(desk, guests)}
+          value={unit}
+          onChange={setUnit}
+          sheetTitle="انتخاب واحد"
         />
-        <div className="rc-field">
-          <label className="field-label" htmlFor={ids.city}>
-            شهر مبدأ <span className="rc-optional">(اختیاری)</span>
-          </label>
-          <input
-            id={ids.city}
-            className="text-input"
-            value={city}
-            maxLength={60}
-            onChange={(e) => setCity(e.target.value)}
-          />
-        </div>
-      </div>
-      <p className="rc-field__hint">نام، نام خانوادگی، استان و شهر با هم ⇒ نمایهٔ زائر هم‌زمان تکمیل می‌شود.</p>
-      <SelectMenu
-        label="واحد اقامتی"
-        icon="home"
-        options={unitOptions(desk, guests)}
-        value={unit}
-        onChange={setUnit}
-        sheetTitle="انتخاب واحد"
-      />
-      <StayPicker
-        anchor="desk-create-date"
-        day={day}
-        setDay={setDay}
-        period={period}
-        setPeriod={setPeriod}
-        cells={cells}
-        setCells={setCells}
-        minDay={desk.day}
-        lattice={lattice}
-      />
-      <RangePreview start={range.start} end={range.end} />
-      <div className="rc-row-2">
-        <TimePicker
+        <StayPicker
+          anchor="desk-create-date"
+          day={day}
+          setDay={setDay}
+          period={period}
+          setPeriod={setPeriod}
+          cells={cells}
+          setCells={setCells}
+          minDay={desk.day}
+          lattice={lattice}
+        />
+        <RangePreview start={range.start} end={range.end} />
+      </FormSection>
+
+      <FormSection step={4} icon="car" title="جزئیات رسیدن" hint="اختیاری">
+        <TimeField
           anchor="desk-create-time"
-          label="ساعت تقریبی رسیدن (اختیاری)"
+          label="ساعت تقریبی رسیدن"
           value={arrival}
           onChange={setArrival}
           placeholder="نامشخص"
         />
-        <div className="rc-field">
-          <label className="field-label" htmlFor={ids.plate}>
-            پلاک خودرو <span className="rc-optional">(اختیاری)</span>
-          </label>
-          <input
-            id={ids.plate}
-            className="text-input"
-            value={plate}
-            maxLength={20}
-            onChange={(e) => setPlate(e.target.value)}
-          />
-        </div>
-      </div>
-      <ReasonField label="یادداشت داخلی" optional value={note} onChange={setNote} />
+        {/* همان پلاک‌خوان ایرانی/خارجی صفحهٔ رزرو و پرتال ⇒ قالب یکسان پلاک در گواهی و گزارش */}
+        <PlateInput onChange={setPlate} invalid={plateBad} />
+        <ReasonField label="یادداشت داخلی" optional value={note} onChange={setNote} />
+      </FormSection>
       {error && !phoneErr ? (
         <Notice tone="danger" icon="alert">
           {errorText(error)}

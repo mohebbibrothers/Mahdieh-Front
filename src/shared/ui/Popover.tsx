@@ -26,8 +26,9 @@ export type PopoverAnchor =
 
 /** پاپ‌اورهای جست‌وجوی سریع زیر کل فیلد (پس از متن راهنما) باز می‌شوند، نه زیر خود دکمه. */
 const FIELD_ANCHORED = new Set<PopoverAnchor>(["arrival", "duration"]);
-/** در گوشی برگهٔ پایینی‌اند (همهٔ پاپ‌اورها جز منوی کوچک تم که کنار دکمه‌اش می‌ماند). */
+/** در گوشی برگهٔ پایینی‌اند (همهٔ پاپ‌اورها جز منوهای کوچک کنشی که کنار دکمهٔ خودشان می‌مانند). */
 const SHEET_QUERY = "(max-width: 620px)";
+const ALWAYS_ANCHORED = new Set<PopoverAnchor>(["theme", "desk-unit"]);
 
 /**
  * پاپ‌اور بومی (HTML popover): بستن با Esc و کلیک بیرون، لایهٔ بالا، بازگشت فوکوس — از خود مرورگر.
@@ -59,7 +60,7 @@ export function Popover({
   const ref = useRef<HTMLDivElement>(null);
   const anchorRef = useRef<Element | null>(null);
   const [open, setOpen] = useState(false);
-  const menu = anchor === "theme";
+  const menu = ALWAYS_ANCHORED.has(anchor);
   // با شناسه (نه ref) تا بتوان آن را هنگام رندر به فرزندان داد.
   const close = () => document.getElementById(id)?.hidePopover();
 

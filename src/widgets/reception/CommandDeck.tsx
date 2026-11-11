@@ -105,23 +105,65 @@ export function CommandDeck({
           {(close) => (
             <div className="rc-officer-menu">
               <p className="popover__title">امنیت نشست خادم</p>
-              <ul className="rc-officer-menu__facts">
-                <li>
-                  <Icon name="shield-check" size={16} /> روش تأیید:{" "}
-                  {desk.mfa.method === "recovery" ? "کد بازیابی" : "برنامهٔ Authenticator (TOTP)"}
-                </li>
-                <li>
-                  <Icon name="clock" size={16} />{" "}
-                  {fresh > 0 ? (
-                    <>تأیید تازه تا {mmss(fresh)} دیگر معتبر است</>
-                  ) : (
-                    "تأیید تازه منقضی است (برای کارهای حساس پرسیده می‌شود)"
-                  )}
-                </li>
-                <li data-warn={lowCodes || undefined}>
-                  <Icon name="key" size={16} /> کدهای بازیابی باقی‌مانده: {faDigits(desk.mfa.recovery_codes_remaining)}
-                </li>
-              </ul>
+              <div className="rc-officer-menu__id">
+                <span className="rc-officer__avatar" aria-hidden="true">
+                  {desk.officer.initials}
+                </span>
+                <span className="rc-officer-menu__who">
+                  <strong>{desk.officer.display_name}</strong>
+                  <span>
+                    {desk.officer.role_label} · {desk.shift.label}
+                  </span>
+                </span>
+              </div>
+              <dl className="rc-officer-menu__facts">
+                <div>
+                  <dt>
+                    <Icon name="shield-check" size={16} /> روش تأیید
+                  </dt>
+                  <dd>
+                    {desk.mfa.method === "recovery" ? (
+                      "کد بازیابی"
+                    ) : (
+                      <>
+                        برنامهٔ تأیید <bdi className="latin">TOTP</bdi>
+                      </>
+                    )}
+                  </dd>
+                </div>
+                <div>
+                  <dt>
+                    <Icon name="clock" size={16} /> تأیید تازه
+                  </dt>
+                  <dd>
+                    {fresh > 0 ? (
+                      <span className="rc-officer-menu__badge" data-tone="ok">
+                        <bdi>{mmss(fresh)}</bdi> باقی‌مانده
+                      </span>
+                    ) : (
+                      <span className="rc-officer-menu__badge">منقضی</span>
+                    )}
+                  </dd>
+                </div>
+                <div>
+                  <dt>
+                    <Icon name="key" size={16} /> کدهای بازیابی
+                  </dt>
+                  <dd>
+                    <span className="rc-officer-menu__badge" data-tone={lowCodes ? "warn" : "ok"}>
+                      {faDigits(desk.mfa.recovery_codes_remaining)} کد
+                    </span>
+                  </dd>
+                </div>
+              </dl>
+              <p className="rc-officer-menu__hint">
+                {lowCodes
+                  ? "کدهای بازیابی رو به پایان است؛ پیش از گم‌شدن گوشی، کدهای تازه بسازید."
+                  : fresh > 0
+                    ? "تا پایان این زمان، کارهای حساس بی‌پرسش دوباره انجام می‌شوند."
+                    : "برای کارهای حساس (نمایش شماره، خروجی کامل) کد ۶ رقمی پرسیده می‌شود."}
+              </p>
+              <div className="rc-officer-menu__sep" role="separator" />
               <button
                 type="button"
                 className="menu__item"
