@@ -58,7 +58,7 @@ jobs:
           cat release/BUILD_INFO.json | head -12
       - name: تمرین — e2e روی همان خروجی منتشرشدنی
         run: |
-          pnpm exec playwright install --with-deps chromium
+          scripts/install-browser.sh
           pnpm e2e
       - name: گزارش شکست
         if: failure()

@@ -61,7 +61,7 @@ jobs:
           name: front-dist
           path: dist/mahdieh-front
       - name: نصب Chromium هم‌نسخهٔ Playwright
-        run: pnpm exec playwright install --with-deps chromium
+        run: scripts/install-browser.sh
       - name: اجرای e2e
         run: pnpm e2e
       - name: گزارش شکست
