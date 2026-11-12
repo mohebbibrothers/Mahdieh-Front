@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useState } from "react";
 import { reservationsQuery, standingQuery } from "@/shared/api/queries";
+import { useStayBoundary } from "@/shared/api/use-stay-boundary";
 import type { Profile, Standing } from "@/shared/api/schemas";
 import { destHref, reservationHref } from "@/shared/config/destinations";
 import { cx } from "@/shared/lib/cx";
@@ -27,6 +28,7 @@ export function AccountPanel({
 }) {
   const standing = useQuery({ ...standingQuery, enabled: profile.is_profile_complete });
   const upcoming = useQuery(reservationsQuery("upcoming"));
+  useStayBoundary(upcoming.data?.results);
   const [confirmAll, setConfirmAll] = useState(false);
   const name = profile.display_name || [profile.first_name, profile.last_name].join(" ").trim() || "زائر گرامی";
   const reservations = upcoming.data?.results ?? [];

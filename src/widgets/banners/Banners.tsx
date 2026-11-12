@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { AccountTrigger } from "@/features/session/AccountButton";
 import { meQuery, occasionsQuery, reservationsQuery, standingQuery } from "@/shared/api/queries";
+import { useStayBoundary } from "@/shared/api/use-stay-boundary";
 import { destHref, reservationHref } from "@/shared/config/destinations";
 import { addDays, formatDayLabel, formatMoment, tehranToday } from "@/shared/lib/fa";
 import { useOnline } from "@/shared/lib/use-online";
@@ -25,6 +26,8 @@ export function AccountBanners() {
   const me = useQuery(meQuery);
   const signedIn = Boolean(me.data);
   const upcoming = useQuery({ ...reservationsQuery("upcoming"), enabled: signedIn });
+  // پایان نزدیک‌ترین اقامت ⇒ وضعیت حساب و فهرست از نو (بنر «سفر بعدی»/«امکان رزرو ندارید» کهنه نماند)
+  useStayBoundary(upcoming.data?.results);
   const standing = useQuery({ ...standingQuery, enabled: signedIn });
   const next = upcoming.data?.results.find((r) => r.is_active);
 

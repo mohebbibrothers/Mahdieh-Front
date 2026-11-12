@@ -6,6 +6,7 @@ import { draftStore } from "@/features/booking-draft/store";
 import { ApiError } from "@/shared/api/client";
 import type { Policies } from "@/shared/api/policies";
 import { fetchQuote, qk, reservationsQuery, standingQuery } from "@/shared/api/queries";
+import { useStayBoundary } from "@/shared/api/use-stay-boundary";
 import { createReservation, joinWaitlist, problemExtras, rk } from "@/shared/api/reservations";
 import type {
   Alternative,
@@ -354,6 +355,7 @@ export function StepDetails({
   const qc = useQueryClient();
   const standing = useQuery(standingQuery);
   const upcoming = useQuery(reservationsQuery("upcoming"));
+  useStayBoundary(upcoming.data?.results);
   const quote = useQuery({
     queryKey: ["me", "quote", payload] as const,
     queryFn: () => fetchQuote(payload),

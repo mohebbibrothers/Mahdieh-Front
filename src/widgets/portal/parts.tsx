@@ -31,9 +31,18 @@ export function SectionHead({
   );
 }
 
-export function StatusPill({ status, label }: { status: ReservationStatus | undefined; label: string }) {
+export function StatusPill({
+  status,
+  label,
+  settling = false,
+}: {
+  status: ReservationStatus | undefined;
+  label: string;
+  /** اقامت تمام شده ولی پرونده باز است ⇒ لحن «در انتظار»، نه «تأییدشده»ٔ سبز */
+  settling?: boolean;
+}) {
   return (
-    <span className="pt-pill" data-tone={STATUS_TONE[status ?? "confirmed"]}>
+    <span className="pt-pill" data-tone={settling ? "hold" : STATUS_TONE[status ?? "confirmed"]}>
       {label}
     </span>
   );

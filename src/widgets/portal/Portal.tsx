@@ -3,13 +3,16 @@ import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef } from "react";
+import { useNow } from "@/features/booking-draft/use-availability";
 import { SignInForm } from "@/features/session/SignInForm";
 import { ApiError } from "@/shared/api/client";
 import { readPolicies } from "@/shared/api/policies";
 import { configQuery, reservationsQuery, sessionQuery, standingQuery } from "@/shared/api/queries";
 import { reservationQuery } from "@/shared/api/reservations";
 import type { Reservation } from "@/shared/api/schemas";
+import { useStayBoundary } from "@/shared/api/use-stay-boundary";
 import { destHref } from "@/shared/config/destinations";
+import { isLiveStay } from "@/shared/lib/stay";
 import { Icon } from "@/shared/ui/Icon";
 import { toast } from "@/shared/ui/toast";
 import { setSearch } from "@/widgets/booking/use-search";
@@ -48,15 +51,19 @@ export function Portal() {
   const standing = useQuery({ ...standingQuery, enabled: signedIn });
   const upcoming = useQuery({ ...reservationsQuery("upcoming"), enabled: signedIn });
   const list = upcoming.data?.results ?? [];
+  // «فعال» زمان‌آگاه (همان سنجهٔ سقف رزرو فعال سرور): اقامتی که در همین دقیقه تمام شد، بی بارگذاری
+  // دوباره از کارت «اقامت فعال» به سابقه می‌رود و وضعیت حساب در همان لحظه از نو پرسیده می‌شود.
+  const now = useNow().getTime();
+  useStayBoundary(upcoming.data?.results);
   // فعال‌ها نخست (سرور نزدیک‌ترین را اول می‌دهد)؛ لغوشده‌های پیش‌رو فقط با ‎?code=‎ دیده می‌شوند.
-  const active = list.filter((r) => r.is_active);
+  const active = list.filter((r) => isLiveStay(r, now));
   const inList = code ? list.find((r) => r.code.toUpperCase() === code) : undefined;
   const pinnedQuery = useQuery({
     ...reservationQuery(code ?? "-"),
     enabled: signedIn && Boolean(code) && !inList && upcoming.isSuccess,
   });
   const pinned = !inList && pinnedQuery.data ? pinnedQuery.data : null;
-  const featured: Reservation | null = pinned ?? inList ?? pickFeatured(active, null);
+  const featured: Reservation | null = pinned ?? inList ?? pickFeatured(active, null, now);
 
   // کد ناموجود در حساب ⇒ پیام و پاک کردن نشانی (نه صفحهٔ خطا).
   const warned = useRef<string | null>(null);
@@ -108,7 +115,7 @@ export function Portal() {
     );
   }
 
-  const recent = [...active, ...list.filter((r) => !r.is_active)];
+  const recent = [...active, ...list.filter((r) => !isLiveStay(r, now))];
   return (
     <div className="pt-wrap">
       <CommandDeck profile={profile} standing={standing.data} recent={recent} onOpenCode={focusStay} />
@@ -143,7 +150,7 @@ export function Portal() {
         canBook={standing.data?.can_book}
       />
       {profile ? <AccountSecurity profile={profile} /> : null}
-      <Companion unitCode={featured && featured.is_active ? featured.unit_code : null} />
+      <Companion unitCode={featured && isLiveStay(featured, now) ? featured.unit_code : null} />
       <VerifySection />
     </div>
   );

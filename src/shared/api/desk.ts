@@ -2,7 +2,7 @@ import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod/mini";
 import { ApiError, api, toApiError, unwrap } from "./client";
 import type { components } from "./schema";
-import { reservationStatus, standingSchema } from "./schemas";
+import { reservationStatus, standingSchema, stayLifecycleShape } from "./schemas";
 
 /**
  * میز پذیرش (P-06) — فقط کارکنانِ گذشته از سد عامل دوم.
@@ -78,8 +78,7 @@ const staffReservationShape = {
     z.enum(["guest_request", "maintenance", "overbooking", "duplicate", "no_show", "other", ""]),
   ),
   cancel_reason: z.exactOptional(z.string()),
-  checked_in_at: z.exactOptional(nullableString),
-  checked_out_at: z.exactOptional(nullableString),
+  ...stayLifecycleShape,
   no_show_at: z.exactOptional(nullableString),
 };
 
@@ -261,6 +260,7 @@ const staffEvent = z.object({
     "checked_out",
     "no_show",
     "expired",
+    "settled",
     "note",
     "details",
   ]),

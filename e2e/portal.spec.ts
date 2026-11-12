@@ -299,6 +299,59 @@ test.describe("P-07 پرتال زائر", () => {
     expect(await horizontalOverflow(page)).toBeNull();
   });
 
+  /*
+   * گزارش کارفرما (۱۴۰۵/۰۸/۲۱): سفری که تمام شده و پذیرش تخلیه‌اش را ثبت نکرده بود، «تأییدشده» و
+   * «—» نشان داده می‌شد و سقف رزرو فعال را پر نگه می‌داشت. سرور اکنون آن را فعال نمی‌شمارد
+   * (‎standing.active.used = 0‎) و پرتال فاز «در حال بستن پرونده» و زمان گشایش دفتر را نشان می‌دهد.
+   */
+  test("سفر تمام‌شدهٔ بسته‌نشده: «پایان اقامت» و زمان گشایش دفتر؛ سقف رزرو فعال آزاد", async ({ page, api }) => {
+    const past = p07<{ results: Record<string, unknown>[]; meta: unknown }>("reservations-past");
+    const ended = {
+      ...past.results[0],
+      code: "M-1405-0001",
+      unit_code: "B1",
+      unit_title: "اتاق بزرگ طبقهٔ اول",
+      status: "confirmed",
+      status_label: "تأییدشده",
+      is_active: false,
+      start: "2026-10-18T08:00:00+03:30",
+      end: "2026-10-20T08:00:00+03:30",
+      feedback_url: null,
+      phase: "settling",
+      phase_label: "پایان اقامت · در حال بستن پرونده",
+      settles_at: "2026-10-20T14:00:00+03:30",
+      checked_in_at: null,
+      checked_out_at: null,
+    };
+    pilgrim(api);
+    const free = fixture<Record<string, unknown>>("standing-active");
+    api.set("/api/v1/me/standing", {
+      body: { ...free, can_book: true, blockers: [], active: { limit: 1, remaining: 1, used: 0, window_days: null } },
+    });
+    lists(api, fixture("reservations-empty"), { results: [ended], meta: { ...(past.meta as object), total: 1 } });
+    await page.goto("/portal/");
+
+    const row = page.locator("#history tbody tr").first();
+    await expect(row).toContainText("M-1405-0001");
+    await expect(row.locator(".pt-pill")).toHaveText("پایان اقامت · در حال بستن پرونده");
+    await expect(row.locator(".pt-pill")).toHaveAttribute("data-tone", "hold");
+    await expect(row).toContainText("دفتر دل‌نوشته امروز ساعت ۱۴:۰۰ گشوده می‌شود");
+    await expect(row).not.toContainText("تأییدشده");
+    await expect(page.getByText("سقف رزرو فعال پر است")).toHaveCount(0);
+    await expect(page.locator(".pt-badge--ok")).toContainText("مجاز به رزرو جدید");
+    expect(await horizontalOverflow(page)).toBeNull();
+
+    // همان پرونده از سابقه ⇒ کارت با نوار «اقامت شما به پایان رسید» و بی دکمهٔ تقویم
+    api.set("/api/v1/reservations/M-1405-0001", { body: ended });
+    api.set("/api/v1/reservations/M-1405-0001/timeline", { body: { results: [] } });
+    await row.getByRole("button", { name: "جزئیات رزرو M-1405-0001" }).click();
+    const stay = page.locator("#stay");
+    await expect(stay.locator(".pt-settling")).toContainText("اقامت شما به پایان رسید");
+    await expect(stay.locator(".pt-stay__badge")).toContainText("پایان اقامت · بستن پرونده");
+    await expect(stay.locator(".pt-act--gcal")).toHaveCount(0);
+    await expect(stay).toContainText("پذیرش حضوری در سامانه ثبت نشد");
+  });
+
   test("خطای سرور در خواندن نشست: «تلاش دوباره»، نه فرم ورود گمراه‌کننده", async ({ page, api }) => {
     api.set("/api/v1/auth/session", { status: 503, body: { detail: "موقتاً در دسترس نیست" } });
     api.allowConsole(/503/);

@@ -16,6 +16,7 @@ import {
   formatYear,
   tehranToday,
 } from "@/shared/lib/fa";
+import { statusBadge } from "@/shared/lib/stay";
 import { Icon } from "@/shared/ui/Icon";
 import { FeedbackDialog } from "@/widgets/booking/FeedbackDialog";
 import { type FeedbackCell, feedbackCell } from "./model";
@@ -63,6 +64,8 @@ export function PastStays({
   const rows = past.data?.pages.flatMap((p) => p.results) ?? [];
   const total = past.data?.pages[0]?.meta.total ?? rows.length;
   const [feedbackFor, setFeedbackFor] = useState<{ token: string; code: string } | null>(null);
+  // دقیقه‌ای: پرونده‌ای که در همین لحظه به پایان می‌رسد، بی بارگذاری دوباره «در آستانهٔ گشایش» می‌شود
+  const now = useNow().getTime();
 
   return (
     <section className="pt-section" aria-labelledby="pt-past-title" id="history">
@@ -138,6 +141,7 @@ export function PastStays({
                 <PastRow
                   key={r.code}
                   r={r}
+                  now={now}
                   onOpen={onOpen}
                   onFeedback={(token) => setFeedbackFor({ token, code: r.code })}
                 />
@@ -181,14 +185,17 @@ export function PastStays({
 
 function PastRow({
   r,
+  now,
   onOpen,
   onFeedback,
 }: {
   r: Reservation;
+  now: number;
   onOpen: (code: string) => void;
   onFeedback: (token: string) => void;
 }) {
-  const cell = feedbackCell(r);
+  const cell = feedbackCell(r, now);
+  const badge = statusBadge(r, now);
   return (
     <tr>
       <td data-label="کد پیگیری">
@@ -219,7 +226,7 @@ function PastRow({
       </td>
       <td data-label="تعداد مهمانان">{faDigits(r.guests_count)} نفر</td>
       <td data-label="وضعیت اقامت">
-        <StatusPill status={r.status} label={r.status_label} />
+        <StatusPill status={r.status} label={badge.label} settling={badge.settling} />
       </td>
       <td data-label="ارزیابی و دل‌نوشته">
         <FeedbackView cell={cell} onFeedback={onFeedback} />
@@ -272,7 +279,8 @@ function FeedbackView({ cell, onFeedback }: { cell: FeedbackCell; onFeedback: (t
     case "awaiting":
       return (
         <span className="pt-soft pt-soft--wait">
-          <Icon name="hourglass" size={14} /> پس از ثبت تخلیه گشوده می‌شود
+          <Icon name="hourglass" size={14} />
+          {cell.opensAt ? `دفتر دل‌نوشته ${cell.opensAt} گشوده می‌شود` : "دفتر دل‌نوشته به‌زودی گشوده می‌شود"}
         </span>
       );
     case "closed":

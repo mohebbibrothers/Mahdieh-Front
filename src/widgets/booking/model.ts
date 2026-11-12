@@ -187,6 +187,9 @@ export function composeNote(needs: readonly string[], text: string): string {
 
 /* ── وضعیت و گاه‌شمار ───────────────────────────────────────────────────── */
 export const CERTIFIABLE: ReadonlySet<ReservationStatus> = new Set(["confirmed", "checked_in", "completed"]);
+/** پروندهٔ باز (هنوز بسته نشده) — اقامت پایان‌یافته‌اش «در حال بستن پرونده» است. */
+const OPEN_STATUSES: ReadonlySet<ReservationStatus> = new Set(["hold", "confirmed", "checked_in"]);
+
 export const CANCELLED: ReadonlySet<ReservationStatus> = new Set([
   "cancelled_by_guest",
   "cancelled_by_staff",
@@ -209,8 +212,12 @@ export function milestones(r: Reservation, events: ReservationEvent[], now: numb
   const status = r.status ?? "confirmed";
   const start = Date.parse(r.start);
   const end = Date.parse(r.end);
-  const checkedIn = at("checked_in") ?? (status === "checked_in" || status === "completed" ? r.start : null);
-  const checkedOut = at("checked_out") ?? (status === "completed" ? r.end : null);
+  // زمان واقعی از سرور؛ «پایان‌یافته» بی ‎checked_in_at‎ = پرونده بی ثبت پذیرش بسته شد
+  const checkedIn = at("checked_in") ?? r.checked_in_at ?? (status === "checked_in" ? r.start : null);
+  const checkedOut =
+    at("checked_out") ?? r.checked_out_at ?? (status === "completed" ? (at("settled") ?? r.end) : null);
+  const closedUnattended = status === "completed" && !checkedIn;
+  const settling = OPEN_STATUSES.has(status) && Boolean(now) && now >= end;
   const booked = at("confirmed") ?? at("created") ?? r.created_at;
 
   const list: Milestone[] = [
@@ -231,16 +238,28 @@ export function milestones(r: Reservation, events: ReservationEvent[], now: numb
     {
       key: "checkin",
       title: "پذیرش و تحویل کلید",
-      detail: checkedIn ? "پذیرش انجام شد" : "همراه داشتن اصل مدرک هویتی",
+      detail: checkedIn
+        ? "پذیرش انجام شد"
+        : closedUnattended || settling
+          ? "پذیرش حضوری در سامانه ثبت نشد"
+          : "همراه داشتن اصل مدرک هویتی",
       at: checkedIn ?? r.start,
-      state: checkedIn ? "done" : now >= start ? "current" : "upcoming",
+      state: checkedIn || closedUnattended || settling ? "done" : now >= start ? "current" : "upcoming",
     },
     {
       key: "checkout",
-      title: "تخلیه و نظرسنجی رضایت",
-      detail: checkedOut ? "پیوند نظرسنجی پیامک شد" : "پیوند نظرسنجی پس از خروج پیامک می‌شود",
+      title: "تخلیه و دفتر دل‌نوشته",
+      detail: checkedOut
+        ? r.feedback_rating
+          ? "نظر و دل‌نوشتهٔ شما ثبت شد"
+          : r.feedback_url
+            ? "دفتر دل‌نوشته باز است"
+            : "پرونده بسته شد"
+        : settling
+          ? "پایان اقامت · پرونده به‌زودی بسته و دفتر دل‌نوشته گشوده می‌شود"
+          : "پس از تخلیه، دفتر دل‌نوشته گشوده می‌شود",
       at: checkedOut ?? r.end,
-      state: checkedOut ? "done" : checkedIn && now >= end ? "current" : "upcoming",
+      state: checkedOut ? "done" : settling || (checkedIn && now >= end) ? "current" : "upcoming",
     },
   ];
 

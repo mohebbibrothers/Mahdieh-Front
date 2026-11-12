@@ -10,6 +10,7 @@ import { SignInForm, type SignInStep } from "@/features/session/SignInForm";
 import { logout } from "@/shared/api/auth";
 import { readPolicies, type Policies } from "@/shared/api/policies";
 import { configQuery, propertyQuery, qk, reservationsQuery, sessionQuery, standingQuery } from "@/shared/api/queries";
+import { useStayBoundary } from "@/shared/api/use-stay-boundary";
 import type { Reservation, SessionState } from "@/shared/api/schemas";
 import { destHref, reservationHref } from "@/shared/config/destinations";
 import { faCount } from "@/shared/lib/fa";
@@ -235,6 +236,8 @@ function BookingEmpty() {
   const session = useQuery(sessionQuery);
   const signedIn = Boolean(session.data?.profile);
   const upcoming = useQuery({ ...reservationsQuery("upcoming"), enabled: signedIn });
+  // پایان نزدیک‌ترین اقامت ⇒ وضعیت حساب و فهرست از نو (بنر «سفر بعدی»/«امکان رزرو ندارید» کهنه نماند)
+  useStayBoundary(upcoming.data?.results);
   const standing = useQuery({ ...standingQuery, enabled: signedIn });
   // فعال‌ها نخست؛ لغوشده‌های پیش رو کم‌رنگ و پس از آن‌ها (برای دسترسی به سابقه و «رزرو تازه»).
   const list = [...(upcoming.data?.results ?? [])].sort((a, b) => Number(b.is_active) - Number(a.is_active));

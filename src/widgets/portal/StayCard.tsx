@@ -18,6 +18,7 @@ import {
   latinDigits,
   tehranToday,
 } from "@/shared/lib/fa";
+import { isLiveStay, isSettling, settleMoment } from "@/shared/lib/stay";
 import { useClock } from "@/shared/lib/use-clock";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon, type IconName } from "@/shared/ui/Icon";
@@ -42,6 +43,7 @@ const BADGE: Record<string, { icon: IconName; text: string }> = {
   checked_in: { icon: "key", text: "در حال اقامت" },
   completed: { icon: "star", text: "اقامت پایان‌یافته" },
 };
+const SETTLING_BADGE: { icon: IconName; text: string } = { icon: "hourglass", text: "پایان اقامت · بستن پرونده" };
 
 /** کارت شاخص اقامت (طراح: ‎.active-stay-card‎) — همهٔ کنش‌های پس از ثبت در یک‌جا. */
 export function StayCard({
@@ -79,7 +81,10 @@ export function StayCard({
   const steps = journey(r, events.data?.results ?? [], now || Date.parse(r.created_at));
   const stopped = CANCELLED.has(status);
   const note = parseNote(r.guest_note ?? "");
-  const badge = BADGE[status];
+  const settling = isSettling(r, now);
+  const live = isLiveStay(r, now);
+  // پروندهٔ «تأییدشده»ٔ گذشته «آمادهٔ پذیرش» خوانده نمی‌شود؛ «پایان‌یافته» بی‌پذیرش هم «اقامت انجام شد» نه
+  const badge = settling ? SETTLING_BADGE : BADGE[status];
 
   return (
     <article className="pt-stay" aria-labelledby="pt-stay-title" data-status={status}>
@@ -128,7 +133,7 @@ export function StayCard({
           </p>
         </div>
         {badge && !stopped ? (
-          <span className="pt-stay__badge" data-status={status}>
+          <span className="pt-stay__badge" data-status={settling ? "hold" : status}>
             <Icon name={badge.icon} size={18} />
             {badge.text}
           </span>
@@ -138,6 +143,7 @@ export function StayCard({
       </header>
 
       {status === "hold" ? <HoldStrip r={r} /> : null}
+      {settling ? <SettlingStrip r={r} now={now} /> : null}
 
       <dl className="pt-metrics">
         <div className="pt-metric">
@@ -262,7 +268,7 @@ export function StayCard({
             <Icon name="certificate" size={18} /> گواهی رسمی اقامت (مشاهده و چاپ)
           </button>
         ) : null}
-        {r.is_active ? (
+        {live ? (
           <a className="pt-act pt-act--ics" href={reservationIcsHref(r.code)} download={`mahdieh-${r.code}.ics`}>
             <Icon name="calendar-plus" size={18} />
             <span>
@@ -270,7 +276,7 @@ export function StayCard({
             </span>
           </a>
         ) : null}
-        {r.is_active && site ? (
+        {live && site ? (
           <a
             className="pt-act pt-act--gcal"
             href={googleCalendarUrl(r, { name: site.name, phone: site.support_phone, address: site.support_address })}
@@ -425,5 +431,22 @@ function CertificateDialog({
         ) : null}
       </div>
     </AppDialog>
+  );
+}
+
+/** اقامت تمام شده ولی پذیرش هنوز تخلیه را ثبت نکرده: چه می‌شود و کی دفتر دل‌نوشته باز می‌شود. */
+function SettlingStrip({ r, now }: { r: Reservation; now: number }) {
+  const opensAt = settleMoment(r, now);
+  return (
+    <div className="verdict verdict--pending pt-settling" role="status">
+      <Icon name="hourglass" size={18} />
+      <p>
+        <strong>اقامت شما به پایان رسید · زیارت قبول</strong>
+        <span>
+          این سفر دیگر جزو رزروهای فعال شما نیست و برای رزرو تازه آزادید. پرونده
+          {opensAt ? ` ${opensAt}` : " به‌زودی"} بسته می‌شود و دفتر دل‌نوشته همین‌جا برایتان گشوده می‌شود.
+        </span>
+      </p>
+    </div>
   );
 }

@@ -1720,16 +1720,10 @@ export type components = {
              */
             cancelled_at?: string | null;
             readonly cells_count: number;
-            /**
-             * زمان پذیرش
-             * Format: date-time
-             */
-            checked_in_at?: string | null;
-            /**
-             * زمان تخلیه
-             * Format: date-time
-             */
-            checked_out_at?: string | null;
+            /** @description زمان واقعی پذیرش حضوری (اگر ثبت شده باشد). */
+            readonly checked_in_at: string | null;
+            /** @description زمان تخلیه (ثبت پیشخوان یا پایان اقامت در بستن خودکار). */
+            readonly checked_out_at: string | null;
             /**
              * کد رزرو
              * @description کد انسان‌خوان برای مکالمهٔ تلفنی؛ مثل M-1405-0231
@@ -1778,6 +1772,12 @@ export type components = {
              * @description شناسهٔ UUIDv7 — مرتب با زمان و غیرقابل‌حدس
              */
             readonly id: string;
+            /**
+             * @description آیا رزرو هنوز «فعال» است؟ — وضعیت فعال **و** اقامتی که هنوز تمام نشده.
+             *
+             *     اقامت تمام‌شده‌ای که پرونده‌اش هنوز بسته نشده، دیگر فعال نیست (هم‌سان با سقف رزرو فعال
+             *     در ‎selectors.active_count‎)؛ وگرنه رسید و پرتال، سفر گذشته را «فعال» نشان می‌دادند.
+             */
             readonly is_active: boolean;
             /** لغو دیرهنگام */
             readonly is_late_cancel: boolean;
@@ -1786,6 +1786,18 @@ export type components = {
              * Format: date-time
              */
             no_show_at?: string | null;
+            /**
+             * @description * `upcoming` - upcoming
+             *     * `ongoing` - ongoing
+             *     * `settling` - settling
+             *     * `closed` - closed
+             * @enum {string}
+             */
+            readonly phase: "upcoming" | "ongoing" | "settling" | "closed";
+            /** @description برچسب فارسی فاز اقامت. */
+            readonly phase_label: string;
+            /** @description لحظهٔ بستن خودکار پرونده اگر پیشخوان زودتر نبندد (فقط پروندهٔ باز)؛ وگرنه ``None``. */
+            readonly settles_at: string | null;
             /**
              * منبع ایجاد
              * @description * `web` - وب (خود زائر)
@@ -2720,6 +2732,10 @@ export type components = {
             /** @description آیا دکمهٔ «لغو» باید نمایش داده شود؟ */
             readonly can_cancel: boolean;
             readonly cells_count: number;
+            /** @description زمان واقعی پذیرش حضوری (اگر ثبت شده باشد). */
+            readonly checked_in_at: string | null;
+            /** @description زمان تخلیه (ثبت پیشخوان یا پایان اقامت در بستن خودکار). */
+            readonly checked_out_at: string | null;
             /**
              * کد رزرو
              * @description کد انسان‌خوان برای مکالمهٔ تلفنی؛ مثل M-1405-0231
@@ -2762,9 +2778,27 @@ export type components = {
              * @description شناسهٔ UUIDv7 — مرتب با زمان و غیرقابل‌حدس
              */
             readonly id: string;
+            /**
+             * @description آیا رزرو هنوز «فعال» است؟ — وضعیت فعال **و** اقامتی که هنوز تمام نشده.
+             *
+             *     اقامت تمام‌شده‌ای که پرونده‌اش هنوز بسته نشده، دیگر فعال نیست (هم‌سان با سقف رزرو فعال
+             *     در ‎selectors.active_count‎)؛ وگرنه رسید و پرتال، سفر گذشته را «فعال» نشان می‌دادند.
+             */
             readonly is_active: boolean;
             /** لغو دیرهنگام */
             readonly is_late_cancel: boolean;
+            /**
+             * @description * `upcoming` - upcoming
+             *     * `ongoing` - ongoing
+             *     * `settling` - settling
+             *     * `closed` - closed
+             * @enum {string}
+             */
+            readonly phase: "upcoming" | "ongoing" | "settling" | "closed";
+            /** @description برچسب فارسی فاز اقامت. */
+            readonly phase_label: string;
+            /** @description لحظهٔ بستن خودکار پرونده اگر پیشخوان زودتر نبندد (فقط پروندهٔ باز)؛ وگرنه ``None``. */
+            readonly settles_at: string | null;
             /** @description آغاز اقامت در قالب ISO 8601 (وقت محلی سایت). */
             readonly start: string;
             /**
@@ -2828,11 +2862,12 @@ export type components = {
              *     * `checked_out` - تخلیه
              *     * `no_show` - عدم‌حضور
              *     * `expired` - انقضای نگه‌داشت
+             *     * `settled` - بستن خودکار پرونده
              *     * `note` - یادداشت
              *     * `details` - هماهنگی ورود
              * @enum {string}
              */
-            kind: "created" | "confirmed" | "cancelled" | "moved" | "checked_in" | "checked_out" | "no_show" | "expired" | "note" | "details";
+            kind: "created" | "confirmed" | "cancelled" | "moved" | "checked_in" | "checked_out" | "no_show" | "expired" | "settled" | "note" | "details";
             readonly kind_label: string;
             /** به وضعیت */
             to_status?: string;
@@ -2963,16 +2998,10 @@ export type components = {
              */
             cancelled_at?: string | null;
             readonly cells_count: number;
-            /**
-             * زمان پذیرش
-             * Format: date-time
-             */
-            checked_in_at?: string | null;
-            /**
-             * زمان تخلیه
-             * Format: date-time
-             */
-            checked_out_at?: string | null;
+            /** @description زمان واقعی پذیرش حضوری (اگر ثبت شده باشد). */
+            readonly checked_in_at: string | null;
+            /** @description زمان تخلیه (ثبت پیشخوان یا پایان اقامت در بستن خودکار). */
+            readonly checked_out_at: string | null;
             /**
              * کد رزرو
              * @description کد انسان‌خوان برای مکالمهٔ تلفنی؛ مثل M-1405-0231
@@ -3020,6 +3049,12 @@ export type components = {
              * @description شناسهٔ UUIDv7 — مرتب با زمان و غیرقابل‌حدس
              */
             readonly id: string;
+            /**
+             * @description آیا رزرو هنوز «فعال» است؟ — وضعیت فعال **و** اقامتی که هنوز تمام نشده.
+             *
+             *     اقامت تمام‌شده‌ای که پرونده‌اش هنوز بسته نشده، دیگر فعال نیست (هم‌سان با سقف رزرو فعال
+             *     در ‎selectors.active_count‎)؛ وگرنه رسید و پرتال، سفر گذشته را «فعال» نشان می‌دادند.
+             */
             readonly is_active: boolean;
             /** لغو دیرهنگام */
             readonly is_late_cancel: boolean;
@@ -3028,6 +3063,18 @@ export type components = {
              * Format: date-time
              */
             no_show_at?: string | null;
+            /**
+             * @description * `upcoming` - upcoming
+             *     * `ongoing` - ongoing
+             *     * `settling` - settling
+             *     * `closed` - closed
+             * @enum {string}
+             */
+            readonly phase: "upcoming" | "ongoing" | "settling" | "closed";
+            /** @description برچسب فارسی فاز اقامت. */
+            readonly phase_label: string;
+            /** @description لحظهٔ بستن خودکار پرونده اگر پیشخوان زودتر نبندد (فقط پروندهٔ باز)؛ وگرنه ``None``. */
+            readonly settles_at: string | null;
             /**
              * منبع ایجاد
              * @description * `web` - وب (خود زائر)
@@ -3128,11 +3175,12 @@ export type components = {
              *     * `checked_out` - تخلیه
              *     * `no_show` - عدم‌حضور
              *     * `expired` - انقضای نگه‌داشت
+             *     * `settled` - بستن خودکار پرونده
              *     * `note` - یادداشت
              *     * `details` - هماهنگی ورود
              * @enum {string}
              */
-            kind: "created" | "confirmed" | "cancelled" | "moved" | "checked_in" | "checked_out" | "no_show" | "expired" | "note" | "details";
+            kind: "created" | "confirmed" | "cancelled" | "moved" | "checked_in" | "checked_out" | "no_show" | "expired" | "settled" | "note" | "details";
             readonly kind_label: string;
             /** فراداده */
             metadata?: unknown;

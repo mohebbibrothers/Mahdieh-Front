@@ -42,6 +42,11 @@ const base: Reservation = {
   feedback_rating: null,
   is_late_cancel: false,
   details_editable: true,
+  phase: "upcoming",
+  phase_label: "پیش رو",
+  settles_at: null,
+  checked_in_at: null,
+  checked_out_at: null,
 };
 const r = (over: Partial<Reservation>): Reservation => ({ ...base, ...over });
 const ev = (kind: ReservationEvent["kind"], at: string): ReservationEvent => ({
@@ -109,16 +114,61 @@ describe("journey", () => {
 });
 
 describe("feedbackCell", () => {
-  it("امتیاز ثبت‌شده", () => expect(feedbackCell(r({ feedback_rating: 4 }))).toEqual({ kind: "rated", rating: 4 }));
-  it("پیوند باز", () => expect(feedbackCell(r({ feedback_url: "/feedback/t/" })).kind).toBe("open"));
+  it("امتیاز ثبت‌شده", () =>
+    expect(feedbackCell(r({ feedback_rating: 4 }), NOW)).toEqual({ kind: "rated", rating: 4 }));
+  it("پیوند باز", () => expect(feedbackCell(r({ feedback_url: "/feedback/t/" }), NOW).kind).toBe("open"));
   it("لغو به‌موقع ⇒ سهمیه بازگشت", () =>
-    expect(feedbackCell(r({ status: "cancelled_by_guest" })).kind).toBe("refunded"));
+    expect(feedbackCell(r({ status: "cancelled_by_guest" }), NOW).kind).toBe("refunded"));
   it("لغو دیرهنگام", () =>
-    expect(feedbackCell(r({ status: "cancelled_by_guest", is_late_cancel: true })).kind).toBe("late"));
-  it("لغو پذیرش ⇒ سهمیه بازگشت", () => expect(feedbackCell(r({ status: "cancelled_by_staff" })).kind).toBe("refunded"));
-  it("پایان‌یافتهٔ بی‌پیوند (پنجره بسته)", () => expect(feedbackCell(r({ status: "completed" })).kind).toBe("closed"));
-  it("پایان زمان بی ثبت تخلیه ⇒ در انتظار گشایش", () =>
-    expect(feedbackCell(r({ status: "checked_in" })).kind).toBe("awaiting"));
+    expect(feedbackCell(r({ status: "cancelled_by_guest", is_late_cancel: true }), NOW).kind).toBe("late"));
+  it("لغو پذیرش ⇒ سهمیه بازگشت", () =>
+    expect(feedbackCell(r({ status: "cancelled_by_staff" }), NOW).kind).toBe("refunded"));
+  it("پایان‌یافتهٔ بی‌پیوند (پنجره بسته)", () =>
+    expect(feedbackCell(r({ status: "completed" }), NOW).kind).toBe("closed"));
+  it("پذیرش‌شده در جریان اقامت ⇒ هنوز چیزی برای نمایش نیست", () =>
+    expect(feedbackCell(r({ status: "checked_in" }), NOW).kind).toBe("none"));
+});
+
+/* گزارش کارفرما (۱۴۰۵/۰۸/۲۱): رزرو «تأییدشده»ای که یک هفته از پایانش گذشته بود «—» نشان می‌داد. */
+describe("پایان اقامت پیش از بستن پرونده", () => {
+  const AFTER = Date.parse("2026-11-01T22:00:00+03:30"); // دو ساعت پس از پایان
+  const ended = r({ settles_at: "2026-11-02T02:00:00+03:30" });
+  it("تأییدشدهٔ گذشته ⇒ دفتر در آستانهٔ گشایش با ساعت", () =>
+    expect(feedbackCell(ended, AFTER)).toEqual({ kind: "awaiting", opensAt: "فردا ساعت ۰۲:۰۰" }));
+  it("پذیرش‌شدهٔ گذشته ⇒ همان", () => expect(feedbackCell(r({ status: "checked_in" }), AFTER).kind).toBe("awaiting"));
+  it("بی زمان بستن از سرور ⇒ «به‌زودی»", () =>
+    expect(feedbackCell(r({}), AFTER)).toEqual({ kind: "awaiting", opensAt: null }));
+  it("کارت «اقامت فعال» سفر زندهٔ بعدی را برمی‌گزیند، نه سفر تمام‌شده", () => {
+    const next = r({ code: "M-1405-0012", start: "2026-11-05T08:00:00+03:30", end: "2026-11-06T08:00:00+03:30" });
+    expect(pickFeatured([ended, next], null, AFTER)).toBe(next);
+  });
+  it("سفر پایان‌یافته: پذیرش «ثبت نشد» و تخلیه جاری با زمان گشایش", () => {
+    const steps = journey(ended, [], AFTER);
+    expect(steps.find((s) => s.key === "checkin")).toMatchObject({
+      state: "done",
+      detail: "پذیرش حضوری در سامانه ثبت نشد",
+    });
+    expect(steps.at(-1)).toMatchObject({
+      state: "current",
+      detail: "پایان اقامت · دفتر دل‌نوشته فردا ساعت ۰۲:۰۰ گشوده می‌شود",
+    });
+  });
+  it("بسته‌شده بی پذیرش ⇒ «پذیرش انجام شد» ادعا نمی‌شود؛ دفتر باز", () => {
+    const steps = journey(r({ status: "completed", feedback_url: "/feedback/t/" }), [], AFTER);
+    expect(steps.find((s) => s.key === "checkin")?.detail).toBe("پذیرش حضوری در سامانه ثبت نشد");
+    expect(steps.at(-1)).toMatchObject({ state: "done", detail: "دفتر دل‌نوشته باز است" });
+  });
+  it("پذیرش واقعی سرور ⇒ زمان همان", () => {
+    const steps = journey(
+      r({ status: "completed", checked_in_at: "2026-10-30T20:40:00+03:30", checked_out_at: base.end }),
+      [],
+      AFTER,
+    );
+    expect(steps.find((s) => s.key === "checkin")).toMatchObject({
+      detail: "پذیرش انجام شد",
+      at: "2026-10-30T20:40:00+03:30",
+    });
+  });
 });
 
 describe("googleCalendarUrl", () => {

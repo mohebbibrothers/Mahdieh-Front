@@ -216,7 +216,9 @@ function RowActions({ row, open, onCheckIn, block }: Omit<Props, "desk"> & { row
       ) : (
         <span className="rc-row-actions__state">
           {f.lane === "checked_out"
-            ? "تخلیه و تحویل کلید"
+            ? row.checked_in_at
+              ? "تخلیه و تحویل کلید"
+              : "بسته‌شده · بی ثبت پذیرش"
             : f.lane === "checked_in"
               ? "کلید تحویل شد ✓"
               : row.status_label}
@@ -243,6 +245,8 @@ const EVENT_ICON: Record<string, IconName> = {
   "reservation.moved": "swap",
   "reservation.note": "note",
   "reservation.details": "car",
+  // بستن خودکار پرونده پس از پایان اقامت (پذیرش تخلیه/عدم‌حضور را ثبت نکرده بود)
+  "reservation.settled": "history",
   "housekeeping.started": "broom",
   "housekeeping.completed": "sparkle",
   "block.created": "wrench",

@@ -16,7 +16,8 @@ import {
 import type { Reservation } from "@/shared/api/schemas";
 import { destHref } from "@/shared/config/destinations";
 import { faDigits, formatMoment } from "@/shared/lib/fa";
-import { useClock } from "@/shared/lib/use-clock";
+import { isLiveStay, isSettling, settleMoment } from "@/shared/lib/stay";
+import { useClock, useHydratedNow } from "@/shared/lib/use-clock";
 import { Icon, type IconName } from "@/shared/ui/Icon";
 import { CancelDialog } from "./CancelDialog";
 import { CertificateSheet, printCertificate } from "./CertificateSheet";
@@ -67,49 +68,63 @@ function HoldCountdown({ r }: { r: Reservation }) {
   );
 }
 
-function Banner({ r, fresh }: { r: Reservation; fresh: boolean }) {
+function Banner({ r, fresh, now }: { r: Reservation; fresh: boolean; now: number }) {
   const status = r.status ?? "confirmed";
-  const view: { tone: string; icon: IconName; title: string; text: string } = CANCELLED.has(status)
+  const opensAt = settleMoment(r, now);
+  const view: { tone: string; icon: IconName; title: string; text: string } = isSettling(r, now)
     ? {
-        tone: "stopped",
-        icon: "calendar-x",
-        title: `این رزرو ${r.status_label} است`,
-        text: "سانس آزاد شده و این رزرو دیگر گواهی معتبر ندارد.",
+        tone: "hold",
+        icon: "hourglass",
+        title: "اقامت شما به پایان رسید · زیارت قبول",
+        text: `این سفر دیگر جزو رزروهای فعال شما نیست و برای رزرو تازه آزادید. پرونده ${
+          opensAt ?? "به‌زودی"
+        } بسته می‌شود و دفتر دل‌نوشته همین‌جا گشوده می‌شود.`,
       }
-    : status === "hold"
+    : CANCELLED.has(status)
       ? {
-          tone: "hold",
-          icon: "hourglass",
-          title: "درخواست شما ثبت شد · در انتظار تأیید پذیرش",
-          text: "تا تأیید پذیرش، سانس برای شما محفوظ است.",
+          tone: "stopped",
+          icon: "calendar-x",
+          title: `این رزرو ${r.status_label} است`,
+          text: "سانس آزاد شده و این رزرو دیگر گواهی معتبر ندارد.",
         }
-      : status === "checked_in"
+      : status === "hold"
         ? {
-            tone: "ok",
-            icon: "key",
-            title: "خوش آمدید · پذیرش شما انجام شده است",
-            text: "اقامتی پربرکت و زیارتی مقبول برایتان آرزومندیم.",
+            tone: "hold",
+            icon: "hourglass",
+            title: "درخواست شما ثبت شد · در انتظار تأیید پذیرش",
+            text: "تا تأیید پذیرش، سانس برای شما محفوظ است.",
           }
-        : status === "completed"
+        : status === "checked_in"
           ? {
               tone: "ok",
-              icon: "star",
-              title: "اقامت شما به پایان رسید · زیارت قبول",
-              text: "پیوند دفتر دل‌نوشته (ارزیابی اقامت) برایتان پیامک شده است.",
+              icon: "key",
+              title: "خوش آمدید · پذیرش شما انجام شده است",
+              text: "اقامتی پربرکت و زیارتی مقبول برایتان آرزومندیم.",
             }
-          : fresh
+          : status === "completed"
             ? {
                 tone: "ok",
-                icon: "check",
-                title: "زیارت قبول · رزرو شما با موفقیت قطعی شد",
-                text: "خانه‌ای برای شما در مهدیه مشهد مقدس آماده است. گواهی اقامت رسمی با کد پیگیری اختصاصی زیر صادر شد.",
+                icon: "star",
+                title: "اقامت شما به پایان رسید · زیارت قبول",
+                text: r.feedback_rating
+                  ? "نظر و دل‌نوشتهٔ شما ثبت شد؛ از همراهی‌تان با خادمان مهدیه سپاسگزاریم."
+                  : r.feedback_url
+                    ? "دفتر دل‌نوشته باز است؛ نظر و دعای خیرتان را همین‌جا برای خادمان بنویسید."
+                    : "از اینکه میهمان مهدیه بودید سپاسگزاریم؛ چشم‌به‌راه سفر بعدی شما هستیم.",
               }
-            : {
-                tone: "ok",
-                icon: "certificate",
-                title: "رزرو قطعی شما",
-                text: "گواهی رسمی اقامت با کد پیگیری اختصاصی زیر در دسترس است.",
-              };
+            : fresh
+              ? {
+                  tone: "ok",
+                  icon: "check",
+                  title: "زیارت قبول · رزرو شما با موفقیت قطعی شد",
+                  text: "خانه‌ای برای شما در مهدیه مشهد مقدس آماده است. گواهی اقامت رسمی با کد پیگیری اختصاصی زیر صادر شد.",
+                }
+              : {
+                  tone: "ok",
+                  icon: "certificate",
+                  title: "رزرو قطعی شما",
+                  text: "گواهی رسمی اقامت با کد پیگیری اختصاصی زیر در دسترس است.",
+                };
   return (
     <div
       className="success-banner"
@@ -181,6 +196,8 @@ export function ReservationView({ code, policies }: { code: string; policies: Po
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [printing, setPrinting] = useState(false);
   const [fresh] = useState(() => freshCodes.has(code));
+  // دقیقه‌ای (نه ثانیه‌ای): پایان اقامت و گشایش دفتر دل‌نوشته در صفحهٔ بازمانده هم دیده شود
+  const now = useHydratedNow(60_000) ?? 0;
   useEffect(() => {
     freshCodes.delete(code);
   }, [code]);
@@ -278,7 +295,7 @@ export function ReservationView({ code, policies }: { code: string; policies: Po
           </Link>
         }
       >
-        <Banner r={r} fresh={fresh} />
+        <Banner r={r} fresh={fresh} now={now} />
         {status === "hold" ? <HoldCountdown r={r} /> : null}
         {certPending ? <div className="skeleton skeleton--block cert-skeleton" aria-hidden="true" /> : null}
         {certError ? (
@@ -317,7 +334,7 @@ export function ReservationView({ code, policies }: { code: string; policies: Po
               <Icon name="printer" size={18} /> {printing ? "آماده‌سازی برگهٔ A4…" : "چاپ گواهی اقامت / دریافت PDF"}
             </button>
           ) : null}
-          {r.is_active ? (
+          {isLiveStay(r, now) ? (
             <a className="btn btn-secondary" href={reservationIcsHref(r.code)} download={`mahdieh-${r.code}.ics`}>
               <Icon name="calendar-plus" size={18} /> افزودن به تقویم گوشی (دانلود ICS)
             </a>
@@ -332,7 +349,7 @@ export function ReservationView({ code, policies }: { code: string; policies: Po
               <Icon name="feather" size={18} /> ثبت نظر و دل‌نوشته
             </button>
           ) : null}
-          {CANCELLED.has(status) || status === "completed" ? (
+          {CANCELLED.has(status) || status === "completed" || isSettling(r, now) ? (
             <Link className="btn btn-secondary" href={destHref("calendar")}>
               <Icon name="calendar" size={18} /> رزرو تازه
             </Link>

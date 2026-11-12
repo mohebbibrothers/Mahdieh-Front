@@ -43,6 +43,11 @@ const base: Reservation = {
   feedback_rating: null,
   is_late_cancel: false,
   details_editable: true,
+  phase: "upcoming",
+  phase_label: "پیش رو",
+  settles_at: null,
+  checked_in_at: null,
+  checked_out_at: null,
 };
 
 describe("بازهٔ درخواست روی شبکهٔ نیم‌روز", () => {

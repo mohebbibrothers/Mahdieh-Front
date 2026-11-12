@@ -247,6 +247,22 @@ export const reservationStatus = z.enum([
 ]);
 export type ReservationStatus = z.infer<typeof reservationStatus>;
 
+/** فاز زندهٔ اقامت: پیش رو · در جریان · پایان‌یافته و در حال بستن پرونده · بسته‌شده. */
+export const stayPhase = z.enum(["upcoming", "ongoing", "settling", "closed"]);
+export type StayPhase = z.infer<typeof stayPhase>;
+
+/** فیلدهای «چرخهٔ پایان اقامت» (بک‌اند ۱۴۰۵/۰۸/۲۱)؛ پیش‌فرض‌ها برای بک‌اند قدیمی‌تر — همیشه با ‎stayPhaseOf‎ بخوانید. */
+export const stayLifecycleShape = {
+  /** فاز لحظهٔ پاسخ سرور؛ نمای زنده با ‎stayPhaseOf(r, now)‎ از ساعت کاربر محاسبه می‌شود */
+  phase: z._default(stayPhase, "upcoming"),
+  phase_label: z._default(z.string(), ""),
+  /** لحظهٔ بستن خودکار پرونده اگر پذیرش زودتر نبندد (فقط پروندهٔ باز) */
+  settles_at: z._default(z.nullable(z.string()), null),
+  /** زمان واقعی پذیرش حضوری؛ ‎null‎ در «پایان‌یافته» یعنی پرونده بی ثبت پذیرش بسته شد */
+  checked_in_at: z._default(z.nullable(z.string()), null),
+  checked_out_at: z._default(z.nullable(z.string()), null),
+};
+
 export const reservationSchema = z.object({
   id: z.string(),
   code: z.string(),
@@ -278,6 +294,7 @@ export const reservationSchema = z.object({
   is_late_cancel: z._default(z.boolean(), false),
   /** «هماهنگی ورود» (ساعت رسیدن/پلاک/یادداشت) هنوز قابل ویرایش است ⇒ ‎PATCH‎ */
   details_editable: z._default(z.boolean(), false),
+  ...stayLifecycleShape,
 }) satisfies z.ZodMiniType<S["Reservation"]>;
 export const pageMetaSchema = z.object({
   next: z.nullable(z.string()),
@@ -354,6 +371,7 @@ export const reservationEventsSchema = z.object({
         "checked_out",
         "no_show",
         "expired",
+        "settled",
         "note",
         "details",
       ]),

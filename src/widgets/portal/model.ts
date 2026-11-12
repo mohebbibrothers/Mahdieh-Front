@@ -1,5 +1,6 @@
 import type { Reservation, ReservationEvent, ReservationStatus } from "@/shared/api/schemas";
 import { faDigits, formatClock, formatDayLabel, latinDigits, tehranToday } from "@/shared/lib/fa";
+import { isLiveStay, isSettling, settleMoment } from "@/shared/lib/stay";
 import { CANCELLED } from "@/widgets/booking/model";
 
 /**
@@ -11,13 +12,17 @@ const DAY = 86_400_000;
 /* ── انتخاب اقامت برجسته ─────────────────────────────────────────────────── */
 
 /** کارت «اقامت فعال»: کد نشانی (اگر در فهرست باشد) وگرنه نزدیک‌ترین سفر پیش‌رو (فهرست از سرور مرتب است). */
-export function pickFeatured(upcoming: readonly Reservation[], code: string | null): Reservation | null {
+export function pickFeatured(
+  upcoming: readonly Reservation[],
+  code: string | null,
+  now: number = 0,
+): Reservation | null {
   if (code) {
     const wanted = code.trim().toUpperCase();
     const hit = upcoming.find((r) => r.code.toUpperCase() === wanted);
     if (hit) return hit;
   }
-  return upcoming.find((r) => r.is_active) ?? upcoming[0] ?? null;
+  return upcoming.find((r) => isLiveStay(r, now)) ?? upcoming[0] ?? null;
 }
 
 /** کد پیگیری نرمال: ارقام لاتین، حروف بزرگ، بی‌فاصله — «m-۱۴۰۵-۰۰۱۱» ⇒ «M-1405-0011». */
@@ -62,8 +67,13 @@ export function journey(r: Reservation, events: readonly ReservationEvent[], now
   const start = Date.parse(r.start);
   const created = at("created") ?? r.created_at;
   const confirmed = at("confirmed") ?? (status === "hold" ? null : created);
-  const checkedIn = at("checked_in") ?? (status === "checked_in" || status === "completed" ? r.start : null);
-  const checkedOut = at("checked_out") ?? (status === "completed" ? r.end : null);
+  // زمان واقعی از سرور؛ «پایان‌یافته» بی ‎checked_in_at‎ یعنی پرونده بی ثبت پذیرش بسته شد (نه «پذیرش انجام شد»)
+  const checkedIn = at("checked_in") ?? r.checked_in_at ?? (status === "checked_in" ? r.start : null);
+  const unattended = status === "completed" && !checkedIn;
+  const checkedOut =
+    at("checked_out") ?? r.checked_out_at ?? (status === "completed" ? (at("settled") ?? r.end) : null);
+  const settling = isSettling(r, now);
+  const opensAt = settling ? settleMoment(r, now) : null;
   const coordinated = Boolean(r.expected_arrival || r.vehicle_plate || at("details"));
   const arrivalDetail = [
     r.vehicle_plate ? "پلاک ثبت شد" : null,
@@ -92,21 +102,33 @@ export function journey(r: Reservation, events: readonly ReservationEvent[], now
       title: "هماهنگی ورود و خودرو",
       detail: coordinated ? arrivalDetail || "هماهنگ شد" : "ساعت رسیدن و پلاک (اختیاری)",
       at: at("details"),
-      state: coordinated || checkedIn ? "done" : status === "hold" ? "upcoming" : "current",
+      state: coordinated || checkedIn || unattended || settling ? "done" : status === "hold" ? "upcoming" : "current",
     },
     {
       key: "checkin",
       title: "پذیرش حضوری و کلید",
-      detail: checkedIn ? "پذیرش انجام شد" : `ساعت ${formatClock(r.start)} در پذیرش`,
+      detail: checkedIn
+        ? "پذیرش انجام شد"
+        : unattended || settling
+          ? "پذیرش حضوری در سامانه ثبت نشد"
+          : `ساعت ${formatClock(r.start)} در پذیرش`,
       at: checkedIn ?? r.start,
-      state: checkedIn ? "done" : coordinated && now >= start - DAY ? "current" : "upcoming",
+      state: checkedIn || unattended || settling ? "done" : coordinated && now >= start - DAY ? "current" : "upcoming",
     },
     {
       key: "checkout",
       title: "تخلیه و ارزیابی",
-      detail: checkedOut ? (r.feedback_rating ? "نظر شما ثبت شد" : "منتظر نظر شما") : `ساعت ${formatClock(r.end)}`,
+      detail: checkedOut
+        ? r.feedback_rating
+          ? "نظر شما ثبت شد"
+          : r.feedback_url
+            ? "دفتر دل‌نوشته باز است"
+            : "منتظر نظر شما"
+        : settling
+          ? `پایان اقامت · دفتر دل‌نوشته ${opensAt ? `${opensAt} ` : "به‌زودی "}گشوده می‌شود`
+          : `ساعت ${formatClock(r.end)}`,
       at: checkedOut ?? r.end,
-      state: checkedOut ? "done" : checkedIn ? "current" : "upcoming",
+      state: checkedOut ? "done" : checkedIn || settling ? "current" : "upcoming",
     },
   ];
   // «جاری» فقط یکی: نخستین مرحلهٔ ناتمام.
@@ -154,15 +176,16 @@ export type FeedbackCell =
   | { kind: "late" }
   | { kind: "noshow" }
   | { kind: "closed" }
-  | { kind: "awaiting" }
+  /** اقامت تمام شده و پرونده در حال بستن است؛ ‎opensAt‎ = «امروز ساعت ۱۸:۳۰» یا ‎null‎ */
+  | { kind: "awaiting"; opensAt: string | null }
   | { kind: "none" };
 
 /** ستون «ارزیابی» بر پایهٔ وضعیت (وقتی نه امتیازی هست نه پیوند نظرسنجی). */
-const AFTER_STAY: Record<ReservationStatus, "refunded" | "noshow" | "closed" | "awaiting" | "none"> = {
+const AFTER_STAY: Record<ReservationStatus, "refunded" | "noshow" | "closed" | "none"> = {
   hold: "none",
+  // پروندهٔ باز پس از پایان اقامت پیش از این نگاشت به «در آستانهٔ گشایش» می‌رسد (‎isSettling‎)
   confirmed: "none",
-  // اقامت تمام شده ولی پذیرش هنوز تخلیه را ثبت نکرده ⇒ دفتر «در آستانهٔ گشایش»، نه «—» گنگ
-  checked_in: "awaiting",
+  checked_in: "none",
   completed: "closed",
   cancelled_by_guest: "refunded",
   cancelled_by_staff: "refunded",
@@ -172,11 +195,17 @@ const AFTER_STAY: Record<ReservationStatus, "refunded" | "noshow" | "closed" | "
 };
 
 export function feedbackCell(
-  r: Pick<Reservation, "status" | "feedback_rating" | "feedback_url" | "is_late_cancel">,
+  r: Pick<
+    Reservation,
+    "status" | "start" | "end" | "phase" | "settles_at" | "feedback_rating" | "feedback_url" | "is_late_cancel"
+  >,
+  now: number,
 ): FeedbackCell {
   if (r.feedback_rating) return { kind: "rated", rating: r.feedback_rating };
   if (r.feedback_url) return { kind: "open", url: r.feedback_url };
   if (r.status === "cancelled_by_guest") return r.is_late_cancel ? { kind: "late" } : { kind: "refunded" };
+  // اقامت تمام شده ولی پذیرش هنوز تخلیه را ثبت نکرده ⇒ دفتر «در آستانهٔ گشایش» با ساعت، نه «—» گنگ
+  if (isSettling(r, now)) return { kind: "awaiting", opensAt: settleMoment(r, now) };
   const kind = r.status ? AFTER_STAY[r.status] : "none";
   return { kind };
 }
