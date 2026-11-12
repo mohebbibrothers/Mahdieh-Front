@@ -1,30 +1,35 @@
 #!/usr/bin/env bash
-# نصب Chromium هم‌نسخهٔ Playwright به‌همراه کتابخانه‌های سیستمی، مقاوم در برابر قطعی گذرای
-# آینهٔ اوبونتو/DNS روی اجراکننده‌های GitHub: مهلت کوتاهِ apt و تلاش دوباره با فاصلهٔ فزاینده.
+# نصب Chromium هم‌نسخهٔ Playwright برای e2e — تاب‌آور در برابر قطعی شبکهٔ آرشیو اوبونتو.
+#
+# ۱۴۰۵/۰۸/۲۰ اجراکننده‌های GitHub ساعتی هیچ میزبانِ ubuntu.com را resolve نمی‌کردند و
+# «playwright install --with-deps» تا سقف زمان شغل معطل می‌ماند. پس دو کار جدا شده است:
+#   ۱) خودِ مرورگر از CDN مایکروسافت/Playwright (مستقل از اوبونتو) — شکستش یعنی شکست واقعی؛
+#   ۲) کتابخانه‌های سیستمی با سقف زمانی؛ ایمیج اجراکننده تقریباً همه را از پیش دارد و تنها
+#      فونت‌های تایلندی/چینی می‌مانند که آزمون‌های ما (با Vazirmatn خودمیزبان) به آن نیازی ندارند.
+#      اگر آرشیو در دسترس نباشد هشدار ثبت می‌شود و درستیِ محیط را خودِ e2e می‌سنجد.
 set -uo pipefail
 
-cat <<'CONF' | sudo tee /etc/apt/apt.conf.d/80-mahdieh-retries >/dev/null
-Acquire::Retries "3";
-Acquire::http::Timeout "20";
-Acquire::https::Timeout "20";
+for attempt in 1 2 3; do
+  if pnpm exec playwright install chromium; then
+    break
+  fi
+  if [[ "${attempt}" == 3 ]]; then
+    echo "::error::دریافت Chromium پس از سه تلاش ناموفق ماند."
+    exit 1
+  fi
+  echo "::warning::دریافت Chromium در تلاش ${attempt} ناموفق بود؛ $((attempt * 15)) ثانیه بعد دوباره."
+  sleep $((attempt * 15))
+done
+
+cat <<'CONF' | sudo tee /etc/apt/apt.conf.d/80-mahdieh-network >/dev/null
+Acquire::Retries "2";
+Acquire::http::Timeout "15";
+Acquire::https::Timeout "15";
 CONF
 
-# security.ubuntu.com گاهی روی اجراکننده‌ها resolve نمی‌شود؛ شاخهٔ ‎-security‎ را از همان آینهٔ
-# اصلیِ اجراکننده بخوان (archive همان بسته‌ها را دارد).
-mirror="$(grep -rhoE 'https?://[a-z0-9.-]*archive\.ubuntu\.com/ubuntu/?' /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null | head -n1 || true)"
-mirror="${mirror:-http://archive.ubuntu.com/ubuntu/}"
-for f in /etc/apt/sources.list /etc/apt/sources.list.d/*.list /etc/apt/sources.list.d/*.sources; do
-  if [[ -f "${f}" ]]; then
-    sudo sed -i -E "s#https?://security\.ubuntu\.com/ubuntu/?#${mirror}#g" "${f}"
-  fi
-done
-
-for attempt in 1 2 3; do
-  if pnpm exec playwright install --with-deps chromium; then
-    exit 0
-  fi
-  echo "::warning::نصب Chromium در تلاش ${attempt} ناموفق بود؛ $((attempt * 20)) ثانیه بعد دوباره."
-  sleep $((attempt * 20))
-done
-echo "::error::نصب Chromium پس از سه تلاش ناموفق ماند."
-exit 1
+if timeout --kill-after=15 300 pnpm exec playwright install-deps chromium; then
+  echo "کتابخانه‌های سیستمی Chromium کامل است."
+else
+  echo "::warning::آرشیو اوبونتو در دسترس نبود؛ e2e با کتابخانه‌های ازپیش‌نصبِ ایمیج اجرا می‌شود."
+fi
+exit 0
