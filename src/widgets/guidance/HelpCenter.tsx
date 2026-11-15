@@ -1,7 +1,7 @@
 "use client";
 import { useDeferredValue, useId, useState } from "react";
 import type { Help } from "@/shared/api/schemas";
-import { latinDigits } from "@/shared/lib/fa";
+import { latinDigits, telHref } from "@/shared/lib/fa";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon, type IconName } from "@/shared/ui/Icon";
 
@@ -101,7 +101,7 @@ export function HelpCenter({ help }: { help: Help | undefined }) {
           <aside className="help-contact" aria-label="تماس با پذیرش">
             <strong>همراهی پذیرش</strong>
             {phone ? (
-              <a className="help-contact__row" href={`tel:${phone}`}>
+              <a className="help-contact__row" href={telHref(phone)}>
                 <Icon name="phone" size={18} /> <bdi className="latin">{contact.phone_display || phone}</bdi>
               </a>
             ) : (

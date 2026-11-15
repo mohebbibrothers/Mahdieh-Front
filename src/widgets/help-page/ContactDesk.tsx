@@ -1,4 +1,5 @@
 "use client";
+import { telHref } from "@/shared/lib/fa";
 import Link from "next/link";
 import { VerifyCertificateButton } from "@/features/verify-certificate/VerifyCertificate";
 import type { Help } from "@/shared/api/schemas";
@@ -54,7 +55,7 @@ export function ContactDesk({ help }: { help: Help | undefined }) {
             </p>
             {phone ? (
               <div className="hp-desk__row">
-                <a className="hp-desk__btn" href={`tel:${phone}`}>
+                <a className="hp-desk__btn" href={telHref(phone)}>
                   <Icon name="phone" size={18} />
                   <span>
                     تماس: <bdi dir="ltr">{contact?.phone_display || phone}</bdi>

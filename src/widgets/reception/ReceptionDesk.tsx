@@ -6,11 +6,14 @@ import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { logout } from "@/shared/api/auth";
 import { deskQuery, isMfaGate, mfaStatusQuery, type Desk, type DeskRow } from "@/shared/api/desk";
 import { sessionQuery } from "@/shared/api/queries";
+import { destHref } from "@/shared/config/destinations";
+import { AccountTrigger } from "@/features/session/AccountButton";
 import { useHydratedNow } from "@/shared/lib/use-clock";
 import { useOnline } from "@/shared/lib/use-online";
 import { Icon } from "@/shared/ui/Icon";
 import { toast } from "@/shared/ui/toast";
 import { CommandDeck } from "./CommandDeck";
+import { DeskLockScreen, useDeskLock } from "./DeskLock";
 import {
   BlockDialog,
   CancelDialog,
@@ -63,10 +66,31 @@ function ReceptionGate() {
       <div className="rc-locked">
         <Icon name="lock" size={28} />
         <h1>این بخش ویژهٔ خادمان پیشخوان است</h1>
-        <p>برای ادامه با حساب کارمندی وارد شوید.</p>
-        <Link className="btn btn-primary" href="/">
-          بازگشت به صفحهٔ نخست
-        </Link>
+        {session.data?.profile ? (
+          <>
+            <p>حساب کنونی شما دسترسی کارمندی ندارد. پیگیری رزروها و گواهی‌ها در پرتال زائر است.</p>
+            <div className="rc-locked__actions">
+              <Link className="btn btn-primary" href={destHref("portal") ?? "/"}>
+                رفتن به پرتال زائر
+              </Link>
+              <Link className="btn btn-secondary" href="/">
+                صفحهٔ نخست
+              </Link>
+            </div>
+          </>
+        ) : (
+          <>
+            <p>برای ادامه با شمارهٔ همراهِ ثبت‌شده در حساب کارمندی وارد شوید.</p>
+            <div className="rc-locked__actions">
+              <AccountTrigger className="btn btn-primary" guestReason="ورود خادمان پیشخوان با شمارهٔ همراه کارمندی.">
+                ورود خادمان
+              </AccountTrigger>
+              <Link className="btn btn-secondary" href="/">
+                صفحهٔ نخست
+              </Link>
+            </div>
+          </>
+        )}
       </div>
     );
   }
@@ -116,12 +140,14 @@ function DeskSkeleton() {
 
 function ReceptionDesk({ desk: initial }: { desk: Desk }) {
   const qc = useQueryClient();
+  // قفل پیش از پرس‌وجوی زنده خوانده می‌شود تا میز قفل‌شده نوسازی خودکار نکند
+  const deskLock = useDeskLock();
   const online = useOnline();
   const now = useHydratedNow(5_000);
   const live = useQuery({
     ...deskQuery,
     initialData: initial,
-    refetchInterval: online ? Math.max(10, initial.poll_seconds) * 1000 : false,
+    refetchInterval: online && !deskLock.locked ? Math.max(10, initial.poll_seconds) * 1000 : false,
   });
   const desk = live.data;
   const [filter, setFilter] = useState<BoardFilter>(null);
@@ -186,7 +212,27 @@ function ReceptionDesk({ desk: initial }: { desk: Desk }) {
   };
 
   const close = () => setDialog(null);
+  const lockDesk = () => {
+    setDialog(null);
+    deskLock.lock();
+  };
   const updatedLabel = now ? agoLabel(new Date(live.dataUpdatedAt).toISOString(), now) : "به‌روز";
+
+  if (deskLock.locked) {
+    return (
+      <div className="rc-page">
+        <DeskLockScreen
+          name={desk.officer.display_name}
+          initials={desk.officer.initials}
+          onUnlock={() => {
+            deskLock.unlock();
+            void live.refetch();
+          }}
+          onLogout={() => void onLogout()}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="rc-page" data-offline={online ? undefined : true}>
@@ -201,7 +247,7 @@ function ReceptionDesk({ desk: initial }: { desk: Desk }) {
         </Notice>
       ) : null}
 
-      <CommandDeck desk={desk} open={setDialog} onKey={flash} onLogout={() => void onLogout()} />
+      <CommandDeck desk={desk} open={setDialog} onKey={flash} onLock={lockDesk} onLogout={() => void onLogout()} />
       <KpiStrip desk={desk} filter={filter} onFilter={setFilter} />
       <UnitBoard
         desk={desk}

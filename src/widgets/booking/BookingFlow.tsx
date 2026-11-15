@@ -73,7 +73,7 @@ function CheckoutStage({ unitCode, policies, lattice }: { unitCode: string; poli
         capacity: found.unit.capacity_total,
       }
     : null;
-  // «ویرایش»: بازگشت به تقویم P-04 با همان انتخاب (کشوی خلاصه باز)؛ تا پیش از انتشار تقویم، جست‌وجوی خانه
+  // «ویرایش»: بازگشت به تقویم P-04 با همان انتخاب (کشوی خلاصه باز)؛ جست‌وجوی خانه فقط پشتیبان نوع‌دار است
   const editParams = {
     ...(draft.day ? { day: draft.day } : {}),
     period: draft.period,

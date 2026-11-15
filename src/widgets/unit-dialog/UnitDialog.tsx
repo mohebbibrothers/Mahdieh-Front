@@ -50,6 +50,23 @@ export function UnitDialog() {
   const unitPage = code
     ? unitPageHref(code, { day: draft.day, period: draft.period, cells: draft.cells, guests: draft.guests })
     : null;
+  // «مشاهدهٔ کل تقویم»: P-04 از همان روز، با همین واحد برگزیده و همان شرایط سفر (قرارداد ‎from/pick‎)
+  // (بی روز انتخاب‌شده ⇒ فقط شمار نفرات؛ تقویم از امروز و همهٔ واحدها)
+  const calendarHref = code
+    ? destHref(
+        "calendarFull",
+        draft.day
+          ? {
+              from: draft.day,
+              pick: code,
+              day: draft.day,
+              period: draft.period,
+              cells: String(draft.cells),
+              guests: String(draft.guests),
+            }
+          : { guests: String(draft.guests) },
+      )
+    : null;
   const quote = useQuery({
     queryKey: ["quote", code, first?.start, last?.end, draft.guests],
     queryFn: () =>
@@ -317,12 +334,17 @@ export function UnitDialog() {
           </section>
         ) : null}
 
-        {/* پیوندهای میان‌صفحه‌ای طراح (P-03 / P-02): تا ساخت آن صفحه‌ها خودکار پنهان‌اند. */}
-        {code && (unitPage ?? destHref("unitsCompare")) ? (
+        {/* پیوندهای میان‌صفحه‌ای طراح: صفحهٔ واحد (P-03)، تقویم کامل با همین انتخاب (P-04)، مقایسه (P-02) */}
+        {code && (unitPage || calendarHref || destHref("unitsCompare")) ? (
           <nav className="unit-detail__more" aria-label="ادامهٔ بررسی واحدها">
             {unitPage ? (
               <a className="btn btn-secondary" href={unitPage}>
                 صفحهٔ کامل این واحد <Icon name="arrow-left" size={18} />
+              </a>
+            ) : null}
+            {calendarHref ? (
+              <a className="btn btn-secondary" href={calendarHref}>
+                مشاهدهٔ کل تقویم <Icon name="calendar" size={18} />
               </a>
             ) : null}
             <PageLink to="unitsCompare" query={{ cmp: code }} className="btn btn-secondary">

@@ -1,7 +1,7 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
 import { configQuery } from "@/shared/api/queries";
-import { faDigits, formatYear, tehranToday } from "@/shared/lib/fa";
+import { faDigits, formatYear, tehranToday, telHref } from "@/shared/lib/fa";
 import { useHydrated } from "@/shared/lib/use-hydrated";
 import { Icon } from "@/shared/ui/Icon";
 
@@ -18,7 +18,7 @@ export function FooterContact() {
       {site?.support_phone ? (
         <p className="footer-location">
           <Icon name="phone" size={18} />
-          <a href={`tel:${site.support_phone}`} dir="ltr">
+          <a href={telHref(site.support_phone)} dir="ltr">
             <bdi>{faDigits(site.support_phone)}</bdi>
           </a>
         </p>

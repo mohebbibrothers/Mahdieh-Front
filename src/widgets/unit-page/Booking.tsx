@@ -6,6 +6,7 @@ import type { Policies } from "@/shared/api/policies";
 import type { FreeWindow, Quote, Standing, UnitDetail } from "@/shared/api/schemas";
 import { destHref } from "@/shared/config/destinations";
 import { cx } from "@/shared/lib/cx";
+import { useStickyFit } from "@/shared/lib/use-sticky-fit";
 import {
   durationLabel,
   faDigits,
@@ -211,8 +212,9 @@ function PanelTop({ signedIn, firstName, id }: { signedIn: boolean; firstName: s
 
 /** پنل چسبان رزرو (رومیزی > ۹۰۰px). */
 export function BookingPanel(p: PanelProps) {
+  const fit = useStickyFit<HTMLElement>(23);
   return (
-    <aside className="ud-panel" aria-labelledby="ud-panel-title">
+    <aside ref={fit} className="ud-panel" aria-labelledby="ud-panel-title">
       <PanelTop signedIn={p.signedIn} firstName={p.firstName} id="ud-panel-title" />
       <PanelBody {...p} idPrefix="ud-panel" />
     </aside>

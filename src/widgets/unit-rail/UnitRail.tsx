@@ -48,10 +48,10 @@ export function UnitRail() {
           <PageLink to="unitsCompare" className="rail-all">
             همهٔ واحدها و مقایسه <Icon name="arrow-left" size={16} />
           </PageLink>
-          <button type="button" className="icon-button" onClick={() => scroll(-1)} aria-label="واحد قبلی">
+          <button type="button" className="icon-button" onClick={() => scroll(-1)} aria-label="واحدهای قبلی">
             <Icon name="arrow-right" size={18} />
           </button>
-          <button type="button" className="icon-button" onClick={() => scroll(1)} aria-label="واحد بعدی">
+          <button type="button" className="icon-button" onClick={() => scroll(1)} aria-label="واحدهای بعدی">
             <Icon name="arrow-left" size={18} />
           </button>
         </div>

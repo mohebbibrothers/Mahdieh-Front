@@ -4,7 +4,7 @@ import type { Policies } from "@/shared/api/policies";
 import type { UnitDetail } from "@/shared/api/schemas";
 import { destHref } from "@/shared/config/destinations";
 import { SITE } from "@/shared/config/site";
-import { durationLabel, faDigits, guestsLabel, latinDigits } from "@/shared/lib/fa";
+import { durationLabel, faDigits, guestsLabel, latinDigits, telHref } from "@/shared/lib/fa";
 import { useActiveSection } from "@/shared/lib/use-active-section";
 import { Icon } from "@/shared/ui/Icon";
 import { toast } from "@/shared/ui/toast";
@@ -243,7 +243,7 @@ export function AccessCard({
           پیش از سفر تأیید کنید.
         </small>
         {tel ? (
-          <a className="ud-text-action" href={`tel:${tel}`}>
+          <a className="ud-text-action" href={telHref(tel)}>
             <Icon name="phone" size={16} /> هماهنگی با پذیرش <bdi dir="ltr">{supportPhone}</bdi>
           </a>
         ) : null}

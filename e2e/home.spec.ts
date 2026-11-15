@@ -72,6 +72,14 @@ test.describe("P-01 صفحهٔ خانه", () => {
     await expect(dialog).toBeVisible();
     await expect(dialog).toContainText(/طبقهٔ/);
     expect(api.calls.some((c) => c.includes("reservations/quote"))).toBe(false);
+    // «مشاهدهٔ کل تقویم»: تقویم P-04 با همین واحد و همین روز برگزیده (نه بازگشت به خانه)
+    const code = (await dialog.locator(".unit-detail__more a").first().getAttribute("href"))?.match(
+      /units\/([A-Z0-9]+)/,
+    )?.[1];
+    await expect(dialog.getByRole("link", { name: /مشاهدهٔ کل تقویم/ })).toHaveAttribute(
+      "href",
+      new RegExp(`^/calendar/\\?from=\\d{4}-\\d{2}-\\d{2}&pick=${code}&day=`),
+    );
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
   });
@@ -515,6 +523,27 @@ test.describe("کیفیت سراسری", () => {
         .map((el) => `${el.tagName}.${el.className}`),
     );
     expect(offenders).toEqual([]);
+    // پنجره‌ها: هیچ نوار پیمایشی کنار پنجره نیست (نه حتی شیار ۱۱px)؛ نشانهٔ «ادامه دارد» محوشدن لبه است
+    const body = page.getByRole("dialog").locator(".app-dialog__body");
+    const quiet = await body.evaluate((el: HTMLElement) => ({
+      bar: getComputedStyle(el).scrollbarWidth,
+      gutter: el.offsetWidth - el.clientWidth,
+      mask: getComputedStyle(el).maskImage,
+    }));
+    expect(quiet.bar).toBe("none");
+    expect(quiet.gutter).toBe(0);
+    expect(quiet.mask).toContain("linear-gradient");
+    // کادرهای چندخطی سراسر سایت: بی دستگیرهٔ تغییر اندازه (سه خط گوشهٔ پایین) و رشد خودکار با متن
+    const textarea = await page.evaluate(() => {
+      const el = document.createElement("textarea");
+      el.className = "text-input";
+      document.body.append(el);
+      const cs = getComputedStyle(el);
+      const out = { resize: cs.resize, sizing: cs.getPropertyValue("field-sizing") };
+      el.remove();
+      return out;
+    });
+    expect(textarea).toEqual({ resize: "none", sizing: "content" });
   });
 
   test("بدون سرریز افقی", async ({ page, api }) => {

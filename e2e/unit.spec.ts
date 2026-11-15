@@ -181,21 +181,30 @@ test.describe("P-03 جزئیات واحد", () => {
     await expect(flex).toBeChecked();
     await page.keyboard.press("Escape");
 
-    // پنل رزرو هنگام اسکرول کنار محتوا می‌ماند — حتی در حالت آسان
+    // پنل رزرو «چسبان دوسویه» است — حتی در حالت آسان: هرگز ظرف پیمایش جدا (نوار کنار پنل) نیست؛
+    // با پیمایش رو به پایین لبهٔ پایینش (کنش اصلی) دیده می‌شود و رو به بالا سرش زیر سرصفحه برمی‌گردد.
+    const panel = page.locator(".ud-layout > .ud-panel");
+    const header = await page.evaluate(
+      () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 0,
+    );
     for (const easy of [false, true]) {
       if (easy) {
         await page.locator(".easy-toggle:visible").click();
         await expect(page.locator(".ud--easy")).toBeVisible();
       }
-      await page.locator("#ud-availability").scrollIntoViewIfNeeded();
-      await page.mouse.wheel(0, 600);
-      await page.waitForTimeout(250);
-      const top = await page.locator(".ud-layout > .ud-panel").evaluate((el) => el.getBoundingClientRect().top);
-      const header = await page.evaluate(
-        () => parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 0,
-      );
-      expect(top).toBeGreaterThanOrEqual(header);
-      expect(top).toBeLessThan(header + 40);
+      expect(await panel.evaluate((el) => getComputedStyle(el).overflowY)).toBe("visible");
+      expect(await panel.evaluate((el) => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
+      // از بالای صفحه تا میانهٔ محتوا (نه انتهای چیدمان، جایی که هر چسبانی طبیعتاً همراه محتوا می‌رود)
+      for (let i = 0; i < 4; i++) await page.mouse.wheel(0, 250);
+      await page.waitForTimeout(300);
+      const down = await panel.evaluate((el) => el.getBoundingClientRect());
+      expect(down.bottom).toBeLessThanOrEqual(800);
+      expect(down.top).toBeLessThanOrEqual(header + 40);
+      await expect(panelCta(page)).toBeInViewport();
+      for (let i = 0; i < 3; i++) await page.mouse.wheel(0, -200);
+      await page.waitForTimeout(300);
+      const up = await panel.evaluate((el) => el.getBoundingClientRect().top);
+      expect(up).toBeGreaterThanOrEqual(header);
       await page.evaluate(() => window.scrollTo(0, 0));
     }
   });

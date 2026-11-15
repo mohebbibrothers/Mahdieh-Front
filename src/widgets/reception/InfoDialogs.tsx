@@ -15,7 +15,7 @@ import {
 import { helpQuery } from "@/shared/api/queries";
 import { copyText } from "@/shared/lib/clipboard";
 import { cx } from "@/shared/lib/cx";
-import { faDigits, formatFullDate, formatMoment } from "@/shared/lib/fa";
+import { faDigits, formatFullDate, formatMoment, telHref } from "@/shared/lib/fa";
 import { useClock } from "@/shared/lib/use-clock";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon, type IconName } from "@/shared/ui/Icon";
@@ -59,7 +59,7 @@ export function PhoneReveal({ guestId, masked, worthy = true }: { guestId: strin
   if (visible) {
     return (
       <div className="rc-reveal rc-reveal--open" role="status">
-        <a className="rc-reveal__phone" href={`tel:${shown.phone}`} dir="ltr">
+        <a className="rc-reveal__phone" href={telHref(shown.phone)} dir="ltr">
           <Icon name="phone" size={18} />
           <bdi className="latin">{shown.phone}</bdi>
         </a>

@@ -22,11 +22,14 @@ export function CommandDeck({
   desk,
   open,
   onKey,
+  onLock,
   onLogout,
 }: {
   desk: Desk;
   open: OpenDialog;
   onKey: (code: string) => void;
+  /** «قفل فوری پیشخوان» هنگام ترک میز */
+  onLock: () => void;
   onLogout: () => void;
 }) {
   const now = useClock();
@@ -83,110 +86,131 @@ export function CommandDeck({
       </div>
 
       <div className="rc-strip">
-        <Popover
-          anchor="desk-officer"
-          label="خادم کشیک و امنیت نشست"
-          className="rc-officer-pop"
-          trigger={(p) => (
-            <button type="button" {...p} className={`rc-officer ${p.className}`}>
-              <span className="rc-officer__avatar" aria-hidden="true">
-                {desk.officer.initials}
-              </span>
-              <span className="rc-officer__meta">
-                <strong>{desk.officer.display_name}</strong>
-                <span>
-                  {desk.officer.role_label} · {desk.shift.label} · گیت ورودی
-                </span>
-              </span>
-              <Icon name="chevron-down" size={16} />
-            </button>
-          )}
-        >
-          {(close) => (
-            <div className="rc-officer-menu">
-              <p className="popover__title">امنیت نشست خادم</p>
-              <div className="rc-officer-menu__id">
+        <div className="rc-strip__who">
+          <Popover
+            anchor="desk-officer"
+            label="خادم کشیک و امنیت نشست"
+            className="rc-officer-pop"
+            trigger={(p) => (
+              <button type="button" {...p} className={`rc-officer ${p.className}`}>
                 <span className="rc-officer__avatar" aria-hidden="true">
                   {desk.officer.initials}
                 </span>
-                <span className="rc-officer-menu__who">
+                <span className="rc-officer__meta">
                   <strong>{desk.officer.display_name}</strong>
                   <span>
-                    {desk.officer.role_label} · {desk.shift.label}
+                    {desk.officer.role_label} · {desk.shift.label} · گیت ورودی
                   </span>
                 </span>
-              </div>
-              <dl className="rc-officer-menu__facts">
-                <div>
-                  <dt>
-                    <Icon name="shield-check" size={16} /> روش تأیید
-                  </dt>
-                  <dd>
-                    {desk.mfa.method === "recovery" ? (
-                      "کد بازیابی"
-                    ) : (
-                      <>
-                        برنامهٔ تأیید <bdi className="latin">TOTP</bdi>
-                      </>
-                    )}
-                  </dd>
-                </div>
-                <div>
-                  <dt>
-                    <Icon name="clock" size={16} /> تأیید تازه
-                  </dt>
-                  <dd>
-                    {fresh > 0 ? (
-                      <span className="rc-officer-menu__badge" data-tone="ok">
-                        <bdi>{mmss(fresh)}</bdi> باقی‌مانده
-                      </span>
-                    ) : (
-                      <span className="rc-officer-menu__badge">منقضی</span>
-                    )}
-                  </dd>
-                </div>
-                <div>
-                  <dt>
-                    <Icon name="key" size={16} /> کدهای بازیابی
-                  </dt>
-                  <dd>
-                    <span className="rc-officer-menu__badge" data-tone={lowCodes ? "warn" : "ok"}>
-                      {faDigits(desk.mfa.recovery_codes_remaining)} کد
+                <Icon name="chevron-down" size={16} />
+              </button>
+            )}
+          >
+            {(close) => (
+              <div className="rc-officer-menu">
+                <p className="popover__title">امنیت نشست خادم</p>
+                <div className="rc-officer-menu__id">
+                  <span className="rc-officer__avatar" aria-hidden="true">
+                    {desk.officer.initials}
+                  </span>
+                  <span className="rc-officer-menu__who">
+                    <strong>{desk.officer.display_name}</strong>
+                    <span>
+                      {desk.officer.role_label} · {desk.shift.label}
                     </span>
-                  </dd>
+                  </span>
                 </div>
-              </dl>
-              <p className="rc-officer-menu__hint">
-                {lowCodes
-                  ? "کدهای بازیابی رو به پایان است؛ پیش از گم‌شدن گوشی، کدهای تازه بسازید."
-                  : fresh > 0
-                    ? "تا پایان این زمان، کارهای حساس بی‌پرسش دوباره انجام می‌شوند."
-                    : "برای کارهای حساس (نمایش شماره، خروجی کامل) کد ۶ رقمی پرسیده می‌شود."}
-              </p>
-              <div className="rc-officer-menu__sep" role="separator" />
-              <button
-                type="button"
-                className="menu__item"
-                onClick={() => {
-                  close();
-                  open({ kind: "recovery" });
-                }}
-              >
-                <Icon name="refresh" size={16} /> ساخت کدهای بازیابی تازه
-              </button>
-              <button
-                type="button"
-                className="menu__item"
-                onClick={() => {
-                  close();
-                  onLogout();
-                }}
-              >
-                <Icon name="log-out" size={16} /> پایان شیفت و خروج از حساب
-              </button>
-            </div>
-          )}
-        </Popover>
+                <dl className="rc-officer-menu__facts">
+                  <div>
+                    <dt>
+                      <Icon name="shield-check" size={16} /> روش تأیید
+                    </dt>
+                    <dd>
+                      {desk.mfa.method === "recovery" ? (
+                        "کد بازیابی"
+                      ) : (
+                        <>
+                          برنامهٔ تأیید <bdi className="latin">TOTP</bdi>
+                        </>
+                      )}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>
+                      <Icon name="clock" size={16} /> تأیید تازه
+                    </dt>
+                    <dd>
+                      {fresh > 0 ? (
+                        <span className="rc-officer-menu__badge" data-tone="ok">
+                          <bdi>{mmss(fresh)}</bdi> باقی‌مانده
+                        </span>
+                      ) : (
+                        <span className="rc-officer-menu__badge">منقضی</span>
+                      )}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>
+                      <Icon name="key" size={16} /> کدهای بازیابی
+                    </dt>
+                    <dd>
+                      <span className="rc-officer-menu__badge" data-tone={lowCodes ? "warn" : "ok"}>
+                        {faDigits(desk.mfa.recovery_codes_remaining)} کد
+                      </span>
+                    </dd>
+                  </div>
+                </dl>
+                <p className="rc-officer-menu__hint">
+                  {lowCodes
+                    ? "کدهای بازیابی رو به پایان است؛ پیش از گم‌شدن گوشی، کدهای تازه بسازید."
+                    : fresh > 0
+                      ? "تا پایان این زمان، کارهای حساس بی‌پرسش دوباره انجام می‌شوند."
+                      : "برای کارهای حساس (نمایش شماره، خروجی کامل) کد ۶ رقمی پرسیده می‌شود."}
+                </p>
+                <div className="rc-officer-menu__sep" role="separator" />
+                <button
+                  type="button"
+                  className="menu__item"
+                  onClick={() => {
+                    close();
+                    onLock();
+                  }}
+                >
+                  <Icon name="lock" size={16} /> قفل فوری پیشخوان
+                </button>
+                <button
+                  type="button"
+                  className="menu__item"
+                  onClick={() => {
+                    close();
+                    open({ kind: "recovery" });
+                  }}
+                >
+                  <Icon name="refresh" size={16} /> ساخت کدهای بازیابی تازه
+                </button>
+                <button
+                  type="button"
+                  className="menu__item"
+                  onClick={() => {
+                    close();
+                    onLogout();
+                  }}
+                >
+                  <Icon name="log-out" size={16} /> پایان شیفت و خروج از حساب
+                </button>
+              </div>
+            )}
+          </Popover>
+          <button
+            type="button"
+            className="icon-button rc-lockbtn"
+            onClick={onLock}
+            aria-label="قفل فوری پیشخوان (محافظت از اطلاعات زائران)"
+            title="قفل فوری پیشخوان"
+          >
+            <Icon name="lock" size={18} />
+          </button>
+        </div>
 
         <div className="rc-strip__chips">
           <span className="rc-chip">

@@ -16,6 +16,30 @@ type Props = { desk: Desk; open: OpenDialog; onCheckIn: (row: DeskRow) => void }
  * کد ملی و تلفن، شهر)، جدول در دسکتاپ و کارت در گوشی (نه جدول با پیمایش افقی). تلفن همیشه ماسک است
  * و «کپسول قفل» پروندهٔ زائر را برای نمایش با تأیید تازه باز می‌کند.
  */
+/**
+ * «تاریخ · ساعت» ورود: در پهنای کم ساعت بی جداکننده به خط دوم می‌رود (نه نقطهٔ آویزان در پایان سطر).
+ * برچسب از سرور است؛ اگر جداکننده نداشت همان‌طور نمایش داده می‌شود.
+ */
+function StartLabel({ label }: { label: string }) {
+  const cut = label.lastIndexOf(" · ");
+  if (cut < 0) {
+    return (
+      <span className="rc-table__time">
+        <bdi>{label}</bdi>
+      </span>
+    );
+  }
+  return (
+    <span className="rc-table__time">
+      <bdi className="rc-table__date">{label.slice(0, cut)}</bdi>
+      <span className="rc-table__sep" aria-hidden="true">
+        {" · "}
+      </span>
+      <bdi className="rc-table__clock">{label.slice(cut + 3)}</bdi>
+    </span>
+  );
+}
+
 export function Ledger({ desk, open, onCheckIn }: Props) {
   const [tab, setTab] = useState<LedgerTab>("all");
   const [q, setQ] = useState("");
@@ -90,7 +114,9 @@ export function Ledger({ desk, open, onCheckIn }: Props) {
                 <tr>
                   <th scope="col">واحد</th>
                   <th scope="col">مشخصات زائر</th>
-                  <th scope="col">کد ملی</th>
+                  <th scope="col" className="rc-table__nid-col">
+                    کد ملی
+                  </th>
                   <th scope="col">تلفن تماس</th>
                   <th scope="col">ورود / تخلیه</th>
                   <th scope="col">وضعیت پذیرش</th>
@@ -108,17 +134,19 @@ export function Ledger({ desk, open, onCheckIn }: Props) {
                       <span className="rc-table__sub">
                         {r.desk.guest_city || "—"} · {faDigits(r.guests_count)} نفر
                       </span>
+                      {/* ≤۱۱۰۰px ستون «کد ملی» پنهان و همین‌جا زیر نام می‌آید (جدول بی پیمایش افقی جا شود) */}
+                      <span className="rc-table__sub rc-table__nid">
+                        کد ملی <Latin>{r.desk.guest_national_id_masked || "—"}</Latin>
+                      </span>
                     </td>
-                    <td>
+                    <td className="rc-table__nid-col">
                       <Latin>{r.desk.guest_national_id_masked || "—"}</Latin>
                     </td>
                     <td>
                       <PhoneLock row={r} open={open} />
                     </td>
                     <td>
-                      <span className="rc-table__time">
-                        <bdi>{r.desk.start_label}</bdi>
-                      </span>
+                      <StartLabel label={r.desk.start_label} />
                       <span className="rc-table__sub">
                         تا <bdi>{r.desk.end_label}</bdi>
                       </span>

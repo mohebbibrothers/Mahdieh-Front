@@ -214,7 +214,7 @@
   }
   .date-option small {
     color: var(--color-text-muted);
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
   }
   .date-option strong {
     font-size: 1rem;

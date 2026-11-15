@@ -8,6 +8,7 @@ import {
   formatFullDate,
   formatMoment,
   latinDigits,
+  telHref,
   tehranToday,
 } from "./fa";
 
@@ -15,6 +16,8 @@ describe("قالب‌بندی فارسی", () => {
   it("ارقام فارسی و برگشت", () => {
     expect(faDigits("M-1405-0012")).toBe("M-۱۴۰۵-۰۰۱۲");
     expect(latinDigits("۰۹۱۲٣")).toBe("09123");
+    expect(telHref("۰۵۱ - ۳۳۴۴ ۵۵۶۶")).toBe("tel:05133445566");
+    expect(telHref("\u200e+98 (51) 3344-5566")).toBe("tel:+985133445566");
   });
   it("تاریخ خورشیدی به افق تهران، مستقل از منطقهٔ زمانی دستگاه", () => {
     expect(formatDayLabel("2026-10-20")).toBe("سه‌شنبه، ۲۸ مهر");

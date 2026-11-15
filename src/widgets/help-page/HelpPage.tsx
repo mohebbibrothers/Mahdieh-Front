@@ -145,7 +145,7 @@ function HelpHero({
               <button
                 type="button"
                 className="hp-search__clear"
-                aria-label="پاک کردن جست‌وجو"
+                aria-label="پاک کردن متن جست‌وجو"
                 onClick={() => {
                   helpStore.set({ q: "" });
                   input.current?.focus();

@@ -36,11 +36,7 @@
     padding: 2px 2px 16px;
     scroll-snap-type: x mandatory;
     scroll-padding-inline: 2px;
-    scrollbar-width: none;
     overscroll-behavior-x: contain;
-  }
-  .unit-rail::-webkit-scrollbar {
-    display: none;
   }
   .unit-card {
     display: flex;
@@ -383,7 +379,7 @@
   }
   .mini-picker__label small {
     color: var(--color-text-muted);
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
     font-weight: 400;
   }
   .mini-picker__cell {

@@ -657,15 +657,18 @@
   .ud-cal__skeleton .skeleton {
     height: 58px;
   }
+  /* فاصلهٔ ۵px خانه‌ها (border-spacing) لبه‌های جدول را هم فاصله می‌دهد؛ جبرانش با حاشیهٔ منفی خودِ
+     ظرف است نه جدول — جدول هم‌عرض ظرف می‌ماند و نوار پیمایش افقیِ بی‌دلیل (۵px سرریز) نمی‌آید. */
   .ud-week-wrap {
+    --ud-week-gap: 5px;
     position: relative;
+    margin-inline: calc(-1 * var(--ud-week-gap));
     overflow-x: auto;
   }
   .ud-week {
-    width: calc(100% + 10px);
-    margin-inline: -5px;
+    width: 100%;
     border-collapse: separate;
-    border-spacing: 5px;
+    border-spacing: var(--ud-week-gap);
     table-layout: fixed;
   }
   .ud-week th {
@@ -714,7 +717,7 @@
     border-radius: 999px;
     background: color-mix(in oklab, var(--color-gold) 18%, transparent);
     color: var(--color-warn-fg);
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
     font-style: normal;
     line-height: 1.8;
     white-space: nowrap;
@@ -1142,12 +1145,11 @@
   }
 
   /* ── پنل رزرو ───────────────────────────────────────────────────────── */
+  /* چسبان دوسویه (‎useStickyFit‎): کوتاه‌تر از پنجره ⇒ زیر سرصفحه؛ بلندتر ⇒ همراه صفحه تا لبهٔ پایین یا
+     سرش پیدا شود — بی نوار پیمایش درونی کنار پنل. پیش از اجرای JS همان فاصلهٔ طراح. */
   .ud-panel {
     position: sticky;
-    top: calc(var(--header-h) + 23px);
-    max-height: calc(100dvh - var(--header-h) - 40px);
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    top: var(--sticky-top, calc(var(--header-h) + 23px));
     padding: 24px 22px;
     border: 1px solid var(--color-border);
     border-radius: 17px;
@@ -2020,8 +2022,8 @@
     .ud-facts strong {
       font-size: 0.9375rem;
     }
-    .ud-week {
-      border-spacing: 4px;
+    .ud-week-wrap {
+      --ud-week-gap: 4px;
     }
     .ud-week thead th:first-child {
       width: 37px;

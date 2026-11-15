@@ -414,12 +414,15 @@
     font-size: 0.813rem;
     line-height: 1.8;
   }
+  /* هدف لمسی ≥۳۲px (WCAG 2.2 · 2.5.8) بی تغییر چیدمان دیداری: ارتفاع کمینه با حاشیهٔ منفی جبران می‌شود. */
   .hp-step__link,
   .hp-faq__action {
     display: inline-flex;
     align-items: center;
     align-self: flex-start;
     gap: 6px;
+    min-block-size: 32px;
+    margin-block: -4px;
     padding: 0;
     border: 0;
     background: none;

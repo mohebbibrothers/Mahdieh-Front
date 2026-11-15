@@ -5,7 +5,7 @@ import { featureIcon } from "@/entities/unit/unit";
 import { configQuery, helpQuery, propertyQuery } from "@/shared/api/queries";
 import type { HelpItem } from "@/shared/api/schemas";
 import { destHref } from "@/shared/config/destinations";
-import { faDigits } from "@/shared/lib/fa";
+import { faDigits, telHref } from "@/shared/lib/fa";
 import { Icon, type IconName } from "@/shared/ui/Icon";
 import { SectionHead } from "./parts";
 
@@ -89,7 +89,7 @@ export function Companion({ unitCode }: { unitCode: string | null }) {
             در صورت تأخیر در ورود، نیاز به راهنمایی مسیر منتهی به حرم، یا درخواست خدمات ویژهٔ سالمندان و توان‌یابان، با
             پذیرش تماس بگیرید.{address ? ` نشانی: ${address}` : ""}
           </p>
-          {/* صفحهٔ راهنمای کامل (P-08) هنوز ساخته نشده ⇒ پیوند فقط پس از آماده شدن نمایش داده می‌شود */}
+          {/* راهنمای کامل زائر (P-08) از نقشهٔ مقصدها */}
           {guideFull ? (
             <Link className="pt-hotline__more" href={guideFull}>
               راهنمای کامل زائر <Icon name="arrow-left" size={16} />
@@ -97,7 +97,7 @@ export function Companion({ unitCode }: { unitCode: string | null }) {
           ) : null}
         </div>
         {phone ? (
-          <a className="pt-hotline__phone" href={`tel:${phone.replace(/[^\d+]/g, "")}`}>
+          <a className="pt-hotline__phone" href={telHref(phone)}>
             <Icon name="phone" size={20} />
             <bdi dir="ltr">{faDigits(phone)}</bdi>
           </a>

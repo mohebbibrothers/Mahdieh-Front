@@ -79,7 +79,7 @@ export function Guidance() {
               </div>
             ))
           : null}
-        {/* با انتشار P-08 «راهنمای کامل» جای پنجرهٔ مرکز راهنما را می‌گیرد (یک ورودی، نه دو). */}
+        {/* «راهنمای کامل» (P-08) تنها ورودی راهنماست؛ پنجرهٔ مرکز راهنما فقط اگر P-08 در دسترس نباشد. */}
         {destHref("guideFull") ? null : <HelpCenter help={help.data} />}
         <PageLink to="guideFull" className="section-link faq-link">
           پرسش دیگری دارید؟ راهنمای کامل زائر <Icon name="arrow-left" size={16} />

@@ -378,7 +378,7 @@
     border-radius: 999px;
     background: var(--cp-peak-fg);
     color: var(--color-surface);
-    font-size: 0.65625rem;
+    font-size: 0.6875rem;
     font-weight: 750;
     line-height: 1.7;
   }
@@ -681,6 +681,9 @@
   }
   .cp-unit__name {
     overflow: hidden;
+    /* هدف لمسی ≥۲۴px روی گوشی بی جابه‌جایی دیداری */
+    margin-block: -4px;
+    padding-block: 4px;
     font-size: 0.8125rem;
     font-weight: 700;
     text-overflow: ellipsis;
@@ -1642,7 +1645,7 @@
   }
   .cp-wait__note {
     min-height: 64px;
-    resize: vertical;
+    max-height: 12rem;
   }
   .cp-wait__phone {
     display: flex;
@@ -2106,7 +2109,7 @@
       font-size: 0.6875rem;
     }
     .cp-unit__floor {
-      font-size: 0.625rem;
+      font-size: 0.6875rem;
     }
     .cp-unit__floor .icon {
       display: none;
@@ -2117,7 +2120,7 @@
       white-space: normal;
     }
     .cp-unit small {
-      font-size: 0.65625rem;
+      font-size: 0.6875rem;
     }
     .cp-dh {
       min-width: 100px;
@@ -2130,16 +2133,16 @@
       font-size: 0.84375rem;
     }
     .cp-dh__free {
-      font-size: 0.625rem;
+      font-size: 0.6875rem;
     }
     .cp-slot {
       padding: 3px 2px;
     }
     .cp-slot__kind {
-      font-size: 0.625rem;
+      font-size: 0.6875rem;
     }
     .cp-slot__state {
-      font-size: 0.59375rem;
+      font-size: 0.6875rem;
     }
     .cp-table {
       min-width: 0;
@@ -2293,7 +2296,7 @@
       font-size: 0.75rem;
     }
     .cp-keys small {
-      font-size: 0.65625rem;
+      font-size: 0.6875rem;
     }
   }
 }

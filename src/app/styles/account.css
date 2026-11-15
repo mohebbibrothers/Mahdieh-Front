@@ -5,7 +5,9 @@
     color: var(--color-text);
     font-family: inherit;
   }
-  .account-trigger {
+  /* بازنشانی ظاهر پیوندی فقط برای کاربردهای متنی؛ هر جا کلاس ‎.btn‎ دارد، ظاهر دکمهٔ سایت می‌ماند
+     (بنر «تکمیل پروفایل»، «ورود خادمان» در صفحهٔ قفل پیشخوان). */
+  .account-trigger:not(.btn) {
     border: 0;
     background: none;
     color: inherit;

@@ -144,7 +144,7 @@ export function BuildingModel({ children }: { children: ReactNode }) {
               type="button"
               aria-pressed={draft.floor === f}
               onClick={() => draftStore.set({ floor: f })}
-              aria-label={f === 0 ? "همهٔ طبقه‌ها" : floorLabel(f)}
+              aria-label={f === 0 ? "همهٔ طبقات" : floorLabel(f)}
             >
               {f === 0 ? "همه" : faDigits(f)}
             </button>

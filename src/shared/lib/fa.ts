@@ -22,6 +22,15 @@ export function latinDigits(value: string): string {
     .replace(/[٠-٩]/g, (d) => String(d.charCodeAt(0) - 0x660));
 }
 
+/**
+ * نشانی ‎tel:‎ یکدست برای هر شماره‌ای که از تنظیمات/داده می‌آید: ارقام فارسی/عربی ⇒ لاتین و حذف
+ * فاصله، خط تیره، پرانتز و نویسه‌های جهت (RFC 3966 فقط رقم و «+» آغازین را می‌پذیرد).
+ */
+export function telHref(phone: string): string {
+  const digits = latinDigits(phone).replace(/[^\d+]/g, "");
+  return `tel:${digits.startsWith("+") ? "+" : ""}${digits.replace(/\+/g, "")}`;
+}
+
 const cache = new Map<string, Intl.DateTimeFormat>();
 function fmt(options: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
   const key = JSON.stringify(options);

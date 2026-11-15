@@ -208,6 +208,17 @@
     border-radius: 16px;
     background: var(--color-canvas);
   }
+  /* خادم کشیک + «قفل فوری پیشخوان» (دکمهٔ گرد طراح) همیشه در یک ردیف */
+  .rc-strip__who {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .rc-lockbtn {
+    flex: none;
+    color: var(--color-brand-ink);
+  }
   .rc-officer {
     display: inline-flex;
     align-items: center;
@@ -1337,6 +1348,17 @@
     color: var(--color-text-muted);
     font-size: 0.6875rem;
   }
+  .rc-table__nid {
+    display: none;
+  }
+  @media (max-width: 1100px) {
+    .rc-table .rc-table__nid-col {
+      display: none;
+    }
+    .rc-table__nid {
+      display: block;
+    }
+  }
   .rc-row-actions {
     display: flex;
     align-items: center;
@@ -1445,7 +1467,7 @@
   }
   .rc-textarea {
     min-height: 68px;
-    resize: vertical;
+    max-height: 12rem;
     line-height: 1.8;
   }
   .rc-row-2 {
@@ -1851,7 +1873,7 @@
   }
   .rc-fsec__step {
     color: var(--color-text-subtle);
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
     font-weight: 750;
   }
   .rc-fsec__titles h3 {
@@ -2256,7 +2278,7 @@
   }
   .rc-sop__tab-step {
     color: var(--color-text-subtle);
-    font-size: 0.625rem;
+    font-size: 0.6875rem;
     font-weight: 700;
   }
   .rc-sop__tab-long {
@@ -2470,6 +2492,49 @@
     font-size: 0.875rem;
     line-height: 1.8;
   }
+  /* صفحهٔ قفل پیشخوان: مهر قفل طلایی، نام خادم کشیک، کد ۶ رقمی و دو کنش جایگزین */
+  .rc-lockscreen {
+    gap: 14px;
+  }
+  .rc-lockscreen__seal {
+    display: grid;
+    place-items: center;
+    inline-size: 60px;
+    block-size: 60px;
+    border-radius: 50%;
+    background: color-mix(in oklch, var(--color-gold) 16%, transparent);
+    color: var(--color-gold);
+  }
+  .rc-lockscreen__who {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding-block: 6px;
+    padding-inline: 6px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    font-size: 0.875rem;
+  }
+  .rc-lockscreen .field-error {
+    margin: 0;
+  }
+  .rc-locked p.rc-lockscreen__note {
+    font-size: 0.75rem;
+  }
+
+  /* دو کنش هم‌عرض و وسط‌چین (قرارداد دکمه‌های سایت)؛ گوشی ⇒ زیر هم، تمام‌عرض */
+  .rc-locked__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    inline-size: min(100%, 380px);
+    margin-block-start: 6px;
+  }
+  @media (max-width: 420px) {
+    .rc-locked__actions {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
 
   /* ── اسکلت بارگذاری ─────────────────────────────────────────────────── */
   .rc-sk-hero {
@@ -2520,6 +2585,38 @@
       grid-template-columns: minmax(0, 1fr);
       gap: 18px;
       padding: 16px;
+    }
+  }
+  /* ۹۶۱–۱۱۸۰: جدول بی‌پیمایش افقی در قاب جا می‌شود (طراح در ۱۰۲۴ سرریز داشت و ستون «اقدامات خادم»
+     بریده می‌شد): فاصلهٔ درونی خانه‌ها فشرده و زمان ورود دوخطی (تاریخ / ساعت). */
+  @media (max-width: 1180px) {
+    .rc-table {
+      min-width: 0;
+    }
+    .rc-table th,
+    .rc-table td {
+      padding-inline: 9px;
+    }
+    .rc-table th:first-child,
+    .rc-table td:first-child {
+      padding-inline-start: 14px;
+    }
+    .rc-table th:last-child,
+    .rc-table td:last-child {
+      padding-inline-end: 14px;
+    }
+    .rc-table td:nth-child(5) {
+      white-space: normal;
+    }
+    .rc-table__date {
+      white-space: nowrap;
+    }
+    .rc-table__sep {
+      display: none;
+    }
+    .rc-table__clock {
+      display: block;
+      color: var(--color-brand-ink);
     }
   }
   /* دفتر: جدول ۸۶۰ پیکسلی زیر ۹۶۰ پیکسل جا نمی‌شود ⇐ کارت تک‌ستونهٔ جادار */
@@ -2642,6 +2739,10 @@
       padding: 14px;
     }
     /* کارت کامل و یکپارچهٔ خادم (بی‌لبهٔ نقطه‌چین و گوشهٔ نیمه‌گرد) */
+    .rc-strip__who .rc-officer {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
     .rc-officer {
       width: 100%;
       padding: 8px 10px;
@@ -2677,7 +2778,7 @@
     /* پنج خانهٔ هم‌اندازه در یک ردیف: برچسب تک‌خطی و فشرده، تیک «در قفسه» فقط در دسکتاپ */
     .rc-slot__tag {
       padding: 2px 5px;
-      font-size: 0.625rem;
+      font-size: 0.6875rem;
     }
     .rc-slot__tick {
       display: none;
@@ -2705,7 +2806,7 @@
       line-height: 1.35;
     }
     .rc-kpi__sub {
-      font-size: 0.625rem;
+      font-size: 0.6875rem;
     }
     .rc-board,
     .rc-sk-board {
@@ -2904,7 +3005,7 @@
     }
     .rc-slot__tag {
       padding-inline: 4px;
-      font-size: 0.625rem;
+      font-size: 0.6875rem;
     }
   }
 

@@ -61,6 +61,14 @@ test.describe("P-06 میز پذیرش", () => {
   test("زائر یا مهمان: صفحهٔ قفل، بی هیچ درخواست دادهٔ کارکنان و بی‌نمایه", async ({ page, api }) => {
     await page.goto("/reception/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("این بخش ویژهٔ خادمان پیشخوان است");
+    // مهمان: «ورود خادمان» در همین صفحه (پنجرهٔ ورود)، نه فقط بازگشت به خانه
+    await expect(page.locator(".rc-locked__actions .btn")).toHaveCount(2);
+    const login = page.getByRole("button", { name: "ورود خادمان" });
+    await expect(login).toBeVisible();
+    // ظاهر دکمهٔ اصلی سایت (نه متن ساده): پس‌زمینهٔ رنگی و هم‌قد دکمهٔ کناری
+    expect(await login.evaluate((el) => getComputedStyle(el).backgroundColor)).not.toBe("rgba(0, 0, 0, 0)");
+    await login.click();
+    await expect(page.getByRole("dialog")).toBeVisible();
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
     expect(api.calls.filter((c) => /\/staff\/|\/mfa\//.test(c))).toEqual([]);
   });
@@ -197,6 +205,31 @@ test.describe("P-06 میز پذیرش", () => {
     expect(attempts).toBe(2);
   });
 
+  test("قفل فوری پیشخوان: هیچ دادهٔ زائری در صفحه نمی‌ماند، با بارگذاری دوباره باز نمی‌شود، کد تازه بازش می‌کند", async ({
+    page,
+    api,
+  }) => {
+    staff(api);
+    const verify = capture(api, "/api/v1/auth/mfa/verify", {
+      body: { method: "totp", status: p06("mfa-status") },
+    });
+    await page.goto("/reception/");
+    await ready(page);
+    await page.getByRole("button", { name: /قفل فوری پیشخوان/ }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("پیشخوان قفل است");
+    await expect(page.locator(".rc-unit")).toHaveCount(0);
+    await expect(page.locator("main")).not.toContainText("زهرا محمدی");
+    // بارگذاری دوباره قفل را دور نمی‌زند
+    await page.reload();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("پیشخوان قفل است");
+    await page.getByRole("textbox", { name: "کد ۶ رقمی باز کردن پیشخوان" }).fill("246810");
+    await ready(page);
+    expect(verify).toEqual([{ code: "246810" }]);
+    // باز شدن ⇒ قفل از نشست برداشته شده (بارگذاری دوباره مستقیم میز را نشان می‌دهد)
+    await page.reload();
+    await ready(page);
+  });
+
   test("موبایل ۳۶۰: بی‌سرریز افقی، دفتر به شکل کارت و دو شاخص در هر ردیف نه", async ({ page, api }) => {
     staff(api);
     await page.setViewportSize({ width: 360, height: 800 });
@@ -218,6 +251,15 @@ test.describe("P-06 میز پذیرش", () => {
     await page.goto("/reception/");
     await ready(page);
     expect(await horizontalOverflow(page)).toBeNull();
+    // ۹۶۱–۱۱۸۰: جدول دفتر بی پیمایش افقی در قاب جا می‌شود (ستون «اقدامات خادم» بریده نمی‌شود)
+    for (const width of [965, 1024, 1180]) {
+      await page.setViewportSize({ width, height: 1000 });
+      const panel = page.locator(".rc-ledger__panel");
+      await expect(panel.locator(".rc-table")).toBeVisible();
+      expect(await panel.evaluate((el) => el.scrollWidth - el.clientWidth), `دفتر در ${width}px`).toBeLessThanOrEqual(
+        1,
+      );
+    }
     await page.setViewportSize({ width: 1440, height: 1000 });
     expect(await horizontalOverflow(page)).toBeNull();
     const result = await new AxeBuilder({ page }).include("main").analyze();

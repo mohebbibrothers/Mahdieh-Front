@@ -159,7 +159,7 @@ export function Toolbar({
           options={[
             {
               value: "0",
-              label: "همهٔ طبقه‌ها",
+              label: "همهٔ طبقات",
               icon: "building",
               hint: `${faDigits(floors.length)} طبقه · ${faDigits(units.length)} واحد`,
               groupEnd: true,

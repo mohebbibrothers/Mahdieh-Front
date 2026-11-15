@@ -1,5 +1,5 @@
-/* اسکرول سراسری — تنها منبع رفتار پیمایش سایت (هیچ پروندهٔ دیگری scrollbar-* تعریف نمی‌کند،
-   جز نوارهای افقیِ عمداً بی‌نوار مثل ‎.unit-rail‎ و ‎.rail-frame‎ که دکمهٔ پیمایش دارند).
+/* اسکرول سراسری — تنها منبع رفتار پیمایش سایت: هیچ پروندهٔ دیگری scrollbar-* یا ::-webkit-scrollbar
+   تعریف نمی‌کند (حتی ریل‌های افقیِ عمداً بی‌نوار ‎.unit-rail‎ و ‎.rail-frame‎ همین‌جا هستند).
 
    چرا این ساختار: در Chrome/Edge از نسخهٔ ۱۲۱ اگر scrollbar-width یا scrollbar-color روی عنصری
    مقدار بگیرد، شبه‌عنصرهای ::-webkit-scrollbar نادیده گرفته می‌شوند و اسکرول‌بار بومی ویندوز با
@@ -69,6 +69,17 @@
     background: transparent;
   }
 
+  /* ریل‌های افقی عمداً بی‌نوار (کارت‌های واحد، زبانه‌ها): پیمایش با لمس/چرخ و دکمه‌های کناری
+     ‎.rail-frame__btn‎؛ لبه‌های محوشونده نشانهٔ «ادامه دارد» است. */
+  .rail-frame > :not(.rail-frame__btn),
+  .unit-rail {
+    scrollbar-width: none;
+  }
+  .rail-frame > :not(.rail-frame__btn)::-webkit-scrollbar,
+  .unit-rail::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Firefox (بی‌شبه‌عنصر): نوار باریک بومی — آن هم بی‌دکمه است. */
   @supports not selector(::-webkit-scrollbar) {
     * {
@@ -84,6 +95,59 @@
     ::-webkit-scrollbar-thumb {
       background-color: CanvasText;
     }
+  }
+}
+
+/* پیمایش «آرام» درون پنجره‌ها: بی هیچ نوار پیمایشی کنار پنجره (خواست کارفرما). چرخ موش، لمس و
+   صفحه‌کلید (بدنه ‎tabIndex=0‎ دارد) دست‌نخورده‌اند؛ نشانهٔ «ادامه دارد» محوشدن نرم لبهٔ بالا/پایین
+   محتواست که با «زمان‌بندی وابسته به اسکرول» خود همان بدنه پیش می‌رود: بالای محتوا ⇒ فقط لبهٔ پایین
+   محو است، میانه ⇒ هر دو، انتها ⇒ فقط بالا؛ محتوای کوتاهِ بی‌پیمایش ⇒ خط زمانی غیرفعال و هیچ محوی.
+   مرورگرِ بی‌پشتیبانی (Firefox) همان نوار باریک بومی را نگه می‌دارد تا نشانهٔ پیمایش گم نشود. */
+@property --quiet-fade-top {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --quiet-fade-bottom {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@supports (animation-timeline: scroll()) {
+  @layer components {
+    .app-dialog__body {
+      scrollbar-width: none;
+      mask-image: linear-gradient(
+        to bottom,
+        transparent 0,
+        #000 var(--quiet-fade-top),
+        #000 calc(100% - var(--quiet-fade-bottom)),
+        transparent 100%
+      );
+      animation: quiet-scroll-fade linear both;
+      animation-timeline: scroll(self block);
+    }
+    .app-dialog__body::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+  }
+}
+@keyframes quiet-scroll-fade {
+  0% {
+    --quiet-fade-top: 0px;
+    --quiet-fade-bottom: 36px;
+  }
+  6% {
+    --quiet-fade-top: 36px;
+  }
+  94% {
+    --quiet-fade-bottom: 36px;
+  }
+  100% {
+    --quiet-fade-top: 36px;
+    --quiet-fade-bottom: 0px;
   }
 }
 

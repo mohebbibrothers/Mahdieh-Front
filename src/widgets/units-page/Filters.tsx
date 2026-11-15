@@ -2,6 +2,7 @@
 import { useId, useState } from "react";
 import { featureIcon, floorLabel } from "@/entities/unit/unit";
 import { faDigits } from "@/shared/lib/fa";
+import { useStickyFit } from "@/shared/lib/use-sticky-fit";
 import { AppDialog } from "@/shared/ui/Dialog";
 import { Icon } from "@/shared/ui/Icon";
 import type { IconName } from "@/shared/ui/icon-names";
@@ -161,8 +162,9 @@ export function FilterAside({
   facets: Facets;
   activeCount: number;
 }) {
+  const fit = useStickyFit<HTMLElement>();
   return (
-    <aside className="uf" aria-labelledby="uf-title">
+    <aside ref={fit} className="uf" aria-labelledby="uf-title">
       <header className="uf__head">
         <h2 id="uf-title">کدام فضا؟</h2>
         <button type="button" className="uf__clear" disabled={!activeCount} onClick={() => onChange(CLEARED)}>

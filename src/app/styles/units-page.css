@@ -335,14 +335,13 @@
     padding-top: 43px;
   }
 
-  /* کنارهٔ پالایش (چسبان، با پیمایش درونی کپسولی) */
+  /* کنارهٔ پالایش: چسبان دوسویه (‎useStickyFit‎) — در نمایشگر کوتاه همراه صفحه پیمایش می‌شود تا لبهٔ
+     پایین یا سرش پیدا شود؛ بی نوار پیمایش درونی. */
   .uf {
     position: sticky;
-    top: calc(var(--header-h) + 20px);
+    top: var(--sticky-top, calc(var(--header-h) + 20px));
     display: flex;
     flex-direction: column;
-    max-height: calc(100dvh - var(--header-h) - 40px);
-    overflow: hidden;
     border: 1px solid var(--color-border);
     border-radius: 15px;
     background: var(--color-surface);
@@ -373,11 +372,7 @@
     cursor: default;
   }
   .uf__scroll {
-    flex: 1;
-    min-height: 0;
     padding: 17px;
-    overflow-y: auto;
-    overscroll-behavior: contain;
   }
   .up-sort.picker--inline {
     display: flex;
@@ -501,12 +496,12 @@
   .uf__check {
     position: absolute;
     inset-inline-start: 0;
-    width: 19px;
-    height: 19px;
+    width: 20px;
+    height: 20px;
     margin: 0;
     border: 1.5px solid var(--color-border-strong, var(--color-border));
     border-radius: 6px;
-    background: var(--color-surface) no-repeat center / 13px;
+    background: var(--color-surface) no-repeat center / 14px;
     cursor: pointer;
     appearance: none;
     transition:
@@ -2063,7 +2058,7 @@
       border-radius: 12px;
       background: color-mix(in oklab, var(--color-surface) 70%, transparent);
       color: var(--color-text-muted);
-      font-size: 0.625rem;
+      font-size: 0.6875rem;
       line-height: 1.4;
       text-align: center;
     }
@@ -2177,7 +2172,7 @@
       justify-self: start;
       margin-inline-start: 0;
       padding: 0 7px;
-      font-size: 0.625rem;
+      font-size: 0.6875rem;
       line-height: 1.7;
     }
     .up-content {

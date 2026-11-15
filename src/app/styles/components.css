@@ -838,7 +838,6 @@
     --rail-fade-e: var(--rail-fade);
   }
   .rail-frame > :not(.rail-frame__btn) {
-    scrollbar-width: none;
     mask-image: linear-gradient(
       to left,
       transparent 0,
@@ -855,9 +854,6 @@
       #000 calc(100% - var(--rail-fade-e)),
       transparent 100%
     );
-  }
-  .rail-frame > :not(.rail-frame__btn)::-webkit-scrollbar {
-    display: none;
   }
   .rail-frame__btn {
     position: absolute;

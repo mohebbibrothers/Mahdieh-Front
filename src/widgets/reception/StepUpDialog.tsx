@@ -30,15 +30,18 @@ export function StepUpDialog({
   isOpen,
   reason,
   onDone,
+  startWith = "totp",
 }: {
   isOpen: boolean;
   reason: string;
   onDone: (verified: boolean) => void;
+  /** روش آغازین (صفحهٔ قفل پیشخوان: «کد بازیابی» مستقیم) */
+  startWith?: "totp" | "recovery";
 }) {
   const qc = useQueryClient();
   const [digits, setDigits] = useState("");
   const [recovery, setRecovery] = useState("");
-  const [mode, setMode] = useState<"totp" | "recovery">("totp");
+  const [mode, setMode] = useState<"totp" | "recovery">(startWith);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const errId = useId();
@@ -49,7 +52,7 @@ export function StepUpDialog({
     setRecovery("");
     setError(null);
     setBusy(false);
-    setMode("totp");
+    setMode(startWith);
   };
 
   const submit = async (code: string) => {
