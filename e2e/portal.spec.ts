@@ -352,6 +352,55 @@ test.describe("P-07 پرتال زائر", () => {
     await expect(stay).toContainText("پذیرش حضوری در سامانه ثبت نشد");
   });
 
+  test("سابقه ⇐ «ثبت نظر و دل‌نوشته» ⇐ ثبت از راه API ⇐ ستون ارزیابی همان سفر «۵ ستاره (ثبت شد)»", async ({
+    page,
+    api,
+  }) => {
+    pilgrim(api);
+    const past = p07<{ results: Record<string, unknown>[]; meta: unknown }>("reservations-past");
+    const row = past.results[0]!;
+    const token = decodeURIComponent(/\/feedback\/([^/]+)\//.exec(String(row.feedback_url))?.[1] ?? "");
+    let rated = false;
+    api.set("/api/v1/reservations", async (route: Route) => {
+      const scope = new URL(route.request().url()).searchParams.get("scope");
+      if (scope !== "past") return route.fulfill({ json: p07("reservations-upcoming") });
+      const results = rated ? [{ ...row, feedback_rating: 5 }, ...past.results.slice(1)] : past.results;
+      return route.fulfill({ json: { ...past, results } });
+    });
+    let body: unknown;
+    api.set(`/api/v1/feedback/${encodeURIComponent(token)}`, async (route: Route) => {
+      if (route.request().method() === "POST") {
+        body = route.request().postDataJSON();
+        rated = true;
+        return route.fulfill({ status: 201, json: p05("feedback-submitted") });
+      }
+      return route.fulfill({ json: p05("feedback-open") });
+    });
+    await page.goto("/portal/");
+    const history = page.locator("#history");
+    const open = history.getByRole("button", { name: /ثبت نظر و دل‌نوشته/ }).first();
+    await open.scrollIntoViewIfNeeded();
+    await open.click();
+    const dialog = page.getByRole("dialog", { name: "دفتر دل‌نوشتهٔ زیارت" });
+    await expect(dialog).toBeVisible();
+    // پنجره بی نوار پیمایش کناری (پیمایش آرام) — همان قرارداد همهٔ پنجره‌ها
+    expect(await dialog.locator(".app-dialog__body").evaluate((el) => getComputedStyle(el).scrollbarWidth)).toBe(
+      "none",
+    );
+    await dialog
+      .getByRole("group", { name: /امتیاز کلی/ })
+      .locator(".stars__item")
+      .nth(4)
+      .click();
+    await dialog.getByRole("textbox").fill("زیارت قبول؛ سپاس از خادمان.");
+    await dialog.getByRole("button", { name: /ثبت در دفتر دل‌نوشته/ }).click();
+    await expect(dialog.locator(".fb-done")).toContainText("دل‌نوشتهٔ شما در دفتر مهدیه ثبت شد");
+    expect(body).toMatchObject({ rating: 5, comment: "زیارت قبول؛ سپاس از خادمان." });
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(history.getByRole("img", { name: "۵ ستاره، ثبت شد" }).first()).toBeVisible();
+  });
+
   test("خطای سرور در خواندن نشست: «تلاش دوباره»، نه فرم ورود گمراه‌کننده", async ({ page, api }) => {
     api.set("/api/v1/auth/session", { status: 503, body: { detail: "موقتاً در دسترس نیست" } });
     api.allowConsole(/503/);
