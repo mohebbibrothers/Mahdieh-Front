@@ -120,3 +120,27 @@ jobs:
             gh release edit edge --prerelease --notes "${notes}"
           fi
           echo "✅ منتشر شد: ${RELEASE_ID}"
+      - name: آینهٔ دسترس‌پذیر از میزبان (شاخهٔ mirror/<برچسب>)
+        # یافتهٔ واقعی ۲۴ آبان ۱۴۰۵: از میزبان، دامنهٔ دانلود دارایی‌های GitHub
+        # (release-assets.githubusercontent.com) بسته بود اما github.com و raw.githubusercontent.com
+        # باز. همان پرونده‌ها در یک کامیت یتیمِ تک‌نسخه‌ای (جایگزین قبلی) هم منتشر می‌شوند؛
+        # «mahdieh update» نخست از این آینه می‌گیرد. کامیت با GITHUB_TOKEN است ⇒ گردش‌کاری راه نمی‌اندازد.
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_ID: ${{ needs.bundle.outputs.release }}
+        run: |
+          set -euo pipefail
+          name=edge
+          [[ "${GITHUB_REF}" == refs/tags/v* ]] && name="${GITHUB_REF_NAME}"
+          work="$(mktemp -d)"
+          cp release/mahdieh-front.tar.gz release/mahdieh-front.tar.gz.sha256 release/BUILD_INFO.json "${work}/"
+          cd "${work}"
+          sha256sum -c ./*.sha256
+          git init -q -b mirror
+          git add -A
+          git -c user.name="github-actions[bot]" \
+              -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+              commit -q -m "mirror(${name}): ${RELEASE_ID} · ${SOURCE_SHA}"
+          git push -q --force "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" \
+            "HEAD:refs/heads/mirror/${name}"
+          echo "🪞 آینه: mirror/${name} → $(git rev-parse --short HEAD) · ${RELEASE_ID}"
